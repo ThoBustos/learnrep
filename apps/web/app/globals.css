@@ -7,9 +7,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+
+  /* semantic slots */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -18,11 +21,6 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -39,6 +37,18 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* difficulty colors */
+  --color-difficulty-easy: var(--difficulty-easy);
+  --color-difficulty-medium: var(--difficulty-medium);
+  --color-difficulty-hard: var(--difficulty-hard);
+  --color-difficulty-expert: var(--difficulty-expert);
+
+  /* accent colors */
+  --color-streak: var(--streak);
+  --color-stats: var(--stats);
+
+  /* radius scale */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,72 +59,78 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* base palette */
+  --background: #F5F4F0;
+  --foreground: #1C1C2E;
+  --surface: #FFFFFF;
+  --card: #FFFFFF;
+  --card-foreground: #1C1C2E;
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1C2E;
+  --primary: #1C1C2E;
+  --primary-foreground: #F5F4F0;
+  --secondary: #ECEAE4;
+  --secondary-foreground: #1C1C2E;
+  --muted: #ECEAE4;
+  --muted-foreground: #6B6A7A;
+  --accent: #ECEAE4;
+  --accent-foreground: #1C1C2E;
+  --destructive: #C0544A;
+  --border: #E0DED8;
+  --input: #E0DED8;
+  --ring: #1C1C2E;
+
+  /* difficulty */
+  --difficulty-easy:   #4A9E6E;
+  --difficulty-medium: #4A7FC0;
+  --difficulty-hard:   #C0544A;
+  --difficulty-expert: #7C5AC0;
+
+  /* accents */
+  --streak: #C0A84A;
+  --stats:  #4A9EB5;
+
+  --radius: 0.75rem;
+
+  /* sidebar */
+  --sidebar: #ECEAE4;
+  --sidebar-foreground: #1C1C2E;
+  --sidebar-primary: #1C1C2E;
+  --sidebar-primary-foreground: #F5F4F0;
+  --sidebar-accent: #E0DED8;
+  --sidebar-accent-foreground: #1C1C2E;
+  --sidebar-border: #E0DED8;
+  --sidebar-ring: #1C1C2E;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #1C1C2E;
+  --foreground: #F5F4F0;
+  --surface: #25253A;
+  --card: #25253A;
+  --card-foreground: #F5F4F0;
+  --popover: #25253A;
+  --popover-foreground: #F5F4F0;
+  --primary: #F5F4F0;
+  --primary-foreground: #1C1C2E;
+  --secondary: #2E2E45;
+  --secondary-foreground: #F5F4F0;
+  --muted: #2E2E45;
+  --muted-foreground: #9B9AAB;
+  --accent: #2E2E45;
+  --accent-foreground: #F5F4F0;
+  --destructive: #E06B61;
+  --border: #3A3A55;
+  --input: #3A3A55;
+  --ring: #9B9AAB;
+  --sidebar: #25253A;
+  --sidebar-foreground: #F5F4F0;
+  --sidebar-primary: #F5F4F0;
+  --sidebar-primary-foreground: #1C1C2E;
+  --sidebar-accent: #2E2E45;
+  --sidebar-accent-foreground: #F5F4F0;
+  --sidebar-border: #3A3A55;
+  --sidebar-ring: #9B9AAB;
 }
 
 @layer base {
@@ -126,5 +142,35 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Typography scale — in utilities so responsive prefixes (sm:text-heading etc.) work */
+@layer utilities {
+  .text-display {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .text-heading {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .text-subhead {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .text-body {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+  .text-caption {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
   }
 }
