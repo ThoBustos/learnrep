@@ -1,11 +1,23 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { Copy, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { mockQuizzes, difficultyStyles } from '@/lib/mock-data'
 import type { MockQuiz } from '@/lib/mock-data'
 
+const HARNESS_PROMPT = 'run lr help, then generate a quiz about all the learnings from this session'
+
 export default function DashboardPage() {
+  const [copied, setCopied] = useState(false)
+
+  function copyPrompt() {
+    navigator.clipboard.writeText(HARNESS_PROMPT).catch(() => {})
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="flex flex-1 flex-col gap-5 p-5 lg:p-8">
       {/* Stat strip */}
@@ -16,16 +28,24 @@ export default function DashboardPage() {
       </div>
 
       {/* CLI callout */}
-      <div className="rounded-[1.3rem] border-[3px] border-[#151515] bg-[#151515] px-5 py-4 shadow-[5px_5px_0_#ff5858]">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#ffd426]/60">
-          Generate quizzes via CLI
+      <div className="group relative rounded-[1.3rem] border-[3px] border-[#151515] bg-[#151515] px-5 py-4 shadow-[5px_5px_0_#d9ff69]">
+        <p className="font-mono text-[9px] font-black uppercase tracking-[0.2em] text-white/40">
+          Let your harness generate quizzes
         </p>
-        <p className="mt-1 font-mono text-base font-black text-[#d9ff69]">
-          learnrep generate &quot;react hooks&quot;
+        <p className="mt-2 font-mono text-sm font-black text-[#d9ff69]">
+          &ldquo;run lr help, then generate a quiz about all the learnings from this session&rdquo;
         </p>
-        <p className="mt-1 font-mono text-[10px] font-bold text-[#ffd426]/50">
-          → opens your quiz at this URL
+        <p className="mt-2 font-mono text-[10px] font-bold text-white/30">
+          → your assistant calls lr generate
         </p>
+        <button
+          type="button"
+          onClick={copyPrompt}
+          className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 rounded-[0.6rem] border-[2px] border-[#d9ff69]/30 bg-white/10 px-2.5 py-1.5 font-mono text-[10px] font-black text-[#d9ff69] opacity-0 transition-all group-hover:opacity-100 hover:border-[#d9ff69]/60 hover:bg-white/20"
+        >
+          {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
       </div>
 
       {/* Feed list */}
