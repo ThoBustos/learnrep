@@ -1,113 +1,75 @@
 import { notFound } from 'next/navigation'
-import type { Difficulty } from '@learnrep/core'
-import { QuizCard } from '@/components/quiz/QuizCard'
-import { DifficultyBadge } from '@/components/quiz/DifficultyBadge'
+import Link from 'next/link'
 
-const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'expert']
+const versions = [
+  {
+    href: '/dev/v1',
+    label: 'V1',
+    title: 'Baseline Brutalist Cards',
+    description: 'The current first pass kept intact for comparison.',
+    bg: 'bg-[#f5f4f0]',
+    accent: 'bg-[#1c1c2e]',
+  },
+  {
+    href: '/dev/v2',
+    label: 'V2',
+    title: 'Challenge Doodle App',
+    description: 'Mobile-first challenge UI with ink outlines, warm surfaces, and custom SVG-style symbols.',
+    bg: 'bg-[#ffd426]',
+    accent: 'bg-[#ff4f52]',
+  },
+  {
+    href: '/dev/v3',
+    label: 'V3',
+    title: 'Collectible Quiz Deck',
+    description: 'Trading-card direction with bold frames, rarity panels, and quiz deck compositions.',
+    bg: 'bg-[#111111]',
+    accent: 'bg-[#ffcf3f]',
+  },
+]
 
-export default function DevPage() {
+export default function DevIndexPage() {
   if (process.env.NODE_ENV === 'production') notFound()
 
   return (
-    <main className="min-h-screen bg-background p-10 space-y-12">
+    <main className="min-h-screen bg-[#f8efe7] px-6 py-12 text-[#15151f]">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10">
+        <header className="max-w-3xl">
+          <p className="mb-3 font-mono text-xs font-bold uppercase tracking-[0.28em] text-[#67606a]">LearnRep design explorations</p>
+          <h1 className="text-5xl font-black tracking-[-0.05em] sm:text-7xl">Compare the system directions.</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-7 text-[#67606a]">
+            V1 remains unchanged. V2 and V3 are opinionated forks that test product screens, not just isolated atoms.
+          </p>
+        </header>
 
-      <section className="space-y-4">
-        <h2 className="text-heading text-foreground">Color Tokens</h2>
-        <div className="flex flex-wrap gap-3">
-          {[
-            ['background', 'bg-background border border-border'],
-            ['surface', 'bg-surface border border-border'],
-            ['card', 'bg-card border border-border'],
-            ['muted', 'bg-muted'],
-            ['primary', 'bg-primary'],
-            ['secondary', 'bg-secondary'],
-            ['streak', 'bg-streak'],
-            ['stats', 'bg-stats'],
-            ['destructive', 'bg-destructive'],
-          ].map(([name, cls]) => (
-            <div key={name} className="flex flex-col items-center gap-1">
-              <div className={`h-12 w-20 rounded-lg ${cls}`} />
-              <span className="text-caption text-muted-foreground">{name}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-heading text-foreground">Difficulty Badges</h2>
-        <div className="flex flex-wrap gap-3">
-          {DIFFICULTIES.map((d) => <DifficultyBadge key={d} difficulty={d} />)}
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-heading text-foreground">Typography Scale</h2>
-        <p className="text-display text-foreground">Display 48/700</p>
-        <p className="text-heading text-foreground">Heading 24/700</p>
-        <p className="text-subhead text-foreground">Subhead 16/700</p>
-        <p className="text-body text-foreground">Body 14/400 — The quick brown fox jumps over the lazy dog</p>
-        <p className="text-caption text-muted-foreground">Caption 12/400 — The quick brown fox jumps over the lazy dog</p>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-heading text-foreground">Quiz Cards - all difficulty variants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {DIFFICULTIES.map((d) => (
-            <QuizCard
-              key={d}
-              title={`${d.charAt(0).toUpperCase() + d.slice(1)} Quiz`}
-              topic="TypeScript"
-              difficulty={d}
-              attemptCount={12}
-              createdBy="thomas"
-              onClick={() => {}}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-heading text-foreground">Quiz Cards - variants</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <QuizCard
-            title="No attempts yet"
-            topic="React Hooks"
-            difficulty="easy"
-            attemptCount={0}
-          />
-          <QuizCard
-            title="With share code"
-            topic="Async/Await"
-            difficulty="medium"
-            attemptCount={3}
-            shareCode="ab12cd34"
-          />
-          <QuizCard
-            title="Non-interactive"
-            topic="Database Design"
-            difficulty="expert"
-            attemptCount={1}
-            createdBy="alice"
-          />
-        </div>
-      </section>
-
-      <section className="space-y-2">
-        <h2 className="text-heading text-foreground">Radius</h2>
-        <div className="flex flex-wrap gap-3">
-          {['rounded-sm', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-2xl', 'rounded-3xl', 'rounded-4xl'].map(
-            (cls) => (
-              <div
-                key={cls}
-                className={`h-12 w-20 bg-primary ${cls} flex items-center justify-center`}
-              >
-                <span className="text-caption text-primary-foreground">{cls.replace('rounded-', '')}</span>
+        <section className="grid gap-5 md:grid-cols-3">
+          {versions.map((version) => (
+            <Link
+              key={version.href}
+              href={version.href}
+              className={`group relative overflow-hidden rounded-[2rem] border-[3px] border-[#15151f] ${version.bg} p-6 shadow-[8px_8px_0_#15151f] transition-transform hover:-translate-y-1`}
+            >
+              <div className={`mb-10 inline-flex size-16 items-center justify-center rounded-2xl border-[3px] border-[#15151f] ${version.accent} font-mono text-xl font-black text-white shadow-[4px_4px_0_#15151f]`}>
+                {version.label}
               </div>
-            ),
-          )}
-        </div>
-      </section>
+              <h2 className="text-2xl font-black tracking-[-0.04em]">{version.title}</h2>
+              <p className="mt-3 min-h-20 text-sm font-medium leading-6 text-[#403b43]">{version.description}</p>
+              <span className="mt-8 inline-flex rounded-full border-[3px] border-[#15151f] bg-white px-4 py-2 font-mono text-xs font-black uppercase tracking-[0.18em] shadow-[3px_3px_0_#15151f]">
+                Open {version.label}
+              </span>
+            </Link>
+          ))}
+        </section>
 
+        <section className="rounded-[2rem] border-[3px] border-[#15151f] bg-white p-6 shadow-[8px_8px_0_#15151f]">
+          <h2 className="text-xl font-black tracking-[-0.03em]">What to review</h2>
+          <div className="mt-4 grid gap-3 text-sm font-medium leading-6 text-[#403b43] sm:grid-cols-3">
+            <p>Does the direction feel ownable for LearnRep, or generic?</p>
+            <p>Do the components survive real screens like challenge detail, level rows, leaderboard, and results?</p>
+            <p>Which SVG assets are worth commissioning after the direction is selected?</p>
+          </div>
+        </section>
+      </div>
     </main>
   )
 }
