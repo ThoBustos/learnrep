@@ -1,17 +1,17 @@
 import { notFound } from 'next/navigation'
+import type { Difficulty } from '@learnrep/core'
+import { QuizCard } from '@/components/quiz/QuizCard'
+import { DifficultyBadge } from '@/components/quiz/DifficultyBadge'
+
+const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard', 'expert']
 
 export default function DevPage() {
   if (process.env.NODE_ENV === 'production') notFound()
-  const difficulties = [
-    { label: 'Easy', cls: 'bg-difficulty-easy' },
-    { label: 'Medium', cls: 'bg-difficulty-medium' },
-    { label: 'Hard', cls: 'bg-difficulty-hard' },
-    { label: 'Expert', cls: 'bg-difficulty-expert' },
-  ]
 
   return (
     <main className="min-h-screen bg-background p-10 space-y-12">
-      <section className="space-y-2">
+
+      <section className="space-y-4">
         <h2 className="text-heading text-foreground">Color Tokens</h2>
         <div className="flex flex-wrap gap-3">
           {[
@@ -33,15 +33,10 @@ export default function DevPage() {
         </div>
       </section>
 
-      <section className="space-y-2">
-        <h2 className="text-heading text-foreground">Difficulty Colors</h2>
+      <section className="space-y-4">
+        <h2 className="text-heading text-foreground">Difficulty Badges</h2>
         <div className="flex flex-wrap gap-3">
-          {difficulties.map(({ label, cls }) => (
-            <div key={label} className="flex flex-col items-center gap-1">
-              <div className={`h-12 w-20 rounded-lg ${cls}`} />
-              <span className="text-caption text-muted-foreground">{label}</span>
-            </div>
-          ))}
+          {DIFFICULTIES.map((d) => <DifficultyBadge key={d} difficulty={d} />)}
         </div>
       </section>
 
@@ -52,6 +47,49 @@ export default function DevPage() {
         <p className="text-subhead text-foreground">Subhead 16/700</p>
         <p className="text-body text-foreground">Body 14/400 — The quick brown fox jumps over the lazy dog</p>
         <p className="text-caption text-muted-foreground">Caption 12/400 — The quick brown fox jumps over the lazy dog</p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-heading text-foreground">Quiz Cards - all difficulty variants</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {DIFFICULTIES.map((d) => (
+            <QuizCard
+              key={d}
+              title={`${d.charAt(0).toUpperCase() + d.slice(1)} Quiz`}
+              topic="TypeScript"
+              difficulty={d}
+              attemptCount={12}
+              createdBy="thomas"
+              onClick={() => {}}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-heading text-foreground">Quiz Cards - variants</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <QuizCard
+            title="No attempts yet"
+            topic="React Hooks"
+            difficulty="easy"
+            attemptCount={0}
+          />
+          <QuizCard
+            title="With share code"
+            topic="Async/Await"
+            difficulty="medium"
+            attemptCount={3}
+            shareCode="ab12cd34"
+          />
+          <QuizCard
+            title="Non-interactive"
+            topic="Database Design"
+            difficulty="expert"
+            attemptCount={1}
+            createdBy="alice"
+          />
+        </div>
       </section>
 
       <section className="space-y-2">
@@ -69,6 +107,7 @@ export default function DevPage() {
           )}
         </div>
       </section>
+
     </main>
   )
 }
