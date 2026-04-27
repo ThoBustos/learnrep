@@ -145,8 +145,20 @@
   }
 }
 
-/* Typography scale — in utilities so responsive prefixes (sm:text-heading etc.) work */
 @layer utilities {
+  .shadow-hard-sm { box-shadow: 2px 2px 0 var(--foreground); }
+  .shadow-hard    { box-shadow: 4px 4px 0 var(--foreground); }
+  .shadow-hard-lg { box-shadow: 6px 6px 0 var(--foreground); }
+  .shadow-hard-colored-easy   { box-shadow: 4px 4px 0 var(--difficulty-easy); }
+  .shadow-hard-colored-medium { box-shadow: 4px 4px 0 var(--difficulty-medium); }
+  .shadow-hard-colored-hard   { box-shadow: 4px 4px 0 var(--difficulty-hard); }
+  .shadow-hard-colored-expert { box-shadow: 4px 4px 0 var(--difficulty-expert); }
+
+  .bg-dot-grid {
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 15%, transparent) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+
   .text-display {
     font-size: 48px;
     font-weight: 700;
