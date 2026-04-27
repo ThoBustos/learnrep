@@ -1,6 +1,6 @@
-/* DEV ONLY - V2 visual exploration */
-
-type Difficulty = 'easy' | 'medium' | 'hard' | 'expert'
+import { notFound } from 'next/navigation'
+import type { Difficulty } from '@learnrep/core'
+import { cn } from '@/lib/utils'
 
 const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert']
 
@@ -45,11 +45,9 @@ const people = [
   { name: 'Maya Park', handle: '@Maya', initials: 'MP', score: 2510 },
 ]
 
-function cx(...classes: Array<string | false | undefined>) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default function V2DevPage() {
+  if (process.env.NODE_ENV === 'production') notFound()
+
   return (
     <main
       className="min-h-screen overflow-hidden bg-[#ffd426] text-[#151515]"
@@ -61,6 +59,7 @@ export default function V2DevPage() {
         <TokenLab />
         <ComponentLab />
         <ScreenLab />
+        <DashboardLab />
         <AssetBrief />
       </div>
     </main>
@@ -199,6 +198,113 @@ function ScreenLab() {
         </PhoneShell>
       </div>
     </section>
+  )
+}
+
+const feedQuizzes = [
+  { title: 'React Server Components', topic: 'React', difficulty: 'medium' as Difficulty, questions: 8, attempts: 3, best: 75 },
+  { title: 'TypeScript Generics', topic: 'TypeScript', difficulty: 'hard' as Difficulty, questions: 10, attempts: 1, best: 60 },
+  { title: 'Closures & Scope', topic: 'JavaScript', difficulty: 'easy' as Difficulty, questions: 6, attempts: 5, best: 90 },
+  { title: 'SQL Indexes', topic: 'Database', difficulty: 'expert' as Difficulty, questions: 12, attempts: 2, best: 45 },
+]
+
+const teamBoard = [
+  { rank: 1, person: { name: 'Thomas B.', handle: '@thomas', initials: 'TB', score: 3240, streak: 12 } },
+  { rank: 2, person: { name: 'Angel C.', handle: '@angel', initials: 'AC', score: 2870, streak: 8 } },
+  { rank: 3, person: { name: 'John M.', handle: '@john', initials: 'JM', score: 2510, streak: 5 } },
+]
+
+function DashboardLab() {
+  return (
+    <section className="space-y-5">
+      <SectionTitle kicker="Dashboard" title="First view after login." />
+      <div className="grid gap-8 lg:grid-cols-3">
+        <PhoneShell title="Feed">
+          <DashFeedScreen />
+        </PhoneShell>
+        <PhoneShell title="My Quizzes">
+          <DashMyQuizzesScreen />
+        </PhoneShell>
+        <PhoneShell title="Leaderboard">
+          <DashLeaderboardScreen />
+        </PhoneShell>
+      </div>
+    </section>
+  )
+}
+
+function DashFeedScreen() {
+  return (
+    <div className="space-y-3">
+      <UserHeader compact />
+      <div className="flex items-center justify-between rounded-[1.2rem] border-[3px] border-[#151515] bg-[#151515] px-4 py-3 text-white shadow-[4px_4px_0_#ff5858]">
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#ffd426]">Team · Supernal</p>
+          <p className="text-lg font-black leading-tight">3 new quizzes today</p>
+        </div>
+        <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[#ffd426] bg-[#ffd426] text-2xl font-black text-[#151515]">3</div>
+      </div>
+      <Tabs labels={['Feed', 'Trending', 'New']} active="Feed" />
+      <div className="space-y-2">
+        {feedQuizzes.slice(0, 3).map((q) => (
+          <div key={q.title} className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515]">
+            <DifficultyBadge difficulty={q.difficulty} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-black">{q.title}</p>
+              <p className="text-[10px] font-bold text-[#67606a]">{q.topic} · {q.questions}q</p>
+            </div>
+            <Button size="sm" tone="yellow">Go</Button>
+          </div>
+        ))}
+      </div>
+      <BottomNav active="Feed" />
+    </div>
+  )
+}
+
+function DashMyQuizzesScreen() {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="font-black">My Quizzes</p>
+        <Button size="sm" tone="yellow">+ New</Button>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <StatBlock value="24" label="Total" tone="yellow" />
+        <StatBlock value="12" label="Streak" tone="paper" />
+        <StatBlock value="74" label="Avg %" tone="paper" />
+      </div>
+      <SearchBar placeholder="Search quizzes…" />
+      <div className="space-y-2">
+        {feedQuizzes.map((q) => (
+          <QuizCard key={q.title} {...q} />
+        ))}
+      </div>
+      <BottomNav active="Quizzes" />
+    </div>
+  )
+}
+
+function DashLeaderboardScreen() {
+  return (
+    <div className="space-y-3">
+      <div className="rounded-[1.3rem] border-[3px] border-[#151515] bg-[#d9ff69] p-4 shadow-[4px_4px_0_#151515]">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em]">Team · Supernal</p>
+        <p className="text-2xl font-black leading-tight">Weekly Leaderboard</p>
+        <p className="text-[10px] font-bold text-[#1e6f38]">Resets Sunday · 3 days left</p>
+      </div>
+      <div className="space-y-2">
+        {teamBoard.map(({ rank, person }) => (
+          <LeaderboardRow key={person.handle} rank={rank} person={person} />
+        ))}
+      </div>
+      <div className="rounded-[1rem] border-[3px] border-[#151515] bg-[#fff7ec] p-3 text-center shadow-[3px_3px_0_#151515]">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">You're ranked</p>
+        <p className="text-4xl font-black">#1</p>
+        <p className="text-[10px] font-bold text-[#67606a]">Keep it up this week</p>
+      </div>
+      <BottomNav active="Team" />
+    </div>
   )
 }
 

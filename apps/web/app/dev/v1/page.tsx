@@ -1,4 +1,4 @@
-/* DEV ONLY — remove before production */
+import { notFound } from 'next/navigation'
 import type { Difficulty } from '@learnrep/core'
 import { QuizCard } from '@/components/quiz/QuizCard'
 import { DifficultyBadge } from '@/components/quiz/DifficultyBadge'
@@ -25,6 +25,8 @@ function SectionHeader({ title }: { title: string }) {
 }
 
 export default function V1DevPage() {
+  if (process.env.NODE_ENV === 'production') notFound()
+
   return (
     <main className="min-h-screen bg-background py-12">
       <div className="max-w-5xl mx-auto px-6 space-y-16">

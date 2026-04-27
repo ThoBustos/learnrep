@@ -1,6 +1,7 @@
-/* DEV ONLY - V3 visual exploration */
+import { notFound } from 'next/navigation'
+import type { Difficulty } from '@learnrep/core'
+import { cn } from '@/lib/utils'
 
-type Difficulty = 'easy' | 'medium' | 'hard' | 'expert'
 type Rarity = 'common' | 'rare' | 'epic' | 'legend'
 
 const difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert']
@@ -32,11 +33,9 @@ const leaderboard = [
   { rank: 3, name: 'Priya Patel', handle: '@priya', score: 2590 },
 ]
 
-function cx(...classes: Array<string | false | undefined>) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export default function V3DevPage() {
+  if (process.env.NODE_ENV === 'production') notFound()
+
   return (
     <main className="min-h-screen bg-[#111111] text-[#f8efe0]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
       <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(#f8efe0_1px,transparent_1px),linear-gradient(90deg,#f8efe0_1px,transparent_1px)] [background-size:44px_44px]" />
@@ -45,6 +44,7 @@ export default function V3DevPage() {
         <Foundations />
         <ComponentLab />
         <ScreenLab />
+        <DashboardLab />
         <AssetBrief />
       </div>
     </main>
@@ -183,6 +183,116 @@ function ScreenLab() {
         </ScreenFrame>
       </div>
     </section>
+  )
+}
+
+const feedQuizzes = [
+  { title: 'React Server Components', topic: 'React', difficulty: 'medium' as Difficulty, rarity: 'rare' as Rarity, no: '005', best: 75 },
+  { title: 'TypeScript Generics', topic: 'TypeScript', difficulty: 'hard' as Difficulty, rarity: 'epic' as Rarity, no: '006', best: 60 },
+  { title: 'Closures & Scope', topic: 'JavaScript', difficulty: 'easy' as Difficulty, rarity: 'common' as Rarity, no: '007', best: 90 },
+]
+
+const teamBoard = [
+  { rank: 1, name: 'Thomas B.', handle: '@thomas', score: 3240 },
+  { rank: 2, name: 'Angel C.', handle: '@angel', score: 2870 },
+  { rank: 3, name: 'John M.', handle: '@john', score: 2510 },
+]
+
+function DashboardLab() {
+  return (
+    <section className="space-y-5">
+      <SectionTitle kicker="Dashboard" title="First view after login." />
+      <div className="grid gap-6 lg:grid-cols-3">
+        <ScreenFrame title="Feed">
+          <DashFeedScreen />
+        </ScreenFrame>
+        <ScreenFrame title="My Deck">
+          <DashDeckScreen />
+        </ScreenFrame>
+        <ScreenFrame title="Leaderboard">
+          <DashLeaderboardScreen />
+        </ScreenFrame>
+      </div>
+    </section>
+  )
+}
+
+function DashFeedScreen() {
+  return (
+    <div className="space-y-4">
+      <TopBar title="LearnRep" />
+      <div className="rounded-[1.3rem] border-[4px] border-[#111111] bg-[#ffcf3f] p-4 text-[#111111] shadow-[5px_5px_0_#111111]">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em]">Team · Supernal</p>
+        <div className="mt-1 flex items-end justify-between">
+          <p className="text-3xl font-black leading-none tracking-[-0.08em]">3 new today</p>
+          <StreakCounter days={12} />
+        </div>
+      </div>
+      <SearchBox />
+      <div className="space-y-2">
+        {feedQuizzes.map((q) => (
+          <div key={q.title} className="flex items-center gap-3 overflow-hidden rounded-[1.1rem] border-[3px] border-[#111111] bg-[#191919] p-2 shadow-[4px_4px_0_#111111]">
+            <div className={cx('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px] border-[#111111] font-mono text-[9px] font-black', difficulty[q.difficulty].card, difficulty[q.difficulty].ink)}>
+              {q.no}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-black text-[#f8efe0]">{q.title}</p>
+              <TopicTag label={q.topic} />
+            </div>
+            <DifficultyTag difficulty={q.difficulty} />
+          </div>
+        ))}
+      </div>
+      <NavBar active="Feed" />
+    </div>
+  )
+}
+
+function DashDeckScreen() {
+  return (
+    <div className="space-y-4">
+      <TopBar title="My Deck" />
+      <div className="grid grid-cols-3 gap-2">
+        <StatBlock value="24" label="Cards" tone="gold" small />
+        <StatBlock value="12" label="Streak" tone="dark" small />
+        <StatBlock value="74" label="Avg" tone="blue" small />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        {feedQuizzes.slice(0, 2).map((q) => (
+          <QuizCard key={q.title} {...q} compact />
+        ))}
+      </div>
+      <div className="space-y-2">
+        <LevelRow number={1} title="Closures" state="complete" />
+        <LevelRow number={2} title="Generics" state="active" />
+        <LevelRow number={3} title="RSC" state="locked" />
+      </div>
+      <NavBar active="Deck" />
+    </div>
+  )
+}
+
+function DashLeaderboardScreen() {
+  return (
+    <div className="space-y-4">
+      <TopBar title="Leaderboard" />
+      <Panel className="bg-[#ffcf3f] text-[#111111]">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em]">Team · Supernal</p>
+        <p className="text-2xl font-black leading-tight tracking-[-0.05em]">Weekly ranking</p>
+        <p className="font-mono text-[10px] font-bold text-[#655b4d]">Resets Sunday · 3 days left</p>
+      </Panel>
+      <div className="space-y-2">
+        {teamBoard.map((person) => (
+          <LeaderboardRow key={person.handle} {...person} />
+        ))}
+      </div>
+      <Panel className="bg-[#8de37f] p-4 text-center text-[#111111]">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">You're ranked</p>
+        <p className="text-5xl font-black leading-none tracking-[-0.08em]">#1</p>
+        <p className="font-mono text-[10px] font-bold">Keep it up this week</p>
+      </Panel>
+      <NavBar active="Scores" />
+    </div>
   )
 }
 
