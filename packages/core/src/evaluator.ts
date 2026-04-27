@@ -3,12 +3,13 @@ import { EVALUATE_ANSWER_SYSTEM_PROMPT } from './schemas'
 
 export interface EvaluateAnswerParams {
   question: Question
-  userAnswer: string | string[]
+  userAnswer: number | number[] | string
   callLLM?: (system: string, prompt: string) => Promise<string>
 }
 
 export interface EvaluationResult {
   correct: boolean
+  score: number
   feedback: string
 }
 
@@ -16,42 +17,51 @@ export async function evaluateAnswer(params: EvaluateAnswerParams): Promise<Eval
   const { question, userAnswer, callLLM } = params
 
   if (question.type === 'multiple-choice') {
-    const answer = Array.isArray(userAnswer) ? userAnswer[0] : userAnswer
-    const correct = answer?.trim().toUpperCase() === String(question.correctAnswer).toUpperCase()
+    const correct = userAnswer === question.correctIndex
     return {
       correct,
-      feedback: correct ? 'Correct!' : `The correct answer is ${question.correctAnswer}. ${question.explanation ?? ''}`,
+      score: correct ? 100 : 0,
+      feedback: correct
+        ? 'Correct!'
+        : `The correct answer was option ${['A', 'B', 'C', 'D'][question.correctIndex ?? 0]}. ${question.explanation ?? ''}`,
     }
   }
 
   if (question.type === 'multi-select') {
-    const userSet = new Set(
-      (Array.isArray(userAnswer) ? userAnswer : [userAnswer]).map((a) => a.trim().toUpperCase()),
-    )
-    const correctSet = new Set(
-      (Array.isArray(question.correctAnswer)
-        ? question.correctAnswer
-        : [question.correctAnswer]
-      ).map((a) => a.toUpperCase()),
-    )
-    const correct =
-      userSet.size === correctSet.size && [...userSet].every((a) => correctSet.has(a))
-    return {
-      correct,
-      feedback: correct
-        ? 'Correct!'
-        : `The correct answers are: ${[...correctSet].join(', ')}. ${question.explanation ?? ''}`,
+    const userIndices = Array.isArray(userAnswer) ? (userAnswer as number[]) : []
+    const correctIndices = question.correctIndices ?? []
+    const userSet = new Set(userIndices)
+    const correctSet = new Set(correctIndices)
+
+    const correctlySelected = userIndices.filter((i) => correctSet.has(i)).length
+    const incorrectlySelected = userIndices.filter((i) => !correctSet.has(i)).length
+    const isCorrect = correctlySelected === correctIndices.length && incorrectlySelected === 0
+
+    let score: number
+    if (isCorrect) {
+      score = 100
+    } else {
+      const earned = Math.max(0, correctlySelected - incorrectlySelected)
+      score = Math.round((earned / correctIndices.length) * 100)
     }
+
+    const correctLetters = correctIndices.map((i) => ['A', 'B', 'C', 'D', 'E', 'F'][i]).join(', ')
+    const feedback = isCorrect
+      ? 'Correct! All right answers selected.'
+      : `Not quite. Correct answers: ${correctLetters}. ${question.explanation ?? ''}`
+
+    return { correct: isCorrect, score, feedback }
   }
 
   if (!callLLM) {
-    return { correct: false, feedback: 'LLM evaluator not provided for this question type.' }
+    return { correct: false, score: 0, feedback: 'LLM evaluator not provided for this question type.' }
   }
 
-  const answer = Array.isArray(userAnswer) ? userAnswer.join('\n') : userAnswer
+  const answer = typeof userAnswer === 'string' ? userAnswer : String(userAnswer)
   const prompt = `Question: ${question.prompt}
 
-Expected answer: ${JSON.stringify(question.correctAnswer)}
+Expected answer: ${question.expectedAnswer ?? question.expectedSolution ?? ''}
+Key points: ${(question.keyPoints ?? []).join(', ')}
 
 User's answer: ${answer}
 
@@ -59,7 +69,7 @@ Is the user's answer correct?`
 
   const raw = await callLLM(EVALUATE_ANSWER_SYSTEM_PROMPT, prompt)
 
-  let result: EvaluationResult
+  let result: { correct: boolean; feedback: string }
   try {
     result = JSON.parse(raw)
   } catch {
@@ -70,7 +80,7 @@ Is the user's answer correct?`
     throw new Error('LLM evaluation response missing required fields')
   }
 
-  return result
+  return { correct: result.correct, score: result.correct ? 100 : 0, feedback: result.feedback }
 }
 
 export function scoreAttempt(

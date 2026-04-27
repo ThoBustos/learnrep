@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "LearnRep CLI",
   "bin": {
-    "learnrep": "./dist/index.js"
+    "learnrep": "./dist/index.js",
+    "lr": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",

@@ -1,0 +1,40 @@
+---
+title: Getting Started
+description: Install LearnRep and generate your first quiz in under a minute.
+---
+
+## Install
+
+```bash
+npm install -g learnrep
+```
+
+## Log in
+
+```bash
+lr login
+```
+
+Opens a browser OAuth flow and stores your token at `~/.learnrep/config.json`.
+
+## Generate your first quiz
+
+```bash
+lr generate "react hooks"
+```
+
+That's it. LearnRep generates 5 multiple-choice questions and returns a link you can open or share.
+
+## Try it with your own content
+
+```bash
+cat my-notes.md | lr generate --focus "async patterns" --difficulty hard
+```
+
+## Share a quiz
+
+```bash
+lr share <quiz-id>
+```
+
+Makes the quiz public and outputs the share link.

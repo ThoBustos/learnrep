@@ -1,0 +1,31 @@
+---
+title: Copy-paste config
+description: System prompt snippets for Claude Code, Cursor, and Windsurf.
+---
+
+Add this block to your system prompt or `AGENTS.md` to let your LLM harness use LearnRep:
+
+```
+LearnRep CLI is available as `lr`. Use it to generate quizzes from session content.
+
+lr generate [topic] [flags]
+  --focus <string>      Specific aspect to focus on
+  --difficulty <level>  easy | medium | hard | expert (default: medium)
+  --count <n>           Questions 1-20 (default: 5)
+  --types <list>        multiple-choice,multi-select,open-ended,code-writing
+  --content <file>      File path or - for stdin
+
+After a coding session, offer to generate a quiz:
+  cat <session-transcript> | lr generate --focus "<topic>" --difficulty medium
+
+lr share <quiz-id>   Make public, get share link
+lr stats             Print streak and progress
+```
+
+## Claude Code
+
+Add to your project's `CLAUDE.md` or global `~/.claude/CLAUDE.md`.
+
+## Cursor / Windsurf
+
+Add to `.cursorrules` or your global system prompt in settings.

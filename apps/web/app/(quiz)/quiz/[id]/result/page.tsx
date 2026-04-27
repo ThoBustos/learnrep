@@ -1,34 +1,50 @@
 'use client'
 
-import { use } from 'react'
+import { use, useState } from 'react'
 import Link from 'next/link'
+import { Share2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MOCK_QUESTIONS, mockQuizzes } from '@/lib/mock-data'
 
-// Mocked result: user got Q1, Q2, Q4 correct (3 of 5 = 60%)
 const MOCK_RESULTS = [
-  { questionId: 'q1', selectedIndex: 1, correct: true },
-  { questionId: 'q2', selectedIndex: 2, correct: true },
-  { questionId: 'q3', selectedIndex: 0, correct: false },
-  { questionId: 'q4', selectedIndex: 1, correct: true },
-  { questionId: 'q5', selectedIndex: 0, correct: false },
+  { questionId: 'q1', correct: true, score: 100 },
+  { questionId: 'q2', correct: true, score: 100 },
+  { questionId: 'q3', correct: false, score: 50 },
+  { questionId: 'q4', correct: false, score: 0 },
+  { questionId: 'q5', correct: false, score: 40 },
+  { questionId: 'q6', correct: false, score: 30 },
 ]
 
-const correctCount = MOCK_RESULTS.filter((r) => r.correct).length
-const totalCount = MOCK_RESULTS.length
-const scorePct = Math.round((correctCount / totalCount) * 100)
-const isHigh = scorePct > 80
-
-export default function ResultPage({ params }: { params: Promise<{ id: string }> }) {
+export default function ResultPage({ params, searchParams }: {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{ score?: string }>
+}) {
   const { id } = use(params)
+  const sp = searchParams ? use(searchParams) : {}
   const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
+
+  const [copied, setCopied] = useState(false)
+
+  const totalCount = MOCK_QUESTIONS.length
+  const avgScore = sp.score
+    ? parseInt(sp.score, 10)
+    : Math.round(MOCK_RESULTS.reduce((sum, r) => sum + r.score, 0) / totalCount)
+  const correctCount = MOCK_RESULTS.filter((r) => r.correct).length
+  const isHigh = avgScore > 80
+
+  function shareResult() {
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/quiz/${id}` : ''
+    const text = `I scored ${avgScore}% on "${quiz.title}" — try it: ${url}`
+    navigator.clipboard.writeText(text).catch(() => {})
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div
       className="relative min-h-screen bg-[#ffd426] text-[#151515]"
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
-      {/* Dot grid */}
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col gap-5 p-5 lg:p-8">
@@ -46,56 +62,65 @@ export default function ResultPage({ params }: { params: Promise<{ id: string }>
             'text-8xl font-black leading-none tracking-[-0.06em]',
             isHigh ? 'text-[#1e6f38]' : 'text-[#151515]'
           )}>
-            {scorePct}%
+            {avgScore}%
           </p>
           <p className={cn('text-lg font-black', isHigh ? 'text-[#1e6f38]' : 'text-[#67606a]')}>
             {correctCount} of {totalCount} correct
           </p>
           <p className="font-mono text-xs font-bold text-[#67606a]">{quiz.title}</p>
+
+          {/* Share button */}
+          <button
+            type="button"
+            onClick={shareResult}
+            className={cn(
+              'mt-2 flex items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] px-5 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5',
+              copied ? 'bg-[#151515] text-[#ffd426]' : 'bg-white text-[#151515]'
+            )}
+          >
+            {copied ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
+            {copied ? 'Copied to clipboard!' : 'Share result'}
+          </button>
         </div>
 
         {/* Per-question review */}
         <div className="flex flex-col gap-3 rounded-[1.3rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[5px_5px_0_#151515]">
           <h2 className="text-lg font-black">Question Review</h2>
           <div className="flex flex-col gap-3">
-            {MOCK_RESULTS.map((result, i) => {
-              const q = MOCK_QUESTIONS[i]
-              const selectedAnswer = q.options[result.selectedIndex]
-              const correctAnswer = q.options[q.correctIndex]
+            {MOCK_QUESTIONS.map((q, i) => {
+              const result = MOCK_RESULTS[i]
               return (
                 <div
-                  key={result.questionId}
+                  key={q.id}
                   className={cn(
                     'rounded-[1rem] border-[3px] border-[#151515] p-4 shadow-[2px_2px_0_#151515]',
-                    result.correct ? 'bg-[#d9ff69]/40' : 'bg-[#ff6b62]/20'
+                    result?.correct ? 'bg-[#d9ff69]/40' : 'bg-[#ff6b62]/20'
                   )}
                 >
                   <div className="flex items-start gap-3">
-                    {/* Icon */}
                     <div className={cn(
                       'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-[2px] font-mono text-[10px] font-black',
-                      result.correct
+                      result?.correct
                         ? 'border-[#1e6f38] bg-[#d9ff69] text-[#1e6f38]'
                         : 'border-[#9c231d] bg-[#ff6b62] text-[#9c231d]'
                     )}>
-                      {result.correct ? '✓' : '✗'}
+                      {result?.correct ? '✓' : '✗'}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-black">Q{i + 1}: {q.prompt}</p>
-                      <div className="mt-1 flex flex-col gap-0.5 font-mono text-[10px]">
-                        <p className="text-[#67606a]">
-                          Your answer:{' '}
-                          <span className={cn('font-black', result.correct ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
-                            {selectedAnswer}
-                          </span>
-                        </p>
-                        {!result.correct && (
-                          <p className="text-[#67606a]">
-                            Correct:{' '}
-                            <span className="font-black text-[#1e6f38]">{correctAnswer}</span>
-                          </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-black">Q{i + 1}: {q.prompt}</p>
+                        {q.type !== 'multiple-choice' && result?.score !== undefined && (
+                          <span className="font-mono text-[10px] font-black text-[#67606a]">{result.score}%</span>
                         )}
                       </div>
+                      <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a]">
+                        {q.type === 'multiple-choice' ? 'Single choice' :
+                         q.type === 'multi-select' ? 'Multi-select' :
+                         q.type === 'open-ended' ? 'Open ended' : 'Code'}
+                      </p>
+                      {q.explanation && !result?.correct && (
+                        <p className="mt-1 text-xs text-[#67606a]">{q.explanation}</p>
+                      )}
                     </div>
                   </div>
                 </div>

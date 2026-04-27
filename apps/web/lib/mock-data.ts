@@ -1,4 +1,4 @@
-import type { Difficulty } from '@learnrep/core'
+import type { Difficulty, Question } from '@learnrep/core'
 
 export type { Difficulty }
 
@@ -164,9 +164,10 @@ export const difficultyStyles: Record<Difficulty, { bg: string; text: string; bo
   expert: { bg: 'bg-[#b995ff]', text: 'text-[#5735a7]', border: 'border-[#5735a7]', label: 'Expert' },
 }
 
-export const MOCK_QUESTIONS = [
+export const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q1',
+    type: 'multiple-choice',
     prompt: 'What is a React Server Component?',
     options: [
       'A component that runs on the client',
@@ -175,10 +176,11 @@ export const MOCK_QUESTIONS = [
       'A server-side API handler',
     ],
     correctIndex: 1,
-    explanation: 'Correct! React Server Components run entirely on the server and send no JavaScript to the client, enabling faster page loads and direct database access.',
+    explanation: 'React Server Components run entirely on the server and send no JavaScript to the client, enabling faster page loads and direct database access.',
   },
   {
     id: 'q2',
+    type: 'multiple-choice',
     prompt: 'Which hook is used for side effects?',
     options: [
       'useState',
@@ -187,42 +189,89 @@ export const MOCK_QUESTIONS = [
       'useMemo',
     ],
     correctIndex: 2,
-    explanation: 'Correct! useEffect runs after render and handles side effects like data fetching, subscriptions, and DOM mutations.',
+    explanation: 'useEffect runs after render and handles side effects like data fetching, subscriptions, and DOM mutations.',
   },
   {
     id: 'q3',
-    prompt: "What does the 'use client' directive do?",
+    type: 'multi-select',
+    prompt: 'Which of the following are valid React hooks? (Select all that apply)',
     options: [
-      'Enables SSR',
-      'Marks a component as a client boundary',
-      'Enables hot reload',
-      'Adds TypeScript support',
+      'useEffect',
+      'useDatabase',
+      'useCallback',
+      'useServer',
+      'useRef',
+      'useNetwork',
     ],
-    correctIndex: 1,
-    explanation: "Correct! 'use client' marks the boundary between server and client component trees, enabling interactivity, hooks, and browser APIs below the boundary.",
+    correctIndices: [0, 2, 4],
+    explanation: 'useEffect, useCallback, and useRef are built-in React hooks. useDatabase, useServer, and useNetwork do not exist in React core.',
   },
   {
     id: 'q4',
-    prompt: 'What is the purpose of the key prop in React lists?',
+    type: 'multi-select',
+    prompt: 'Which statements about React Server Components are true? (Select all that apply)',
     options: [
-      'Styling list items',
-      'Helping React identify which items have changed',
-      'Setting the order of elements',
-      'Enabling animations',
+      'They can directly access databases',
+      'They can use useState',
+      'They reduce client-side JavaScript',
+      'They run in the browser',
     ],
-    correctIndex: 1,
-    explanation: 'Correct! The key prop helps React identify which items in a list have changed, been added, or removed, enabling efficient re-rendering.',
+    correctIndices: [0, 2],
+    explanation: 'Server Components run on the server so they can access databases directly and their code never ships to the client, reducing JS bundle size. They cannot use client-only APIs like useState.',
   },
   {
     id: 'q5',
-    prompt: 'What does useMemo optimize?',
-    options: [
-      'Network requests',
-      'State updates',
-      'Expensive computations between renders',
-      'Event handler creation',
+    type: 'open-ended',
+    prompt: 'Explain the difference between useCallback and useMemo in React.',
+    expectedAnswer: 'useCallback memoizes a function reference, preventing it from being recreated on every render. useMemo memoizes the result of a computation. useCallback(fn, deps) is equivalent to useMemo(() => fn, deps).',
+    keyPoints: [
+      'useCallback returns a memoized function',
+      'useMemo returns a memoized value/result',
+      'Both accept a dependency array',
+      'useCallback prevents unnecessary re-renders of child components that receive callbacks as props',
     ],
-    correctIndex: 2,
-    explanation: 'Correct! useMemo memoizes the result of expensive computations so they are only recalculated when their dependencies change, not on every render.',
+    explanation: 'useCallback memoizes a function reference, preventing it from being recreated on every render. useMemo memoizes the result of a computation. They solve similar problems but for functions vs computed values.',
+  },
+  {
+    id: 'q6',
+    type: 'code-writing',
+    prompt: 'Write a custom React hook called useLocalStorage that persists state to localStorage. It should have the same API as useState.',
+    language: 'typescript',
+    starterCode: `import { useState } from 'react'
+
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  // your implementation here
+}`,
+    expectedSolution: `import { useState } from 'react'
+
+export function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch {
+      return initialValue
+    }
+  })
+
+  const setValue = (value: T) => {
+    try {
+      setStoredValue(value)
+      window.localStorage.setItem(key, JSON.stringify(value))
+    } catch {
+      console.error('Failed to write to localStorage')
+    }
+  }
+
+  return [storedValue, setValue] as const
+}`,
+    keyPoints: [
+      'Reads initial value from localStorage on mount',
+      'Falls back to initialValue if key not found or parse fails',
+      'Syncs state updates back to localStorage',
+      'Returns [value, setter] tuple like useState',
+      'Handles JSON serialization/deserialization',
+    ],
+    explanation: 'The hook initializes state lazily from localStorage, wraps the setter to also persist to localStorage, and handles JSON serialization with error handling for SSR environments.',
   },
 ]
