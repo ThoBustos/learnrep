@@ -21,7 +21,7 @@ export default function LlmOverviewPage() {
 
       <P>
         After that, the agent calls <Code>lr generate</Code> like any shell command. No API key in
-        the harness. No extra auth. The CLI uses the user's stored token.
+        the harness. No extra auth. The CLI uses the user&apos;s stored token.
       </P>
 
       <P>

@@ -287,7 +287,7 @@ function DashLeaderboardScreen() {
         ))}
       </div>
       <Panel className="bg-[#8de37f] p-4 text-center text-[#111111]">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">You're ranked</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">You&apos;re ranked</p>
         <p className="text-5xl font-black leading-none tracking-[-0.08em]">#1</p>
         <p className="font-mono text-[10px] font-bold">Keep it up this week</p>
       </Panel>

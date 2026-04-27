@@ -1,5 +1,5 @@
 import type { Difficulty, Question, Quiz } from './types'
-import { DIFFICULTY_QUESTION_COUNT, GENERATE_QUIZ_SYSTEM_PROMPT, isValidQuestion } from './schemas'
+import { DIFFICULTY_QUESTION_COUNT, GENERATE_QUIZ_SYSTEM_PROMPT, normalizeQuestion } from './schemas'
 
 export interface GenerateQuizParams {
   topic: string
@@ -24,8 +24,8 @@ Return JSON with this exact shape:
       "id": "q1",
       "type": "multiple-choice",
       "prompt": "string",
-      "options": ["A. ...", "B. ...", "C. ...", "D. ..."],
-      "correctAnswer": "A",
+      "options": ["...", "...", "...", "..."],
+      "correctIndex": 0,
       "explanation": "string"
     }
   ]
@@ -44,7 +44,13 @@ Return JSON with this exact shape:
     throw new Error('LLM returned unexpected shape')
   }
 
-  const questions = parsed.questions.filter(isValidQuestion) as Question[]
+  const questions = parsed.questions
+    .map((question) => normalizeQuestion(question))
+    .filter((question): question is Question => question !== null)
+
+  if (questions.length !== questionCount) {
+    throw new Error(`LLM returned ${questions.length} valid questions, expected ${questionCount}`)
+  }
 
   return {
     id: crypto.randomUUID(),

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { evaluateAnswer } from '@learnrep/core'
-import type { Question } from '@learnrep/core'
+import { parseEvaluateQuizAnswerRequest, resolveEvaluationQuestion } from '@/lib/evaluation'
 
 const client = new Anthropic()
 
@@ -19,12 +19,10 @@ async function callLLM(system: string, prompt: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    const { question, userAnswer } = (await request.json()) as {
-      question: Question
-      userAnswer: string
-    }
+    const payload = parseEvaluateQuizAnswerRequest(await request.json())
+    const question = resolveEvaluationQuestion(payload)
 
-    const result = await evaluateAnswer({ question, userAnswer, callLLM })
+    const result = await evaluateAnswer({ question, userAnswer: payload.userAnswer, callLLM })
     return NextResponse.json(result)
   } catch (err) {
     console.error('Evaluation error:', err)

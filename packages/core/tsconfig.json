@@ -3,9 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
-    "module": "NodeNext",
-    "target": "es2020",
+    "declaration": true,
     "types": ["node"]
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts"]
 }

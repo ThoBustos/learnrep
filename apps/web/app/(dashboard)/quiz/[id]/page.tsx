@@ -1,14 +1,15 @@
 'use client'
 
-import { useState, use, useContext } from 'react'
+import { useContext, useState } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { Copy, Lock, Unlock, Check, Bell, ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { mockQuizzes, mockLeaderboard, difficultyStyles } from '@/lib/mock-data'
 import { NotifContext } from '@/components/layout/NotifContext'
 
-export default function QuizDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+export default function QuizDetailPage() {
+  const { id } = useParams<{ id: string }>()
   const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
   const isOwner = quiz.isOwner
   const tone = difficultyStyles[quiz.difficulty]

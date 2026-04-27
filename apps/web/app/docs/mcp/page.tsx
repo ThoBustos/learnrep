@@ -27,7 +27,7 @@ export default function McpPage() {
       <Ul>
         <Li><Code>generate_quiz</Code> — generate a quiz from a topic or content string</Li>
         <Li><Code>share_quiz</Code> — make a quiz public and return the share URL</Li>
-        <Li><Code>get_stats</Code> — return the user's streak, topics mastered, and avg improvement</Li>
+        <Li><Code>get_stats</Code> — return the user&apos;s streak, topics mastered, and avg improvement</Li>
       </Ul>
 
       <H2>generate_quiz parameters</H2>

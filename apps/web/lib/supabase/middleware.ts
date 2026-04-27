@@ -29,10 +29,10 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/auth/callback')
-  const isDashboardRoute = pathname.startsWith('/dashboard')
+  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/callback')
+  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/quizzes') || pathname.startsWith('/library') || pathname.startsWith('/stats') || pathname.startsWith('/team')
 
-  if (!user && isDashboardRoute) {
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

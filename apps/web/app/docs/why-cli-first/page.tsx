@@ -17,7 +17,7 @@ export default function WhyCliFirstPage() {
         input with zero preprocessing.
       </P>
       <P>
-        The web app and MCP server extend the CLI — they don't replace it. The MCP path is cleaner
+        The web app and MCP server extend the CLI — they don&apos;t replace it. The MCP path is cleaner
         for harnesses that support tool calls natively, but the CLI works everywhere.
       </P>
     </>

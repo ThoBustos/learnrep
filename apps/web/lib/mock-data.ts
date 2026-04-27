@@ -275,3 +275,11 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     explanation: 'The hook initializes state lazily from localStorage, wraps the setter to also persist to localStorage, and handles JSON serialization with error handling for SSR environments.',
   },
 ]
+
+export function getMockQuestionsForQuiz(quizId: string): Question[] {
+  return mockQuizzes.some((quiz) => quiz.id === quizId) ? MOCK_QUESTIONS : []
+}
+
+export function getMockQuestion(quizId: string, questionId: string): Question | undefined {
+  return getMockQuestionsForQuiz(quizId).find((question) => question.id === questionId)
+}

@@ -1,26 +1,22 @@
 'use client'
 
-import { useState, use } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { MOCK_QUESTIONS, mockQuizzes } from '@/lib/mock-data'
-import type { Question } from '@learnrep/core'
+import { evaluateAnswer } from '@learnrep/core'
+import type { EvaluationResult, Question } from '@learnrep/core'
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false })
 
 type Phase = 'question' | 'evaluating' | 'feedback'
 
-interface EvaluationResult {
-  correct: boolean
-  score: number
-  feedback: string
-}
-
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
-export default function TakePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+export default function TakePage() {
+  const { id } = useParams<{ id: string }>()
   const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
 
   const [questionIndex, setQuestionIndex] = useState(0)
@@ -56,39 +52,17 @@ export default function TakePage({ params }: { params: Promise<{ id: string }> }
   async function handleSubmit() {
     if (question.type === 'multiple-choice') {
       if (selectedOption === null) return
-      const correct = selectedOption === question.correctIndex
-      const score = correct ? 100 : 0
-      setScores((s) => [...s, score])
-      setEvaluation({
-        correct,
-        score,
-        feedback: correct
-          ? 'Correct!'
-          : `The correct answer was ${LETTERS[question.correctIndex ?? 0]}. ${question.explanation ?? ''}`,
-      })
+      const result = await evaluateAnswer({ question, userAnswer: selectedOption })
+      setScores((s) => [...s, result.score])
+      setEvaluation(result)
       setPhase('feedback')
       return
     }
 
     if (question.type === 'multi-select') {
-      const userIndices = [...selectedOptions]
-      const correctIndices = question.correctIndices ?? []
-      const correctSet = new Set(correctIndices)
-      const correctlySelected = userIndices.filter((i) => correctSet.has(i)).length
-      const incorrectlySelected = userIndices.filter((i) => !correctSet.has(i)).length
-      const isCorrect = correctlySelected === correctIndices.length && incorrectlySelected === 0
-      const score = isCorrect
-        ? 100
-        : Math.round((Math.max(0, correctlySelected - incorrectlySelected) / correctIndices.length) * 100)
-      const correctLetters = correctIndices.map((i) => LETTERS[i]).join(', ')
-      setScores((s) => [...s, score])
-      setEvaluation({
-        correct: isCorrect,
-        score,
-        feedback: isCorrect
-          ? 'Correct! All right answers selected.'
-          : `Not quite. Correct answers: ${correctLetters}. ${question.explanation ?? ''}`,
-      })
+      const result = await evaluateAnswer({ question, userAnswer: [...selectedOptions] })
+      setScores((s) => [...s, result.score])
+      setEvaluation(result)
       setPhase('feedback')
       return
     }
@@ -100,8 +74,9 @@ export default function TakePage({ params }: { params: Promise<{ id: string }> }
       const res = await fetch('/api/quiz/evaluate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, userAnswer: textAnswer }),
+        body: JSON.stringify({ quizId: id, questionId: question.id, userAnswer: textAnswer }),
       })
+      if (!res.ok) throw new Error('Evaluation failed')
       const data: EvaluationResult = await res.json()
       setScores((s) => [...s, data.score])
       setEvaluation(data)
@@ -212,7 +187,11 @@ export default function TakePage({ params }: { params: Promise<{ id: string }> }
               if (phase !== 'question') return
               setSelectedOptions((prev) => {
                 const next = new Set(prev)
-                next.has(i) ? next.delete(i) : next.add(i)
+                if (next.has(i)) {
+                  next.delete(i)
+                } else {
+                  next.add(i)
+                }
                 return next
               })
             }}
@@ -469,7 +448,6 @@ function CodeWritingInput({
   onChange: (v: string) => void
   disabled: boolean
 }) {
-  const initial = value || question.starterCode || ''
   return (
     <div className="overflow-hidden rounded-[1rem] border-[3px] border-[#151515] shadow-[3px_3px_0_#151515]">
       <div className="flex items-center justify-between border-b-[2px] border-[#151515] bg-[#151515] px-4 py-2">

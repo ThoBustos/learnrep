@@ -30,8 +30,8 @@ export async function evaluateAnswer(params: EvaluateAnswerParams): Promise<Eval
   if (question.type === 'multi-select') {
     const userIndices = Array.isArray(userAnswer) ? (userAnswer as number[]) : []
     const correctIndices = question.correctIndices ?? []
-    const userSet = new Set(userIndices)
     const correctSet = new Set(correctIndices)
+    const incorrectOptionCount = Math.max((question.options?.length ?? correctIndices.length) - correctIndices.length, 1)
 
     const correctlySelected = userIndices.filter((i) => correctSet.has(i)).length
     const incorrectlySelected = userIndices.filter((i) => !correctSet.has(i)).length
@@ -41,8 +41,9 @@ export async function evaluateAnswer(params: EvaluateAnswerParams): Promise<Eval
     if (isCorrect) {
       score = 100
     } else {
-      const earned = Math.max(0, correctlySelected - incorrectlySelected)
-      score = Math.round((earned / correctIndices.length) * 100)
+      const positive = correctlySelected / Math.max(correctIndices.length, 1)
+      const negative = incorrectlySelected / incorrectOptionCount
+      score = Math.round(Math.max(0, Math.min(1, positive - negative)) * 100)
     }
 
     const correctLetters = correctIndices.map((i) => ['A', 'B', 'C', 'D', 'E', 'F'][i]).join(', ')
@@ -87,6 +88,6 @@ export function scoreAttempt(
   questions: Question[],
   results: EvaluationResult[],
 ): Pick<QuizAttempt, 'score'> {
-  const correct = results.filter((r) => r.correct).length
-  return { score: Math.round((correct / questions.length) * 100) }
+  const totalScore = results.reduce((sum, result) => sum + result.score, 0)
+  return { score: Math.round(totalScore / Math.max(questions.length, 1)) }
 }

@@ -17,10 +17,10 @@ export default function WhenToGeneratePage() {
         <Li>User reads or is walked through a technical doc or README</Li>
         <Li>Agent explains a concept, pattern, or debug fix in depth</Li>
         <Li>User completes a code review with significant feedback</Li>
-        <Li>User asks "can you quiz me on this?" or "help me retain this"</Li>
+        <Li>User asks &quot;can you quiz me on this?&quot; or &quot;help me retain this&quot;</Li>
       </Ul>
 
-      <H2>Weaker signals (offer, don't auto-generate)</H2>
+      <H2>Weaker signals (offer, don&apos;t auto-generate)</H2>
       <Ul>
         <Li>Short Q&A with no clear learning arc</Li>
         <Li>Refactoring or mechanical changes with no new concepts</Li>

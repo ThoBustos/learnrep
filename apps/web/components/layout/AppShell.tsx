@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check, Star, ExternalLink } from 'lucide-react'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check, Star } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { mockNotifications } from '@/lib/mock-data'
 import type { MockNotification } from '@/lib/mock-data'
@@ -27,13 +27,7 @@ export default function AppShell({
   const pathname = usePathname()
   const [notifOpen, setNotifOpen] = useState(false)
   const [notifications, setNotifications] = useState<MockNotification[]>(mockNotifications)
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
-
-  const unreadCount = notifications.filter((n) => !dismissed.has(n.id)).length
-
-  function dismiss(id: string) {
-    setDismissed((prev) => new Set([...prev, id]))
-  }
+  const unreadCount = notifications.length
 
   function dismissAll(id: string) {
     setNotifications((prev) => prev.filter((n) => n.id !== id))

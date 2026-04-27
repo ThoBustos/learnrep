@@ -299,7 +299,7 @@ function DashLeaderboardScreen() {
         ))}
       </div>
       <div className="rounded-[1rem] border-[3px] border-[#151515] bg-[#fff7ec] p-3 text-center shadow-[3px_3px_0_#151515]">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">You're ranked</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">You&apos;re ranked</p>
         <p className="text-4xl font-black">#1</p>
         <p className="text-[10px] font-bold text-[#67606a]">Keep it up this week</p>
       </div>

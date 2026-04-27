@@ -1,4 +1,4 @@
-import { H1, H2, Lead, P, Pre, Ul, Li } from '../../prose'
+import { H1, H2, Lead, Pre, Ul, Li } from '../../prose'
 
 export default function StatsPage() {
   return (

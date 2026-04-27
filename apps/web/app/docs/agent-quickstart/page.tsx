@@ -26,13 +26,13 @@ lr login`}</Pre>
       <P>Or pipes session content directly:</P>
       <Pre>{`cat session.md | lr generate --difficulty hard --types multiple-choice,open-ended`}</Pre>
       <P>
-        LearnRep returns a URL. The agent surfaces it to the user: <em>"Quiz ready — test yourself: [url]"</em>
+        LearnRep returns a URL. The agent surfaces it to the user: <em>&quot;Quiz ready — test yourself: [url]&quot;</em>
       </P>
 
-      <H2>That's it</H2>
+      <H2>That&apos;s it</H2>
       <P>
         No auth step in the agent. No API key needed in the harness. The CLI handles auth via the
-        user's stored token. The agent just calls <Code>lr generate</Code> like any shell command.
+        user&apos;s stored token. The agent just calls <Code>lr generate</Code> like any shell command.
       </P>
       <P>
         For a zero-shell path, see <a href="/docs/mcp" className="font-bold underline decoration-2">MCP integration</a>.

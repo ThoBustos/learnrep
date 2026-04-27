@@ -1,7 +1,13 @@
 #!/usr/bin/env node
+import * as fs from 'node:fs'
 import { Command } from 'commander'
-import * as fs from 'fs'
-import * as path from 'path'
+import {
+  clampQuestionCount,
+  normalizeDifficulty,
+  parseTypes,
+  readContentInput,
+  validateGenerateInput,
+} from './lib.js'
 
 const program = new Command()
 
@@ -27,29 +33,17 @@ program
   }) => {
     let content: string | undefined
 
-    if (opts.content) {
-      if (opts.content === '-') {
-        content = fs.readFileSync('/dev/stdin', 'utf-8')
-      } else {
-        const resolved = path.resolve(opts.content)
-        if (!fs.existsSync(resolved)) {
-          console.error(`File not found: ${resolved}`)
-          process.exit(1)
-        }
-        content = fs.readFileSync(resolved, 'utf-8')
-      }
-    }
-
-    if (!topic && !content) {
-      console.error('Provide a topic or use --content <file>')
+    try {
+      content = readContentInput(opts.content)
+      validateGenerateInput(topic, content)
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : 'Generate failed')
       process.exit(1)
     }
 
-    const count = Math.min(20, Math.max(1, parseInt(opts.count, 10) || 5))
-    const types = opts.types.split(',').map((t) => t.trim())
-    const difficulty = ['easy', 'medium', 'hard', 'expert'].includes(opts.difficulty)
-      ? opts.difficulty
-      : 'medium'
+    const count = clampQuestionCount(opts.count)
+    const types = parseTypes(opts.types)
+    const difficulty = normalizeDifficulty(opts.difficulty)
 
     console.log(`Generating ${count} ${difficulty} question(s) on "${topic ?? 'content'}"...`)
     if (opts.focus) console.log(`Focus: ${opts.focus}`)

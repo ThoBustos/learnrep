@@ -1,7 +1,8 @@
 'use client'
 
-import { use, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
+import { useParams, useSearchParams } from 'next/navigation'
 import { Share2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MOCK_QUESTIONS, mockQuizzes } from '@/lib/mock-data'
@@ -15,19 +16,17 @@ const MOCK_RESULTS = [
   { questionId: 'q6', correct: false, score: 30 },
 ]
 
-export default function ResultPage({ params, searchParams }: {
-  params: Promise<{ id: string }>
-  searchParams?: Promise<{ score?: string }>
-}) {
-  const { id } = use(params)
-  const sp = searchParams ? use(searchParams) : {}
+export default function ResultPage() {
+  const { id } = useParams<{ id: string }>()
+  const searchParams = useSearchParams()
   const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
 
   const [copied, setCopied] = useState(false)
 
   const totalCount = MOCK_QUESTIONS.length
-  const avgScore = sp.score
-    ? parseInt(sp.score, 10)
+  const scoreParam = searchParams.get('score')
+  const avgScore = scoreParam
+    ? parseInt(scoreParam, 10)
     : Math.round(MOCK_RESULTS.reduce((sum, r) => sum + r.score, 0) / totalCount)
   const correctCount = MOCK_RESULTS.filter((r) => r.correct).length
   const isHigh = avgScore > 80
