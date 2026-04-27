@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation'
+import AppShell from '@/components/layout/AppShell'
 
 const supabaseConfigured =
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -9,8 +9,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const { createClient } = await import('@/lib/supabase/server')
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/login')
+    if (!user) {
+      const { redirect } = await import('next/navigation')
+      redirect('/login')
+    }
   }
 
-  return <>{children}</>
+  return <AppShell>{children}</AppShell>
 }

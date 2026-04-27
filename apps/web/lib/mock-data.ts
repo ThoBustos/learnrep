@@ -1,0 +1,228 @@
+import type { Difficulty } from '@learnrep/core'
+
+export type { Difficulty }
+
+export interface MockQuiz {
+  id: string
+  title: string
+  topic: string
+  difficulty: Difficulty
+  questionCount: number
+  attempts: number
+  bestScore: number
+  author: string
+  authorHandle: string
+  createdAt: string
+  visibility: 'public' | 'private'
+  isOwner: boolean
+}
+
+export interface MockAttempt {
+  id: string
+  quizId: string
+  user: string
+  userHandle: string
+  score: number
+  completedAt: string
+  rank: number
+}
+
+export interface MockNotification {
+  id: string
+  type: 'invite' | 'access_request' | 'approved'
+  from: string
+  quizTitle: string
+  quizId: string
+  createdAt: string
+}
+
+export const mockQuizzes: MockQuiz[] = [
+  {
+    id: '1',
+    title: 'React Server Components',
+    topic: 'React',
+    difficulty: 'medium',
+    questionCount: 8,
+    attempts: 3,
+    bestScore: 75,
+    author: 'Thomas B.',
+    authorHandle: '@thomas',
+    createdAt: '2026-04-25T10:00:00Z',
+    visibility: 'public',
+    isOwner: true,
+  },
+  {
+    id: '2',
+    title: 'TypeScript Generics Deep Dive',
+    topic: 'TypeScript',
+    difficulty: 'hard',
+    questionCount: 10,
+    attempts: 1,
+    bestScore: 60,
+    author: 'Thomas B.',
+    authorHandle: '@thomas',
+    createdAt: '2026-04-24T14:00:00Z',
+    visibility: 'private',
+    isOwner: true,
+  },
+  {
+    id: '3',
+    title: 'Closures and Scope',
+    topic: 'JavaScript',
+    difficulty: 'easy',
+    questionCount: 6,
+    attempts: 5,
+    bestScore: 90,
+    author: 'Thomas B.',
+    authorHandle: '@thomas',
+    createdAt: '2026-04-23T09:00:00Z',
+    visibility: 'public',
+    isOwner: true,
+  },
+  {
+    id: '4',
+    title: 'SQL Indexes Deep Dive',
+    topic: 'Database',
+    difficulty: 'expert',
+    questionCount: 12,
+    attempts: 0,
+    bestScore: 0,
+    author: 'Angel C.',
+    authorHandle: '@angel',
+    createdAt: '2026-04-22T16:00:00Z',
+    visibility: 'public',
+    isOwner: false,
+  },
+  {
+    id: '5',
+    title: 'Async Patterns in Go',
+    topic: 'Go',
+    difficulty: 'hard',
+    questionCount: 9,
+    attempts: 2,
+    bestScore: 55,
+    author: 'John M.',
+    authorHandle: '@john',
+    createdAt: '2026-04-21T11:00:00Z',
+    visibility: 'public',
+    isOwner: false,
+  },
+  {
+    id: '6',
+    title: 'CSS Grid Mastery',
+    topic: 'CSS',
+    difficulty: 'easy',
+    questionCount: 7,
+    attempts: 4,
+    bestScore: 85,
+    author: 'Angel C.',
+    authorHandle: '@angel',
+    createdAt: '2026-04-20T08:00:00Z',
+    visibility: 'public',
+    isOwner: false,
+  },
+]
+
+export const mockLeaderboard: MockAttempt[] = [
+  { id: 'a1', quizId: '1', user: 'Thomas B.', userHandle: '@thomas', score: 75, completedAt: '2026-04-27T09:00:00Z', rank: 1 },
+  { id: 'a2', quizId: '1', user: 'Angel C.', userHandle: '@angel', score: 70, completedAt: '2026-04-26T14:00:00Z', rank: 2 },
+  { id: 'a3', quizId: '1', user: 'John M.', userHandle: '@john', score: 62, completedAt: '2026-04-25T11:00:00Z', rank: 3 },
+  { id: 'a4', quizId: '1', user: 'Sara K.', userHandle: '@sara', score: 50, completedAt: '2026-04-24T16:00:00Z', rank: 4 },
+]
+
+export const mockNotifications: MockNotification[] = [
+  {
+    id: 'n1',
+    type: 'invite',
+    from: 'Angel C.',
+    quizTitle: 'TypeScript Generics Deep Dive',
+    quizId: '2',
+    createdAt: '2026-04-27T08:00:00Z',
+  },
+  {
+    id: 'n2',
+    type: 'access_request',
+    from: 'John M.',
+    quizTitle: 'React Server Components',
+    quizId: '1',
+    createdAt: '2026-04-26T20:00:00Z',
+  },
+  {
+    id: 'n3',
+    type: 'approved',
+    from: 'Angel C.',
+    quizTitle: 'SQL Indexes Deep Dive',
+    quizId: '4',
+    createdAt: '2026-04-26T15:00:00Z',
+  },
+]
+
+export const difficultyStyles: Record<Difficulty, { bg: string; text: string; border: string; label: string }> = {
+  easy:   { bg: 'bg-[#d9ff69]', text: 'text-[#1e6f38]', border: 'border-[#1e6f38]', label: 'Easy' },
+  medium: { bg: 'bg-[#7bd8ef]', text: 'text-[#0d5c75]', border: 'border-[#0d5c75]', label: 'Medium' },
+  hard:   { bg: 'bg-[#ff6b62]', text: 'text-[#9c231d]', border: 'border-[#9c231d]', label: 'Hard' },
+  expert: { bg: 'bg-[#b995ff]', text: 'text-[#5735a7]', border: 'border-[#5735a7]', label: 'Expert' },
+}
+
+export const MOCK_QUESTIONS = [
+  {
+    id: 'q1',
+    prompt: 'What is a React Server Component?',
+    options: [
+      'A component that runs on the client',
+      'A component that renders on the server with no client JS',
+      'A Redux state component',
+      'A server-side API handler',
+    ],
+    correctIndex: 1,
+    explanation: 'Correct! React Server Components run entirely on the server and send no JavaScript to the client, enabling faster page loads and direct database access.',
+  },
+  {
+    id: 'q2',
+    prompt: 'Which hook is used for side effects?',
+    options: [
+      'useState',
+      'useCallback',
+      'useEffect',
+      'useMemo',
+    ],
+    correctIndex: 2,
+    explanation: 'Correct! useEffect runs after render and handles side effects like data fetching, subscriptions, and DOM mutations.',
+  },
+  {
+    id: 'q3',
+    prompt: "What does the 'use client' directive do?",
+    options: [
+      'Enables SSR',
+      'Marks a component as a client boundary',
+      'Enables hot reload',
+      'Adds TypeScript support',
+    ],
+    correctIndex: 1,
+    explanation: "Correct! 'use client' marks the boundary between server and client component trees, enabling interactivity, hooks, and browser APIs below the boundary.",
+  },
+  {
+    id: 'q4',
+    prompt: 'What is the purpose of the key prop in React lists?',
+    options: [
+      'Styling list items',
+      'Helping React identify which items have changed',
+      'Setting the order of elements',
+      'Enabling animations',
+    ],
+    correctIndex: 1,
+    explanation: 'Correct! The key prop helps React identify which items in a list have changed, been added, or removed, enabling efficient re-rendering.',
+  },
+  {
+    id: 'q5',
+    prompt: 'What does useMemo optimize?',
+    options: [
+      'Network requests',
+      'State updates',
+      'Expensive computations between renders',
+      'Event handler creation',
+    ],
+    correctIndex: 2,
+    explanation: 'Correct! useMemo memoizes the result of expensive computations so they are only recalculated when their dependencies change, not on every render.',
+  },
+]
