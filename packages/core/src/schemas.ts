@@ -142,6 +142,7 @@ For code-writing questions, evaluate whether the code would produce the correct 
 
 Respond with JSON: { "correct": boolean, "feedback": string }`
 
+// generateQuiz always requests multiple-choice questions; literal enforces the LLM can't drift to other types.
 export const QuizLLMQuestionSchema = z.object({
   id: z.string(),
   type: z.literal('multiple-choice'),
