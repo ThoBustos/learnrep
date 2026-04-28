@@ -4,10 +4,10 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
-import { MOCK_QUESTIONS, mockQuizzes } from '@/lib/mock-data'
 import { evaluateAnswer } from '@learnrep/core'
-import type { EvaluationResult, Question } from '@learnrep/core'
+import type { EvaluationResult, Question, Quiz } from '@learnrep/core'
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false })
 
@@ -17,23 +17,50 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 export default function TakePage() {
   const { id } = useParams<{ id: string }>()
-  const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
+
+  const { data: quiz, isError } = useQuery<Quiz>({
+    queryKey: ['quiz', id],
+    queryFn: ({ signal }) =>
+      fetch(`/api/quiz/${id}`, { signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Quiz not found'))
+      ),
+  })
 
   const [questionIndex, setQuestionIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>('question')
-  // multiple-choice: number | null
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  // multi-select: Set<number>
   const [selectedOptions, setSelectedOptions] = useState<Set<number>>(new Set())
-  // open-ended / code-writing: string
   const [textAnswer, setTextAnswer] = useState('')
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
   const [scores, setScores] = useState<number[]>([])
 
-  const question = MOCK_QUESTIONS[questionIndex]
-  const total = MOCK_QUESTIONS.length
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
+        <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white p-8 shadow-[6px_6px_0_#151515]">
+          <p className="font-black text-lg">Quiz not found.</p>
+          <Link href="/dashboard" className="mt-4 block font-mono text-sm font-bold text-[#67606a] underline">
+            Back to dashboard
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (!quiz) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
+        <div className="font-mono text-sm font-bold text-[#67606a]">Loading quiz...</div>
+      </div>
+    )
+  }
+
+  const questions: Question[] = quiz.questions
+  const question = questions[questionIndex]
+  const total = questions.length
   const progress = ((questionIndex + (phase !== 'question' ? 1 : 0)) / total) * 100
   const isLast = questionIndex === total - 1
+
 
   function resetAnswerState() {
     setSelectedOption(null)

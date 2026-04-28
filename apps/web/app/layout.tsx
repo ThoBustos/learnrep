@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Space_Grotesk, Space_Mono, Bowlby_One_SC } from "next/font/google";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -44,7 +45,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${spaceMono.variable} ${bowlby.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><Providers>{children}</Providers></body>
     </html>
   );
 }
