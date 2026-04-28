@@ -3,22 +3,54 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Lock, Unlock, Share2, Eye } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
-import { mockQuizzes, difficultyStyles } from '@/lib/mock-data'
-import type { MockQuiz } from '@/lib/mock-data'
+import { difficultyStyles } from '@/lib/mock-data'
 
-const myQuizzes = mockQuizzes.filter((q) => q.isOwner)
+type ApiQuiz = {
+  id: string
+  title: string
+  topic: string
+  difficulty: string
+  questionCount: number
+  is_public: boolean
+  created_at: string
+  attemptCount: number
+  myBestScore: number | null
+}
 
 export default function QuizzesPage() {
-  const [quizzes, setQuizzes] = useState(myQuizzes)
+  const queryClient = useQueryClient()
   const [copied, setCopied] = useState<string | null>(null)
+  const [optimisticPublic, setOptimisticPublic] = useState<Record<string, boolean>>({})
 
-  function toggleVisibility(id: string) {
-    setQuizzes((prev) =>
-      prev.map((q) =>
-        q.id === id ? { ...q, visibility: q.visibility === 'public' ? 'private' : 'public' } : q
-      )
-    )
+  const { data: quizzes = [], isLoading } = useQuery<ApiQuiz[]>({
+    queryKey: ['quizzes'],
+    queryFn: ({ signal }) =>
+      fetch('/api/quizzes', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed to fetch'))
+      ),
+  })
+
+  async function toggleVisibility(quiz: ApiQuiz) {
+    const current = optimisticPublic[quiz.id] ?? quiz.is_public
+    const newValue = !current
+    setOptimisticPublic((prev) => ({ ...prev, [quiz.id]: newValue }))
+    try {
+      const res = await fetch(`/api/quiz/${quiz.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ is_public: newValue }),
+      })
+      if (!res.ok) {
+        setOptimisticPublic((prev) => ({ ...prev, [quiz.id]: current }))
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['quizzes'] })
+      }
+    } catch {
+      setOptimisticPublic((prev) => ({ ...prev, [quiz.id]: current }))
+    }
   }
 
   function copyLink(id: string) {
@@ -26,6 +58,18 @@ export default function QuizzesPage() {
     navigator.clipboard.writeText(url).catch(() => {})
     setCopied(id)
     setTimeout(() => setCopied(null), 2000)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-5 p-5 lg:p-8">
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#67606a]">Your library</p>
+          <h1 className="text-3xl font-black tracking-[-0.04em]">My Quizzes</h1>
+        </div>
+        <p className="font-mono text-xs font-bold text-[#67606a]">Loading...</p>
+      </div>
+    )
   }
 
   return (
@@ -41,15 +85,19 @@ export default function QuizzesPage() {
         <EmptyState />
       ) : (
         <div className="flex flex-col gap-3">
-          {quizzes.map((quiz) => (
-            <QuizRow
-              key={quiz.id}
-              quiz={quiz}
-              copied={copied === quiz.id}
-              onCopy={() => copyLink(quiz.id)}
-              onToggle={() => toggleVisibility(quiz.id)}
-            />
-          ))}
+          {quizzes.map((quiz) => {
+            const isPublic = optimisticPublic[quiz.id] ?? quiz.is_public
+            return (
+              <QuizRow
+                key={quiz.id}
+                quiz={quiz}
+                isPublic={isPublic}
+                copied={copied === quiz.id}
+                onCopy={() => copyLink(quiz.id)}
+                onToggle={() => toggleVisibility(quiz)}
+              />
+            )
+          })}
         </div>
       )}
     </div>
@@ -58,17 +106,18 @@ export default function QuizzesPage() {
 
 function QuizRow({
   quiz,
+  isPublic,
   copied,
   onCopy,
   onToggle,
 }: {
-  quiz: MockQuiz
+  quiz: ApiQuiz
+  isPublic: boolean
   copied: boolean
   onCopy: () => void
   onToggle: () => void
 }) {
-  const tone = difficultyStyles[quiz.difficulty]
-  const isPublic = quiz.visibility === 'public'
+  const tone = difficultyStyles[quiz.difficulty as keyof typeof difficultyStyles] ?? difficultyStyles.medium
 
   return (
     <div className="rounded-[1.3rem] border-[3px] border-[#151515] bg-white/80 p-4 shadow-[4px_4px_0_#151515]">
@@ -99,8 +148,9 @@ function QuizRow({
               {tone.label}
             </span>
             <span>{quiz.questionCount} questions</span>
-            <span>{quiz.attempts} attempts</span>
-            <span>Created {new Date(quiz.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            <span>{quiz.attemptCount} attempts</span>
+            {quiz.myBestScore !== null && <span>Best: {quiz.myBestScore}%</span>}
+            <span>Created {new Date(quiz.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           </div>
         </div>
 

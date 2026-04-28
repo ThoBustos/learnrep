@@ -3,14 +3,51 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Copy, Check } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
-import { mockQuizzes, difficultyStyles } from '@/lib/mock-data'
-import type { MockQuiz } from '@/lib/mock-data'
+import { difficultyStyles } from '@/lib/mock-data'
 
 const HARNESS_PROMPT = 'run lr help, then generate a quiz about all the learnings from this session'
 
+type UserStats = {
+  quizzesTaken: number
+  topicsExplored: number
+  quizzesGenerated: number
+  avgScore: number | null
+  streak: number
+  avgImprovement: number | null
+}
+
+type ApiQuiz = {
+  id: string
+  title: string
+  topic: string
+  difficulty: string
+  questionCount: number
+  is_public: boolean
+  created_at: string
+  attemptCount: number
+  myBestScore: number | null
+}
+
 export default function DashboardPage() {
   const [copied, setCopied] = useState(false)
+
+  const { data: stats } = useQuery<UserStats>({
+    queryKey: ['user-stats'],
+    queryFn: ({ signal }) =>
+      fetch('/api/user/stats', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed to fetch stats'))
+      ),
+  })
+
+  const { data: quizzes = [] } = useQuery<ApiQuiz[]>({
+    queryKey: ['quizzes'],
+    queryFn: ({ signal }) =>
+      fetch('/api/quizzes', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed to fetch'))
+      ),
+  })
 
   function copyPrompt() {
     navigator.clipboard.writeText(HARNESS_PROMPT).catch(() => {})
@@ -18,13 +55,31 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const statCards = [
+    {
+      value: stats ? stats.quizzesTaken.toString() : '--',
+      label: 'Quizzes taken',
+      tone: 'dark' as const,
+    },
+    {
+      value: stats ? stats.topicsExplored.toString() : '--',
+      label: 'Topics explored',
+      tone: 'paper' as const,
+    },
+    {
+      value: stats?.avgScore != null ? `${stats.avgScore}%` : '--',
+      label: 'Avg score',
+      tone: 'lime' as const,
+    },
+  ]
+
   return (
     <div className="flex flex-1 flex-col gap-5 p-5 lg:p-8">
       {/* Stat strip */}
       <div className="grid grid-cols-3 gap-3">
-        <StatCard value="24" label="Quizzes taken" tone="dark" />
-        <StatCard value="8" label="Topics explored" tone="paper" />
-        <StatCard value="+14%" label="Avg improvement" tone="lime" />
+        {statCards.map((card) => (
+          <StatCard key={card.label} value={card.value} label={card.label} tone={card.tone} />
+        ))}
       </div>
 
       {/* CLI callout */}
@@ -51,18 +106,22 @@ export default function DashboardPage() {
       {/* Feed list */}
       <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-4 shadow-[6px_6px_0_#151515]">
         <h2 className="text-lg font-black">Your Feed</h2>
-        <div className="flex flex-col gap-2">
-          {mockQuizzes.map((quiz) => (
-            <FeedRow key={quiz.id} quiz={quiz} />
-          ))}
-        </div>
+        {quizzes.length === 0 ? (
+          <p className="py-4 text-center font-mono text-xs font-bold text-[#67606a]">No quizzes yet.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {quizzes.map((quiz) => (
+              <FeedRow key={quiz.id} quiz={quiz} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-function FeedRow({ quiz }: { quiz: MockQuiz }) {
-  const tone = difficultyStyles[quiz.difficulty]
+function FeedRow({ quiz }: { quiz: ApiQuiz }) {
+  const tone = difficultyStyles[quiz.difficulty as keyof typeof difficultyStyles] ?? difficultyStyles.medium
   return (
     <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5">
       <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, tone.bg)}>
@@ -73,7 +132,7 @@ function FeedRow({ quiz }: { quiz: MockQuiz }) {
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-black">{quiz.title}</p>
         <p className="font-mono text-[10px] font-bold text-[#67606a]">
-          {quiz.author} · {quiz.questionCount}q · {quiz.attempts} attempts
+          {quiz.questionCount}q · {quiz.attemptCount} attempts
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
