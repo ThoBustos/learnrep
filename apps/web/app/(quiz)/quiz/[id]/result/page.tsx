@@ -4,40 +4,81 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Share2, Check } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
-import { MOCK_QUESTIONS, mockQuizzes } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase/client'
 
-const MOCK_RESULTS = [
-  { questionId: 'q1', correct: true, score: 100 },
-  { questionId: 'q2', correct: true, score: 100 },
-  { questionId: 'q3', correct: false, score: 50 },
-  { questionId: 'q4', correct: false, score: 0 },
-  { questionId: 'q5', correct: false, score: 40 },
-  { questionId: 'q6', correct: false, score: 30 },
-]
+type StoredAnswer = {
+  questionId: string
+  prompt: string
+  type: string
+  correct: boolean
+  score: number
+  feedback: string
+}
+
+type QuizAttempt = {
+  id: string
+  quiz_id: string
+  score: number
+  answers: StoredAnswer[]
+  completed_at: string
+}
 
 export default function ResultPage() {
   const { id } = useParams<{ id: string }>()
   const searchParams = useSearchParams()
-  const quiz = mockQuizzes.find((q) => q.id === id) ?? mockQuizzes[0]
+  const attemptId = searchParams.get('attempt')
+  const scoreParam = searchParams.get('score')
 
   const [copied, setCopied] = useState(false)
 
-  const totalCount = MOCK_QUESTIONS.length
-  const scoreParam = searchParams.get('score')
-  const avgScore = scoreParam
+  const { data: attempt, isLoading } = useQuery<QuizAttempt | null>({
+    queryKey: ['attempt', attemptId],
+    enabled: !!attemptId,
+    queryFn: async () => {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('quiz_attempts')
+        .select('id, quiz_id, score, answers, completed_at')
+        .eq('id', attemptId!)
+        .single()
+      if (error || !data) return null
+      return data as QuizAttempt
+    },
+  })
+
+  // Determine display values
+  const answers: StoredAnswer[] = attempt?.answers ?? []
+  const totalCount = answers.length
+  const correctCount = answers.filter((a) => a.correct).length
+
+  const avgScore: number = attempt
+    ? attempt.score
+    : scoreParam
     ? parseInt(scoreParam, 10)
-    : Math.round(MOCK_RESULTS.reduce((sum, r) => sum + r.score, 0) / totalCount)
-  const correctCount = MOCK_RESULTS.filter((r) => r.correct).length
+    : 0
+
   const isHigh = avgScore > 80
 
   function shareResult() {
     const url = typeof window !== 'undefined' ? `${window.location.origin}/quiz/${id}` : ''
-    const text = `I scored ${avgScore}% on "${quiz.title}" — try it: ${url}`
+    const text = `I scored ${avgScore}% on this quiz — try it: ${url}`
     navigator.clipboard.writeText(text).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  // Loading state when fetching attempt
+  if (attemptId && isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
+        <div className="font-mono text-sm font-bold text-[#67606a]">Loading results...</div>
+      </div>
+    )
+  }
+
+  const hasReview = answers.length > 0
 
   return (
     <div
@@ -63,10 +104,11 @@ export default function ResultPage() {
           )}>
             {avgScore}%
           </p>
-          <p className={cn('text-lg font-black', isHigh ? 'text-[#1e6f38]' : 'text-[#67606a]')}>
-            {correctCount} of {totalCount} correct
-          </p>
-          <p className="font-mono text-xs font-bold text-[#67606a]">{quiz.title}</p>
+          {hasReview && (
+            <p className={cn('text-lg font-black', isHigh ? 'text-[#1e6f38]' : 'text-[#67606a]')}>
+              {correctCount} of {totalCount} correct
+            </p>
+          )}
 
           {/* Share button */}
           <button
@@ -82,51 +124,50 @@ export default function ResultPage() {
           </button>
         </div>
 
-        {/* Per-question review */}
-        <div className="flex flex-col gap-3 rounded-[1.3rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[5px_5px_0_#151515]">
-          <h2 className="text-lg font-black">Question Review</h2>
-          <div className="flex flex-col gap-3">
-            {MOCK_QUESTIONS.map((q, i) => {
-              const result = MOCK_RESULTS[i]
-              return (
+        {/* Per-question review — only when we have real answer data */}
+        {hasReview && (
+          <div className="flex flex-col gap-3 rounded-[1.3rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[5px_5px_0_#151515]">
+            <h2 className="text-lg font-black">Question Review</h2>
+            <div className="flex flex-col gap-3">
+              {answers.map((a, i) => (
                 <div
-                  key={q.id}
+                  key={a.questionId}
                   className={cn(
                     'rounded-[1rem] border-[3px] border-[#151515] p-4 shadow-[2px_2px_0_#151515]',
-                    result?.correct ? 'bg-[#d9ff69]/40' : 'bg-[#ff6b62]/20'
+                    a.correct ? 'bg-[#d9ff69]/40' : 'bg-[#ff6b62]/20'
                   )}
                 >
                   <div className="flex items-start gap-3">
                     <div className={cn(
                       'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-[2px] font-mono text-[10px] font-black',
-                      result?.correct
+                      a.correct
                         ? 'border-[#1e6f38] bg-[#d9ff69] text-[#1e6f38]'
                         : 'border-[#9c231d] bg-[#ff6b62] text-[#9c231d]'
                     )}>
-                      {result?.correct ? '✓' : '✗'}
+                      {a.correct ? '✓' : '✗'}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-black">Q{i + 1}: {q.prompt}</p>
-                        {q.type !== 'multiple-choice' && result?.score !== undefined && (
-                          <span className="font-mono text-[10px] font-black text-[#67606a]">{result.score}%</span>
+                        <p className="text-sm font-black">Q{i + 1}: {a.prompt}</p>
+                        {a.type !== 'multiple-choice' && (
+                          <span className="font-mono text-[10px] font-black text-[#67606a]">{a.score}%</span>
                         )}
                       </div>
                       <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a]">
-                        {q.type === 'multiple-choice' ? 'Single choice' :
-                         q.type === 'multi-select' ? 'Multi-select' :
-                         q.type === 'open-ended' ? 'Open ended' : 'Code'}
+                        {a.type === 'multiple-choice' ? 'Single choice' :
+                         a.type === 'multi-select' ? 'Multi-select' :
+                         a.type === 'open-ended' ? 'Open ended' : 'Code'}
                       </p>
-                      {q.explanation && !result?.correct && (
-                        <p className="mt-1 text-xs text-[#67606a]">{q.explanation}</p>
+                      {a.feedback && !a.correct && (
+                        <p className="mt-1 text-xs text-[#67606a]">{a.feedback}</p>
                       )}
                     </div>
                   </div>
                 </div>
-              )
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Action buttons */}
         <div className="flex gap-3">
