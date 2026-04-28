@@ -1,4 +1,4 @@
 {
-  "installCommand": "npm install -g pnpm@10.33.0 && cd ../.. && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm --filter web build"
+  "installCommand": "cd ../.. && npx --yes pnpm@10.33.0 install --frozen-lockfile",
+  "buildCommand": "cd ../.. && npx --yes pnpm@10.33.0 --filter web build"
 }
