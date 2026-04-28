@@ -1,10 +1,11 @@
+import { z } from 'zod'
 import type { Question, QuizAttempt } from './types'
-import { EVALUATE_ANSWER_SYSTEM_PROMPT } from './schemas'
+import { EVALUATE_ANSWER_SYSTEM_PROMPT, EvaluationLLMOutputSchema } from './schemas'
 
 export interface EvaluateAnswerParams {
   question: Question
   userAnswer: number | number[] | string
-  callLLM?: (system: string, prompt: string) => Promise<string>
+  callStructured?: <T>(schema: z.ZodType<T>, system: string, prompt: string) => Promise<T>
 }
 
 export interface EvaluationResult {
@@ -14,7 +15,7 @@ export interface EvaluationResult {
 }
 
 export async function evaluateAnswer(params: EvaluateAnswerParams): Promise<EvaluationResult> {
-  const { question, userAnswer, callLLM } = params
+  const { question, userAnswer, callStructured } = params
 
   if (question.type === 'multiple-choice') {
     const correct = userAnswer === question.correctIndex
@@ -54,7 +55,7 @@ export async function evaluateAnswer(params: EvaluateAnswerParams): Promise<Eval
     return { correct: isCorrect, score, feedback }
   }
 
-  if (!callLLM) {
+  if (!callStructured) {
     return { correct: false, score: 0, feedback: 'LLM evaluator not provided for this question type.' }
   }
 
@@ -68,19 +69,7 @@ User's answer: ${answer}
 
 Is the user's answer correct?`
 
-  const raw = await callLLM(EVALUATE_ANSWER_SYSTEM_PROMPT, prompt)
-
-  let result: { correct: boolean; feedback: string }
-  try {
-    result = JSON.parse(raw)
-  } catch {
-    throw new Error(`LLM returned non-JSON: ${raw.slice(0, 200)}`)
-  }
-
-  if (typeof result.correct !== 'boolean' || typeof result.feedback !== 'string') {
-    throw new Error('LLM evaluation response missing required fields')
-  }
-
+  const result = await callStructured(EvaluationLLMOutputSchema, EVALUATE_ANSWER_SYSTEM_PROMPT, prompt)
   return { correct: result.correct, score: result.correct ? 100 : 0, feedback: result.feedback }
 }
 

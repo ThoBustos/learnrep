@@ -1,26 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import Anthropic from '@anthropic-ai/sdk'
 import { generateQuiz } from '@learnrep/core'
 import { isValidDifficulty } from '@learnrep/core'
 import type { Difficulty } from '@learnrep/core'
+import { callStructured } from '@/lib/llm'
 
 type QuizSource = 'cli' | 'mcp' | 'web'
-
-const anthropic = new Anthropic()
-
-async function callLLM(system: string, prompt: string): Promise<string> {
-  const msg = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 2048,
-    system,
-    messages: [{ role: 'user', content: prompt }],
-  })
-  const block = msg.content.find((b) => b.type === 'text')
-  if (!block || block.type !== 'text') throw new Error('No text response from LLM')
-  return block.text
-}
 
 function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   return createServerClient(
@@ -35,7 +21,6 @@ function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   )
 }
 
-// Resolves the authenticated user from either a Bearer token (CLI) or a cookie session (web).
 async function getAuthUser(request: Request) {
   const authHeader = request.headers.get('Authorization')
 
@@ -85,7 +70,7 @@ export async function POST(request: Request) {
       difficulty: difficulty as Difficulty,
       userId: user.id,
       source: quizSource,
-      callLLM,
+      callStructured,
     })
   } catch (err) {
     console.error('Generation error:', err)
