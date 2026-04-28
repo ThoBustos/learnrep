@@ -12,6 +12,19 @@ type StoredAnswer = {
   feedback: string
 }
 
+function isStoredAnswer(v: unknown): v is StoredAnswer {
+  if (typeof v !== 'object' || v === null) return false
+  const a = v as Record<string, unknown>
+  return (
+    typeof a.questionId === 'string' &&
+    typeof a.prompt === 'string' &&
+    typeof a.type === 'string' &&
+    typeof a.correct === 'boolean' &&
+    typeof a.score === 'number' &&
+    typeof a.feedback === 'string'
+  )
+}
+
 function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,10 +72,14 @@ export async function POST(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { score, answers } = body as { score?: number; answers?: StoredAnswer[] }
+  const { score, answers } = body as { score?: unknown; answers?: unknown }
 
-  if (typeof score !== 'number') {
-    return NextResponse.json({ error: 'score is required' }, { status: 400 })
+  if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 100) {
+    return NextResponse.json({ error: 'score must be a finite number 0–100' }, { status: 400 })
+  }
+
+  if (!Array.isArray(answers) || !answers.every(isStoredAnswer)) {
+    return NextResponse.json({ error: 'answers must be an array of answer records' }, { status: 400 })
   }
 
   const { data, error } = await db
@@ -71,7 +88,7 @@ export async function POST(
       quiz_id: id,
       user_id: user.id,
       score,
-      answers: answers ?? [],
+      answers,
     })
     .select('id, score')
     .single()
