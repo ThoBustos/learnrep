@@ -3,11 +3,20 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { evaluateAnswer } from '@learnrep/core'
 import type { EvaluationResult, Question, Quiz } from '@learnrep/core'
+
+type StoredAnswer = {
+  questionId: string
+  prompt: string
+  type: string
+  correct: boolean
+  score: number
+  feedback: string
+}
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false })
 
@@ -17,6 +26,7 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F']
 
 export default function TakePage() {
   const { id } = useParams<{ id: string }>()
+  const router = useRouter()
 
   const { data: quiz, isError } = useQuery<Quiz>({
     queryKey: ['quiz', id],
@@ -33,6 +43,8 @@ export default function TakePage() {
   const [textAnswer, setTextAnswer] = useState('')
   const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null)
   const [scores, setScores] = useState<number[]>([])
+  const [answerRecords, setAnswerRecords] = useState<StoredAnswer[]>([])
+  const [isSaving, setIsSaving] = useState(false)
 
   if (isError) {
     return (
@@ -81,6 +93,14 @@ export default function TakePage() {
       if (selectedOption === null) return
       const result = await evaluateAnswer({ question, userAnswer: selectedOption })
       setScores((s) => [...s, result.score])
+      setAnswerRecords((r) => [...r, {
+        questionId: question.id,
+        prompt: question.prompt,
+        type: question.type,
+        correct: result.correct,
+        score: result.score,
+        feedback: result.feedback,
+      }])
       setEvaluation(result)
       setPhase('feedback')
       return
@@ -89,6 +109,14 @@ export default function TakePage() {
     if (question.type === 'multi-select') {
       const result = await evaluateAnswer({ question, userAnswer: [...selectedOptions] })
       setScores((s) => [...s, result.score])
+      setAnswerRecords((r) => [...r, {
+        questionId: question.id,
+        prompt: question.prompt,
+        type: question.type,
+        correct: result.correct,
+        score: result.score,
+        feedback: result.feedback,
+      }])
       setEvaluation(result)
       setPhase('feedback')
       return
@@ -106,11 +134,43 @@ export default function TakePage() {
       if (!res.ok) throw new Error('Evaluation failed')
       const data: EvaluationResult = await res.json()
       setScores((s) => [...s, data.score])
+      setAnswerRecords((r) => [...r, {
+        questionId: question.id,
+        prompt: question.prompt,
+        type: question.type,
+        correct: data.correct,
+        score: data.score,
+        feedback: data.feedback,
+      }])
       setEvaluation(data)
       setPhase('feedback')
     } catch {
       setEvaluation({ correct: false, score: 0, feedback: 'Evaluation failed. Please try again.' })
       setPhase('feedback')
+    }
+  }
+
+  async function saveAndNavigate() {
+    const computedAvgScore = scores.length > 0
+      ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+      : 0
+    setIsSaving(true)
+    try {
+      const res = await fetch(`/api/quiz/${id}/attempt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ score: computedAvgScore, answers: answerRecords }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        router.push(`/quiz/${id}/result?attempt=${data.id}`)
+      } else {
+        router.push(`/quiz/${id}/result?score=${computedAvgScore}`)
+      }
+    } catch {
+      router.push(`/quiz/${id}/result?score=${computedAvgScore}`)
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -264,12 +324,14 @@ export default function TakePage() {
               Evaluating...
             </div>
           ) : isLast ? (
-            <Link
-              href={`/quiz/${id}/result?score=${avgScore}`}
-              className="block w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-center text-lg font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5"
+            <button
+              type="button"
+              onClick={saveAndNavigate}
+              disabled={isSaving}
+              className="block w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-center text-lg font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5 disabled:opacity-60"
             >
-              See Results
-            </Link>
+              {isSaving ? 'Saving...' : 'See Results'}
+            </button>
           ) : (
             <button
               type="button"
