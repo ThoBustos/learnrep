@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import type { Difficulty, Question, QuestionType } from './types'
 
 export const DIFFICULTY_QUESTION_COUNT: Record<Difficulty, number> = {
@@ -140,3 +141,23 @@ For open-ended questions, accept semantically correct answers even if phrased di
 For code-writing questions, evaluate whether the code would produce the correct output.
 
 Respond with JSON: { "correct": boolean, "feedback": string }`
+
+// generateQuiz always requests multiple-choice questions; literal enforces the LLM can't drift to other types.
+export const QuizLLMQuestionSchema = z.object({
+  id: z.string(),
+  type: z.literal('multiple-choice'),
+  prompt: z.string(),
+  options: z.array(z.string()).length(4),
+  correctIndex: z.number().int().min(0).max(3),
+  explanation: z.string(),
+})
+
+export const QuizLLMOutputSchema = z.object({
+  title: z.string(),
+  questions: z.array(QuizLLMQuestionSchema),
+})
+
+export const EvaluationLLMOutputSchema = z.object({
+  correct: z.boolean(),
+  feedback: z.string(),
+})

@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import type { z } from 'zod'
 import { evaluateAnswer, scoreAttempt } from './evaluator.js'
 import { normalizeQuestion } from './schemas.js'
 import type { Question } from './types.js'
@@ -20,6 +21,14 @@ const multiSelectQuestion = normalizeQuestion({
   options: ['useEffect', 'useServer', 'useCallback', 'useRef'],
   correctIndices: [0, 2, 3],
   explanation: 'React core hooks only.',
+}) as Question
+
+const openEndedQuestion = normalizeQuestion({
+  id: 'q3',
+  type: 'open-ended',
+  prompt: 'Explain useMemo',
+  expectedAnswer: 'Memoizes a computed value',
+  keyPoints: ['memoized value'],
 }) as Question
 
 test('normalizeQuestion converts legacy correctAnswer letters to correctIndex', () => {
@@ -62,19 +71,23 @@ test('evaluateAnswer scores partial multi-select answers without rewarding selec
   assert.equal(none.score, 0)
 })
 
-test('evaluateAnswer throws on malformed LLM JSON', async () => {
-  const question = normalizeQuestion({
-    id: 'q3',
-    type: 'open-ended',
-    prompt: 'Explain useMemo',
-    expectedAnswer: 'Memoizes a computed value',
-    keyPoints: ['memoized value'],
-  }) as Question
+test('evaluateAnswer calls callStructured for open-ended questions', async () => {
+  const result = await evaluateAnswer({
+    question: openEndedQuestion,
+    userAnswer: 'It memoizes a value so it only recomputes when dependencies change',
+    callStructured: <T>(_s: z.ZodType<T>, _sys: string, _p: string) =>
+      Promise.resolve({ correct: true, feedback: 'Good explanation.' } as unknown as T),
+  })
 
-  await assert.rejects(
-    () => evaluateAnswer({ question, userAnswer: 'answer', callLLM: async () => 'not json' }),
-    /LLM returned non-JSON/,
-  )
+  assert.equal(result.correct, true)
+  assert.equal(result.score, 100)
+  assert.equal(result.feedback, 'Good explanation.')
+})
+
+test('evaluateAnswer returns fallback when callStructured not provided for open-ended', async () => {
+  const result = await evaluateAnswer({ question: openEndedQuestion, userAnswer: 'answer' })
+  assert.equal(result.correct, false)
+  assert.equal(result.score, 0)
 })
 
 test('scoreAttempt averages per-question scores', () => {

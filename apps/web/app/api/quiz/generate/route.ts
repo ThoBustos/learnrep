@@ -1,26 +1,13 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import Anthropic from '@anthropic-ai/sdk'
 import { generateQuiz } from '@learnrep/core'
 import { isValidDifficulty } from '@learnrep/core'
 import type { Difficulty } from '@learnrep/core'
+import { callStructured } from '@/lib/llm'
 
 type QuizSource = 'cli' | 'mcp' | 'web'
-
-const anthropic = new Anthropic()
-
-async function callLLM(system: string, prompt: string): Promise<string> {
-  const msg = await anthropic.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 2048,
-    system,
-    messages: [{ role: 'user', content: prompt }],
-  })
-  const block = msg.content.find((b) => b.type === 'text')
-  if (!block || block.type !== 'text') throw new Error('No text response from LLM')
-  return block.text
-}
 
 function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   return createServerClient(
@@ -35,7 +22,15 @@ function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   )
 }
 
-// Resolves the authenticated user from either a Bearer token (CLI) or a cookie session (web).
+// For Bearer-token requests (CLI/MCP), use a client that forwards the JWT so RLS resolves correctly.
+function makeTokenClient(token: string) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } },
+  )
+}
+
 async function getAuthUser(request: Request) {
   const authHeader = request.headers.get('Authorization')
 
@@ -51,6 +46,9 @@ async function getAuthUser(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const authHeader = request.headers.get('Authorization')
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
+
   const user = await getAuthUser(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -85,7 +83,7 @@ export async function POST(request: Request) {
       difficulty: difficulty as Difficulty,
       userId: user.id,
       source: quizSource,
-      callLLM,
+      callStructured,
     })
   } catch (err) {
     console.error('Generation error:', err)
@@ -94,8 +92,9 @@ export async function POST(request: Request) {
 
   const shareCode = quiz.id.slice(0, 8)
   const cookieStore = await cookies()
+  const db = bearerToken ? makeTokenClient(bearerToken) : makeSupabaseClient(cookieStore)
 
-  const { error: insertError } = await makeSupabaseClient(cookieStore).from('quizzes').insert({
+  const { error: insertError } = await db.from('quizzes').insert({
     id: quiz.id,
     user_id: user.id,
     title: quiz.title,
