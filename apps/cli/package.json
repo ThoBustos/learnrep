@@ -1,15 +1,26 @@
 {
-  "name": "@learnrep/cli",
+  "name": "learnrep",
   "version": "0.1.0",
-  "description": "LearnRep CLI",
+  "description": "Generate quizzes from your terminal. Share them. Compete.",
+  "keywords": ["quiz", "learning", "cli", "ai"],
+  "homepage": "https://learnrep.ideabench.ai",
+  "repository": "github:ThoBustos/learnrep",
+  "license": "MIT",
   "bin": {
     "learnrep": "./dist/index.js",
     "lr": "./dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "ts-node src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.1",
