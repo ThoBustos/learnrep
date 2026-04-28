@@ -34,7 +34,7 @@ export default function AppShell({
   }
 
   return (
-    <NotifContext.Provider value={{ openNotif: () => setNotifOpen(true) }}>
+    <NotifContext.Provider value={{ openNotif: () => setNotifOpen(true), unreadCount }}>
       <div
         className="relative min-h-screen overflow-hidden bg-[#ffd426] text-[#151515]"
         style={{ fontFamily: 'var(--font-space-grotesk)' }}

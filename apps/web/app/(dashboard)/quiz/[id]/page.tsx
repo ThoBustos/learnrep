@@ -1,10 +1,10 @@
 'use client'
 
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Copy, Lock, Unlock, Check, ChevronLeft } from 'lucide-react'
+import { Bell, Copy, Lock, Unlock, Check, ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { difficultyStyles } from '@/lib/mock-data'
 import { NotifContext } from '@/components/layout/NotifContext'
@@ -32,19 +32,16 @@ type LeaderboardEntry = {
 
 export default function QuizDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { openNotif: _openNotif } = useContext(NotifContext)
+  const { openNotif, unreadCount } = useContext(NotifContext)
   const queryClient = useQueryClient()
 
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [isPublicOverride, setIsPublicOverride] = useState<boolean | null>(null)
 
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(({ data }) => {
-      setCurrentUserId(data.user?.id ?? null)
-    })
-  }, [])
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => createClient().auth.getUser().then(({ data }) => data.user ?? null),
+  })
 
   const { data: quiz, isLoading: quizLoading } = useQuery<Quiz>({
     queryKey: ['quiz', id],
@@ -63,7 +60,7 @@ export default function QuizDetailPage() {
     enabled: !!quiz?.is_public,
   })
 
-  const isOwner = !!(currentUserId && quiz?.user_id && currentUserId === quiz.user_id)
+  const isOwner = !!(currentUser && quiz?.user_id && currentUser.id === quiz.user_id)
   const effectiveIsPublic = isPublicOverride ?? quiz?.is_public ?? false
 
   async function toggleVisibility() {
@@ -191,6 +188,20 @@ export default function QuizDetailPage() {
             >
               {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
               {copied ? 'Copied!' : 'Copy link'}
+            </button>
+
+            <button
+              type="button"
+              onClick={openNotif}
+              className="relative flex items-center gap-2 rounded-[1rem] border-[3px] border-[#9c231d] bg-[#ff6b62]/20 px-5 py-3 font-black text-[#9c231d] shadow-[3px_3px_0_#9c231d] transition-transform hover:-translate-y-0.5"
+            >
+              <Bell className="size-4" />
+              {unreadCount > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-[#ff6b62] font-mono text-[10px] font-black text-white">
+                  {unreadCount}
+                </span>
+              )}
+              {unreadCount === 1 ? '1 notification' : unreadCount > 1 ? `${unreadCount} notifications` : 'Notifications'}
             </button>
           </>
         )}
