@@ -135,8 +135,10 @@ export async function login(apiBase: string): Promise<AuthConfig> {
       const error = callbackUrl.searchParams.get('error')
 
       const respond = (html: string, err?: Error) => {
-        res.writeHead(200, { 'Content-Type': 'text/html' })
+        clearTimeout(loginTimeout)
+        res.writeHead(200, { 'Content-Type': 'text/html', 'Connection': 'close' })
         res.end(html)
+        server.closeAllConnections()
         server.close()
         if (err) reject(err)
       }
@@ -193,7 +195,7 @@ export async function login(apiBase: string): Promise<AuthConfig> {
       reject(new Error(`Could not start local callback server: ${err.message}`))
     })
 
-    setTimeout(() => {
+    const loginTimeout = setTimeout(() => {
       server.close()
       reject(new Error('Login timed out after 5 minutes'))
     }, LOGIN_TIMEOUT_MS)
