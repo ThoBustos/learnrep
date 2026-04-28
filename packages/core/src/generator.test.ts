@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import type { z } from 'zod'
 import { generateQuiz } from './generator.js'
 
 const baseQuestions = [
@@ -16,7 +17,8 @@ test('generateQuiz returns canonical quiz shape', async () => {
     difficulty: 'easy',
     userId: 'user-1',
     source: 'cli',
-    callStructured: async () => ({ title: 'React hooks', questions: baseQuestions }) as never,
+    callStructured: <T>(_s: z.ZodType<T>, _sys: string, _p: string) =>
+      Promise.resolve({ title: 'React hooks', questions: baseQuestions } as unknown as T),
   })
 
   assert.equal(quiz.questions.length, 5)
@@ -30,7 +32,8 @@ test('generateQuiz rejects when question count does not match difficulty', async
       difficulty: 'easy',
       userId: 'user-1',
       source: 'cli',
-      callStructured: async () => ({ title: 'Broken quiz', questions: baseQuestions.slice(0, 2) }) as never,
+      callStructured: <T>(_s: z.ZodType<T>, _sys: string, _p: string) =>
+        Promise.resolve({ title: 'Broken quiz', questions: baseQuestions.slice(0, 2) } as unknown as T),
     }),
     /expected 5/,
   )

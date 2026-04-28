@@ -1,5 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import type { z } from 'zod'
 import { evaluateAnswer, scoreAttempt } from './evaluator.js'
 import { normalizeQuestion } from './schemas.js'
 import type { Question } from './types.js'
@@ -74,7 +75,8 @@ test('evaluateAnswer calls callStructured for open-ended questions', async () =>
   const result = await evaluateAnswer({
     question: openEndedQuestion,
     userAnswer: 'It memoizes a value so it only recomputes when dependencies change',
-    callStructured: async () => ({ correct: true, feedback: 'Good explanation.' }) as never,
+    callStructured: <T>(_s: z.ZodType<T>, _sys: string, _p: string) =>
+      Promise.resolve({ correct: true, feedback: 'Good explanation.' } as unknown as T),
   })
 
   assert.equal(result.correct, true)

@@ -46,9 +46,8 @@ async function getAuthUser(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const bearerToken = request.headers.get('Authorization')?.startsWith('Bearer ')
-    ? request.headers.get('Authorization')!.slice(7)
-    : null
+  const authHeader = request.headers.get('Authorization')
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null
 
   const user = await getAuthUser(request)
   if (!user) {
