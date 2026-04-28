@@ -299,7 +299,7 @@ function DashLeaderboardScreen() {
         ))}
       </div>
       <div className="rounded-[1rem] border-[3px] border-[#151515] bg-[#fff7ec] p-3 text-center shadow-[3px_3px_0_#151515]">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">You're ranked</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">You&apos;re ranked</p>
         <p className="text-4xl font-black">#1</p>
         <p className="text-[10px] font-bold text-[#67606a]">Keep it up this week</p>
       </div>
@@ -460,7 +460,7 @@ function QuizCard({ title, topic, difficulty, questions, attempts, best }: {
   const tone = difficultyTone[difficulty]
   return (
     <div className="overflow-hidden rounded-[1.35rem] border-[3px] border-[#151515] bg-white shadow-[5px_5px_0_#151515]">
-      <div className={cx('h-4 border-b-[3px] border-[#151515]', tone.bg)} />
+      <div className={cn('h-4 border-b-[3px] border-[#151515]', tone.bg)} />
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-lg font-black leading-5 tracking-[-0.04em]">{title}</h3>
@@ -488,12 +488,12 @@ function LevelRow({ number, title, description, state }: {
 }) {
   const isLocked = state === 'locked'
   return (
-    <div className={cx('flex items-center gap-3 rounded-[1.2rem] border-[3px] border-[#151515] bg-white p-3 shadow-[4px_4px_0_#151515]', isLocked && 'opacity-55 shadow-none')}>
-      <div className={cx('flex size-11 shrink-0 items-center justify-center rounded-full border-[3px] border-[#151515] font-black', state === 'done' && 'bg-[#d9ff69]', state === 'active' && 'bg-[#151515] text-white', state === 'locked' && 'bg-[#fff7ec]')}>
+    <div className={cn('flex items-center gap-3 rounded-[1.2rem] border-[3px] border-[#151515] bg-white p-3 shadow-[4px_4px_0_#151515]', isLocked && 'opacity-55 shadow-none')}>
+      <div className={cn('flex size-11 shrink-0 items-center justify-center rounded-full border-[3px] border-[#151515] font-black', state === 'done' && 'bg-[#d9ff69]', state === 'active' && 'bg-[#151515] text-white', state === 'locked' && 'bg-[#fff7ec]')}>
         {state === 'done' ? <Icon name="check" className="size-5" /> : state === 'locked' ? <Icon name="lock" className="size-5" /> : number}
       </div>
       <div className="min-w-0 flex-1">
-        <p className={cx('truncate text-sm font-black', state === 'done' && 'line-through decoration-[3px]')}>{title}</p>
+        <p className={cn('truncate text-sm font-black', state === 'done' && 'line-through decoration-[3px]')}>{title}</p>
         <p className="truncate text-xs font-bold text-[#6b625c]">{description}</p>
       </div>
       {state === 'active' && <IconButton icon="play" label="Start level" tone="blue" />}
@@ -504,7 +504,7 @@ function LevelRow({ number, title, description, state }: {
 function LeaderboardRow({ rank, person }: { rank: number; person: typeof people[number] }) {
   return (
     <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3">
-      <div className={cx('flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] font-black', rank === 1 ? 'bg-[#ffd426]' : 'bg-[#fff7ec]')}>
+      <div className={cn('flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] font-black', rank === 1 ? 'bg-[#ffd426]' : 'bg-[#fff7ec]')}>
         {rank}
       </div>
       <DoodleAvatar initials={person.initials} size="sm" />
@@ -576,7 +576,7 @@ function StatBlock({ value, label, tone }: { value: string; label: string; tone:
     red: 'bg-[#ff5858] text-white',
   }
   return (
-    <div className={cx('min-w-24 rounded-[1.2rem] border-[3px] border-[#151515] px-4 py-3 text-center shadow-[4px_4px_0_#151515]', styles[tone])}>
+    <div className={cn('min-w-24 rounded-[1.2rem] border-[3px] border-[#151515] px-4 py-3 text-center shadow-[4px_4px_0_#151515]', styles[tone])}>
       <p className="text-4xl font-black leading-none tracking-[-0.08em]">{value}</p>
       <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">{label}</p>
     </div>
@@ -612,7 +612,7 @@ function ProgressBar({ label, value, tone }: { label: string; value: number; ton
         <span>{value}%</span>
       </div>
       <div className="h-5 overflow-hidden rounded-full border-[3px] border-[#151515] bg-white">
-        <div className={cx('h-full rounded-full border-r-[3px] border-[#151515]', tone === 'yellow' ? 'bg-[#ffd426]' : 'bg-[#7bd8ef]')} style={{ width: `${value}%` }} />
+        <div className={cn('h-full rounded-full border-r-[3px] border-[#151515]', tone === 'yellow' ? 'bg-[#ffd426]' : 'bg-[#7bd8ef]')} style={{ width: `${value}%` }} />
       </div>
     </div>
   )
@@ -631,7 +631,7 @@ function Tabs({ labels, active }: { labels: string[]; active: string }) {
   return (
     <div className="flex gap-4 overflow-hidden border-b-[3px] border-[#151515] pb-2">
       {labels.map((label) => (
-        <span key={label} className={cx('font-mono text-[10px] font-bold uppercase tracking-[0.18em]', label === active && 'border-b-[3px] border-[#151515]')}>
+        <span key={label} className={cn('font-mono text-[10px] font-bold uppercase tracking-[0.18em]', label === active && 'border-b-[3px] border-[#151515]')}>
           {label}
         </span>
       ))}
@@ -649,7 +649,7 @@ function BottomNav({ active }: { active: string }) {
     <div className="sticky bottom-0 mt-5 grid grid-cols-3 rounded-full border-[3px] border-[#151515] bg-[#fff7ec] p-2">
       {items.map((item) => (
         <div key={item.label} className="flex flex-col items-center gap-1">
-          <div className={cx('rounded-full px-4 py-1', active === item.label && 'bg-[#ffd426]')}>
+          <div className={cn('rounded-full px-4 py-1', active === item.label && 'bg-[#ffd426]')}>
             <Icon name={item.icon} className="size-5" />
           </div>
           <span className="text-[10px] font-black">{item.label}</span>
@@ -684,7 +684,7 @@ function Button({ children, tone = 'yellow', size = 'md', className }: {
     lime: 'bg-[#d9ff69]',
   }
   return (
-    <button className={cx('rounded-full border-[3px] border-[#151515] font-black uppercase shadow-[3px_3px_0_#151515]', tones[tone], size === 'sm' ? 'px-4 py-2 text-xs tracking-[0.12em]' : 'px-7 py-3 text-sm tracking-[0.14em]', className)}>
+    <button className={cn('rounded-full border-[3px] border-[#151515] font-black uppercase shadow-[3px_3px_0_#151515]', tones[tone], size === 'sm' ? 'px-4 py-2 text-xs tracking-[0.12em]' : 'px-7 py-3 text-sm tracking-[0.14em]', className)}>
       {children}
     </button>
   )
@@ -698,7 +698,7 @@ function IconButton({ icon, label, tone = 'paper' }: { icon: IconName; label: st
     lime: 'bg-[#d9ff69]',
   }
   return (
-    <button aria-label={label} className={cx('flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] shadow-[3px_3px_0_#151515]', tones[tone])}>
+    <button aria-label={label} className={cn('flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] shadow-[3px_3px_0_#151515]', tones[tone])}>
       <Icon name={icon} className="size-5" />
     </button>
   )
@@ -707,7 +707,7 @@ function IconButton({ icon, label, tone = 'paper' }: { icon: IconName; label: st
 function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
   const tone = difficultyTone[difficulty]
   return (
-    <span className={cx('inline-flex rounded-full border-[3px] px-3 py-1 text-xs font-black', tone.bg, tone.text, tone.border)}>
+    <span className={cn('inline-flex rounded-full border-[3px] px-3 py-1 text-xs font-black', tone.bg, tone.text, tone.border)}>
       {tone.label}
     </span>
   )
@@ -721,7 +721,7 @@ function TopicTag({ label, tone = 'paper' }: { label: string; tone?: 'paper' | '
     violet: 'bg-[#b995ff]',
   }
   return (
-    <span className={cx('inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-black leading-none', tones[tone])}>
+    <span className={cn('inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-black leading-none', tones[tone])}>
       {label}
     </span>
   )
@@ -732,7 +732,7 @@ function StarRating({ difficulty }: { difficulty: Difficulty }) {
   return (
     <div className="flex gap-1" aria-label={`${tone.label} difficulty`}>
       {Array.from({ length: 5 }).map((_, index) => (
-        <StarIcon key={index} filled={index < tone.score} className={cx('size-5', index < tone.score ? tone.text : 'text-[#d3ccc5]')} />
+        <StarIcon key={index} filled={index < tone.score} className={cn('size-5', index < tone.score ? tone.text : 'text-[#d3ccc5]')} />
       ))}
     </div>
   )
@@ -740,7 +740,7 @@ function StarRating({ difficulty }: { difficulty: Difficulty }) {
 
 function MiniStat({ value, label, border = false }: { value: string | number; label: string; border?: boolean }) {
   return (
-    <div className={cx('px-2 py-3', border && 'border-l-[3px] border-[#151515]')}>
+    <div className={cn('px-2 py-3', border && 'border-l-[3px] border-[#151515]')}>
       <p className="font-black leading-none">{value}</p>
       <p className="mt-1 font-mono text-[9px] font-bold uppercase tracking-[0.12em] text-[#6b625c]">{label}</p>
     </div>
@@ -749,7 +749,7 @@ function MiniStat({ value, label, border = false }: { value: string | number; la
 
 function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cx('rounded-[2rem] border-[3px] border-[#151515] bg-[#fff7ec] p-5 shadow-[7px_7px_0_#151515]', className)}>
+    <div className={cn('rounded-[2rem] border-[3px] border-[#151515] bg-[#fff7ec] p-5 shadow-[7px_7px_0_#151515]', className)}>
       {children}
     </div>
   )
@@ -771,7 +771,7 @@ function Pill({ children, tone = 'paper' }: { children: React.ReactNode; tone?: 
     blue: 'bg-[#7bd8ef]',
   }
   return (
-    <span className={cx('rounded-full border-[3px] border-[#151515] px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.16em] shadow-[3px_3px_0_#151515]', tones[tone])}>
+    <span className={cn('rounded-full border-[3px] border-[#151515] px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.16em] shadow-[3px_3px_0_#151515]', tones[tone])}>
       {children}
     </span>
   )
@@ -779,7 +779,7 @@ function Pill({ children, tone = 'paper' }: { children: React.ReactNode; tone?: 
 
 function Token({ name, color, dark = false }: { name: string; color: string; dark?: boolean }) {
   return (
-    <div className={cx('rounded-[1rem] border-[3px] border-[#151515] p-3 shadow-[3px_3px_0_#151515]', color, dark && 'text-white')}>
+    <div className={cn('rounded-[1rem] border-[3px] border-[#151515] p-3 shadow-[3px_3px_0_#151515]', color, dark && 'text-white')}>
       <div className="h-16" />
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em]">{name}</p>
     </div>
@@ -789,7 +789,7 @@ function Token({ name, color, dark = false }: { name: string; color: string; dar
 function DoodleAvatar({ initials, size = 'md' }: { initials: string; size?: 'sm' | 'md' }) {
   const box = size === 'sm' ? 'size-11' : 'size-14'
   return (
-    <div className={cx('relative shrink-0 overflow-hidden rounded-full border-[3px] border-[#151515] bg-[#fff7ec]', box)}>
+    <div className={cn('relative shrink-0 overflow-hidden rounded-full border-[3px] border-[#151515] bg-[#fff7ec]', box)}>
       <svg viewBox="0 0 64 64" className="size-full" aria-hidden="true">
         <circle cx="32" cy="31" r="17" fill="#fff7ec" stroke="#151515" strokeWidth="3" />
         <path d="M18 29c3-15 23-17 29-3-8-2-17-2-29 3Z" fill="#151515" />

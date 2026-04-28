@@ -1,0 +1,50 @@
+---
+title: lr generate
+description: Generate a quiz from a topic or file content.
+---
+
+## Usage
+
+```bash
+lr generate [topic] [flags]
+```
+
+## Flags
+
+| Flag | Type | Default | Description |
+|---|---|---|---|
+| `--focus` | string | — | Specific aspect to focus on within the topic |
+| `--difficulty` | enum | `medium` | `easy`, `medium`, `hard`, `expert` |
+| `--count` | number | `5` | Questions to generate (1-20) |
+| `--types` | list | `multiple-choice` | Comma-separated question types |
+| `--content` | file/stdin | — | File path or `-` for stdin |
+
+**Question types:** `multiple-choice`, `multi-select`, `open-ended`, `code-writing`
+
+## Examples
+
+```bash
+# Topic
+lr generate "react hooks"
+
+# With flags
+lr generate "typescript generics" --difficulty hard --count 10
+
+# Focused
+lr generate --focus "useCallback vs useMemo" --difficulty hard
+
+# From file
+lr generate --content session.md --types multiple-choice,open-ended
+
+# From stdin
+cat transcript.md | lr generate --focus "error handling"
+```
+
+## Output
+
+Returns the quiz URL on success.
+
+```
+Quiz created: https://learnrep.ai/quiz/abc123
+Share: lr share abc123
+```

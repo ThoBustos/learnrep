@@ -58,38 +58,68 @@ alter table public.teams        enable row level security;
 alter table public.team_members enable row level security;
 
 -- profiles: users see/edit their own
-create policy "profiles: own" on public.profiles
-  for all using (auth.uid() = id);
+create policy "profiles: select own" on public.profiles
+  for select using (auth.uid() = id);
+create policy "profiles: insert own" on public.profiles
+  for insert with check (auth.uid() = id);
+create policy "profiles: update own" on public.profiles
+  for update using (auth.uid() = id) with check (auth.uid() = id);
+create policy "profiles: delete own" on public.profiles
+  for delete using (auth.uid() = id);
 
 -- quizzes: own full access + public read
-create policy "quizzes: own" on public.quizzes
-  for all using (auth.uid() = user_id);
 create policy "quizzes: public read" on public.quizzes
   for select using (is_public = true);
+create policy "quizzes: select own" on public.quizzes
+  for select using (auth.uid() = user_id);
+create policy "quizzes: insert own" on public.quizzes
+  for insert with check (auth.uid() = user_id);
+create policy "quizzes: update own" on public.quizzes
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "quizzes: delete own" on public.quizzes
+  for delete using (auth.uid() = user_id);
 
 -- quiz_attempts: own only
-create policy "quiz_attempts: own" on public.quiz_attempts
-  for all using (auth.uid() = user_id);
+create policy "quiz_attempts: select own" on public.quiz_attempts
+  for select using (auth.uid() = user_id);
+create policy "quiz_attempts: insert own" on public.quiz_attempts
+  for insert with check (auth.uid() = user_id);
+create policy "quiz_attempts: update own" on public.quiz_attempts
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "quiz_attempts: delete own" on public.quiz_attempts
+  for delete using (auth.uid() = user_id);
 
 -- teams: members can read, owner can write
 create policy "teams: member read" on public.teams
   for select using (
     exists (select 1 from public.team_members where team_id = id and user_id = auth.uid())
   );
-create policy "teams: owner write" on public.teams
-  for all using (auth.uid() = created_by);
+create policy "teams: owner insert" on public.teams
+  for insert with check (auth.uid() = created_by);
+create policy "teams: owner update" on public.teams
+  for update using (auth.uid() = created_by) with check (auth.uid() = created_by);
+create policy "teams: owner delete" on public.teams
+  for delete using (auth.uid() = created_by);
 
 -- team_members: members can read
 create policy "team_members: read" on public.team_members
   for select using (
     exists (select 1 from public.team_members tm where tm.team_id = team_id and tm.user_id = auth.uid())
   );
-create policy "team_members: own" on public.team_members
-  for all using (auth.uid() = user_id);
+create policy "team_members: insert own" on public.team_members
+  for insert with check (auth.uid() = user_id);
+create policy "team_members: update own" on public.team_members
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "team_members: delete own" on public.team_members
+  for delete using (auth.uid() = user_id);
 
 -- auto-create profile on signup
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 begin
   insert into public.profiles (id, display_name, avatar_url)
   values (

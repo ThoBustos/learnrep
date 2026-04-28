@@ -1,0 +1,58 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "LearnRep",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#151515",
+    "light": "#ffd426",
+    "dark": "#151515",
+    "background": {
+      "light": "#ffd426",
+      "dark": "#151515"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/ThoBustos/learnrep"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get started",
+    "url": "https://learnrep.ai"
+  },
+  "navigation": [
+    {
+      "group": "Overview",
+      "pages": ["introduction", "why-cli-first"]
+    },
+    {
+      "group": "Getting Started",
+      "pages": ["quickstart"]
+    },
+    {
+      "group": "CLI Reference",
+      "pages": [
+        "cli/generate",
+        "cli/share",
+        "cli/stats",
+        "cli/login"
+      ]
+    },
+    {
+      "group": "Using with LLM apps",
+      "pages": ["llm/overview", "llm/config"]
+    },
+    {
+      "group": "Open Source",
+      "pages": ["contributing"]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/ThoBustos/learnrep"
+  }
+}

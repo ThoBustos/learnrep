@@ -70,7 +70,7 @@ function Hero() {
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {cards.map((card, index) => (
-          <div key={card.no} className={cx(index % 2 === 0 ? 'sm:translate-y-8' : 'sm:-translate-y-4')}>
+          <div key={card.no} className={cn(index % 2 === 0 ? 'sm:translate-y-8' : 'sm:-translate-y-4')}>
             <QuizCard {...card} compact />
           </div>
         ))}
@@ -232,7 +232,7 @@ function DashFeedScreen() {
       <div className="space-y-2">
         {feedQuizzes.map((q) => (
           <div key={q.title} className="flex items-center gap-3 overflow-hidden rounded-[1.1rem] border-[3px] border-[#111111] bg-[#191919] p-2 shadow-[4px_4px_0_#111111]">
-            <div className={cx('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px] border-[#111111] font-mono text-[9px] font-black', difficulty[q.difficulty].card, difficulty[q.difficulty].ink)}>
+            <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px] border-[#111111] font-mono text-[9px] font-black', difficulty[q.difficulty].card, difficulty[q.difficulty].ink)}>
               {q.no}
             </div>
             <div className="min-w-0 flex-1">
@@ -287,7 +287,7 @@ function DashLeaderboardScreen() {
         ))}
       </div>
       <Panel className="bg-[#8de37f] p-4 text-center text-[#111111]">
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">You're ranked</p>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.14em]">You&apos;re ranked</p>
         <p className="text-5xl font-black leading-none tracking-[-0.08em]">#1</p>
         <p className="font-mono text-[10px] font-bold">Keep it up this week</p>
       </Panel>
@@ -394,16 +394,16 @@ function QuizCard({ title, topic, difficulty: level, rarity: cardRarity, no, bes
   const levelTone = difficulty[level]
   const rareTone = rarity[cardRarity]
   return (
-    <article className={cx('overflow-hidden rounded-[1.25rem] border-[4px] border-[#111111] text-[#111111] shadow-[6px_6px_0_#000]', levelTone.card)}>
+    <article className={cn('overflow-hidden rounded-[1.25rem] border-[4px] border-[#111111] text-[#111111] shadow-[6px_6px_0_#000]', levelTone.card)}>
       <div className="flex items-center justify-between border-b-[4px] border-[#111111] bg-[#f8efe0] px-3 py-2">
-        <h3 className={cx('truncate uppercase leading-none', compact ? 'text-sm' : 'text-lg')} style={{ fontFamily: 'var(--font-bowlby)' }}>
+        <h3 className={cn('truncate uppercase leading-none', compact ? 'text-sm' : 'text-lg')} style={{ fontFamily: 'var(--font-bowlby)' }}>
           {title}
         </h3>
         <StarMeter difficulty={level} compact />
       </div>
-      <div className={cx('relative border-b-[4px] border-[#111111] bg-white', compact ? 'h-24' : 'h-36')}>
+      <div className={cn('relative border-b-[4px] border-[#111111] bg-white', compact ? 'h-24' : 'h-36')}>
         <CardArt difficulty={level} />
-        <div className={cx('absolute right-2 top-2 rounded-full border-[3px] border-[#111111] px-2 py-1 font-mono text-[9px] font-bold uppercase', rareTone.bg, rareTone.text)}>
+        <div className={cn('absolute right-2 top-2 rounded-full border-[3px] border-[#111111] px-2 py-1 font-mono text-[9px] font-bold uppercase', rareTone.bg, rareTone.text)}>
           {rareTone.label}
         </div>
       </div>
@@ -447,8 +447,8 @@ function ChallengeCard() {
 
 function LevelRow({ number, title, state }: { number: number; title: string; state: 'complete' | 'active' | 'locked' }) {
   return (
-    <div className={cx('flex items-center gap-3 rounded-[1rem] border-[3px] border-[#f8efe0] bg-[#191919] p-3 text-[#f8efe0]', state === 'locked' && 'opacity-45')}>
-      <div className={cx('flex size-10 items-center justify-center rounded-full border-[3px] border-[#f8efe0] font-black', state === 'complete' && 'bg-[#8de37f] text-[#111111]', state === 'active' && 'bg-[#ffcf3f] text-[#111111]')}>
+    <div className={cn('flex items-center gap-3 rounded-[1rem] border-[3px] border-[#f8efe0] bg-[#191919] p-3 text-[#f8efe0]', state === 'locked' && 'opacity-45')}>
+      <div className={cn('flex size-10 items-center justify-center rounded-full border-[3px] border-[#f8efe0] font-black', state === 'complete' && 'bg-[#8de37f] text-[#111111]', state === 'active' && 'bg-[#ffcf3f] text-[#111111]')}>
         {state === 'complete' ? <Icon name="check" className="size-5" /> : state === 'locked' ? <Icon name="lock" className="size-5" /> : number}
       </div>
       <p className="flex-1 truncate text-sm font-black">{title}</p>
@@ -473,7 +473,7 @@ function ActivityItem({ name, action, time }: { name: string; action: string; ti
 function LeaderboardRow({ rank, name, handle, score }: { rank: number; name: string; handle: string; score: number }) {
   return (
     <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-[#111111] bg-white p-2">
-      <div className={cx('flex size-9 items-center justify-center rounded-full border-[3px] border-[#111111] font-black', rank === 1 ? 'bg-[#ffcf3f]' : 'bg-[#f8efe0]')}>
+      <div className={cn('flex size-9 items-center justify-center rounded-full border-[3px] border-[#111111] font-black', rank === 1 ? 'bg-[#ffcf3f]' : 'bg-[#f8efe0]')}>
         {rank}
       </div>
       <Avatar name={name} />
@@ -540,7 +540,7 @@ function ProgressBar({ label, value, tone }: { label: string; value: number; ton
         <span>{value}%</span>
       </div>
       <div className="h-5 overflow-hidden rounded-full border-[3px] border-current bg-transparent">
-        <div className={cx('h-full border-r-[3px] border-current', fills[tone])} style={{ width: `${value}%` }} />
+        <div className={cn('h-full border-r-[3px] border-current', fills[tone])} style={{ width: `${value}%` }} />
       </div>
     </div>
   )
@@ -560,8 +560,8 @@ function StatBlock({ value, label, tone, small = false }: {
     coral: 'bg-[#ff6b58] text-[#111111]',
   }
   return (
-    <div className={cx('rounded-[1rem] border-[4px] border-[#111111] text-center shadow-[4px_4px_0_#111111]', tones[tone], small ? 'px-2 py-3' : 'px-5 py-4')}>
-      <p className={cx('font-black leading-none tracking-[-0.08em]', small ? 'text-3xl' : 'text-5xl')}>{value}</p>
+    <div className={cn('rounded-[1rem] border-[4px] border-[#111111] text-center shadow-[4px_4px_0_#111111]', tones[tone], small ? 'px-2 py-3' : 'px-5 py-4')}>
+      <p className={cn('font-black leading-none tracking-[-0.08em]', small ? 'text-3xl' : 'text-5xl')}>{value}</p>
       <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em]">{label}</p>
     </div>
   )
@@ -593,7 +593,7 @@ function CardStat({ icon, value }: { icon: IconName; value: string }) {
 function DifficultyTag({ difficulty: level }: { difficulty: Difficulty }) {
   const tone = difficulty[level]
   return (
-    <span className={cx('inline-flex rounded-full border-[3px] border-[#111111] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em]', tone.card, tone.ink)}>
+    <span className={cn('inline-flex rounded-full border-[3px] border-[#111111] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em]', tone.card, tone.ink)}>
       {tone.label}
     </span>
   )
@@ -602,7 +602,7 @@ function DifficultyTag({ difficulty: level }: { difficulty: Difficulty }) {
 function RarityTag({ rarity: cardRarity }: { rarity: Rarity }) {
   const tone = rarity[cardRarity]
   return (
-    <span className={cx('inline-flex rounded-full border-[3px] border-[#111111] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em]', tone.bg, tone.text)}>
+    <span className={cn('inline-flex rounded-full border-[3px] border-[#111111] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em]', tone.bg, tone.text)}>
       {tone.label}
     </span>
   )
@@ -611,9 +611,9 @@ function RarityTag({ rarity: cardRarity }: { rarity: Rarity }) {
 function StarMeter({ difficulty: level, compact = false }: { difficulty: Difficulty; compact?: boolean }) {
   const power = difficulty[level].power
   return (
-    <div className={cx('flex', compact ? 'gap-0.5' : 'gap-1')}>
+    <div className={cn('flex', compact ? 'gap-0.5' : 'gap-1')}>
       {Array.from({ length: 4 }).map((_, index) => (
-        <Icon key={index} name="star" className={cx(compact ? 'size-3.5' : 'size-5', index < power ? 'fill-[#111111] text-[#111111]' : 'text-[#b7a993]')} />
+        <Icon key={index} name="star" className={cn(compact ? 'size-3.5' : 'size-5', index < power ? 'fill-[#111111] text-[#111111]' : 'text-[#b7a993]')} />
       ))}
     </div>
   )
@@ -651,7 +651,7 @@ function NavBar({ active }: { active: string }) {
   return (
     <div className="grid grid-cols-3 rounded-full border-[4px] border-[#111111] bg-[#f8efe0] p-2 text-[#111111]">
       {items.map((item) => (
-        <div key={item} className={cx('rounded-full px-3 py-2 text-center text-xs font-black', active === item && 'bg-[#ffcf3f]')}>
+        <div key={item} className={cn('rounded-full px-3 py-2 text-center text-xs font-black', active === item && 'bg-[#ffcf3f]')}>
           {item}
         </div>
       ))}
@@ -670,7 +670,7 @@ function ScreenFrame({ title, children }: { title: string; children: React.React
 
 function Panel({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cx('rounded-[1.75rem] border-[4px] border-[#f8efe0] bg-[#191919] p-5 shadow-[7px_7px_0_#ffcf3f]', className)}>
+    <div className={cn('rounded-[1.75rem] border-[4px] border-[#f8efe0] bg-[#191919] p-5 shadow-[7px_7px_0_#ffcf3f]', className)}>
       {children}
     </div>
   )
@@ -692,7 +692,7 @@ function Badge({ children, tone }: { children: React.ReactNode; tone: 'yellow' |
     pink: 'bg-[#c15bff] text-white',
   }
   return (
-    <span className={cx('rounded-full border-[4px] border-[#f8efe0] px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.16em] shadow-[4px_4px_0_#ffcf3f]', tones[tone])}>
+    <span className={cn('rounded-full border-[4px] border-[#f8efe0] px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.16em] shadow-[4px_4px_0_#ffcf3f]', tones[tone])}>
       {children}
     </span>
   )
@@ -700,7 +700,7 @@ function Badge({ children, tone }: { children: React.ReactNode; tone: 'yellow' |
 
 function Token({ name, color, dark = false }: { name: string; color: string; dark?: boolean }) {
   return (
-    <div className={cx('rounded-[1rem] border-[3px] border-[#111111] p-3 shadow-[4px_4px_0_#111111]', color, dark ? 'text-[#f8efe0]' : 'text-[#111111]')}>
+    <div className={cn('rounded-[1rem] border-[3px] border-[#111111] p-3 shadow-[4px_4px_0_#111111]', color, dark ? 'text-[#f8efe0]' : 'text-[#111111]')}>
       <div className="h-16" />
       <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em]">{name}</p>
     </div>
