@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { generateQuiz } from '@learnrep/core'
 import { isValidDifficulty } from '@learnrep/core'
@@ -21,6 +22,15 @@ function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   )
 }
 
+// For Bearer-token requests (CLI/MCP), use a client that forwards the JWT so RLS resolves correctly.
+function makeTokenClient(token: string) {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { global: { headers: { Authorization: `Bearer ${token}` } } },
+  )
+}
+
 async function getAuthUser(request: Request) {
   const authHeader = request.headers.get('Authorization')
 
@@ -36,6 +46,10 @@ async function getAuthUser(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const bearerToken = request.headers.get('Authorization')?.startsWith('Bearer ')
+    ? request.headers.get('Authorization')!.slice(7)
+    : null
+
   const user = await getAuthUser(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -79,8 +93,9 @@ export async function POST(request: Request) {
 
   const shareCode = quiz.id.slice(0, 8)
   const cookieStore = await cookies()
+  const db = bearerToken ? makeTokenClient(bearerToken) : makeSupabaseClient(cookieStore)
 
-  const { error: insertError } = await makeSupabaseClient(cookieStore).from('quizzes').insert({
+  const { error: insertError } = await db.from('quizzes').insert({
     id: quiz.id,
     user_id: user.id,
     title: quiz.title,
