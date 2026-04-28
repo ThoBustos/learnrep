@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import * as fs from 'node:fs'
 import { Command } from 'commander'
 import {
   clampQuestionCount,
@@ -8,6 +7,7 @@ import {
   readContentInput,
   validateGenerateInput,
 } from './lib.js'
+import { login, readConfig, writeConfig, clearConfig } from './auth.js'
 
 const program = new Command()
 
@@ -77,23 +77,38 @@ program
 
 program
   .command('login')
-  .description('Log in via browser OAuth and store token at ~/.learnrep/config.json')
-  .action(() => {
-    console.log('Opening browser for login...')
-    // TODO: open OAuth URL and poll for token
+  .description('Authenticate via Google in the browser — stores token at ~/.config/learnrep/config.json')
+  .action(async () => {
+    const apiBase = process.env.LEARNREP_API_URL ?? 'http://localhost:3000'
+    try {
+      process.stdout.write(`Connecting to ${apiBase}...\n`)
+      const config = await login(apiBase)
+      writeConfig(config)
+      console.log(`Logged in as ${config.user.email}`)
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : 'Login failed')
+      process.exit(1)
+    }
   })
 
 program
   .command('logout')
-  .description('Clear stored token')
+  .description('Clear stored credentials')
   .action(() => {
-    const configPath = `${process.env.HOME}/.learnrep/config.json`
-    if (fs.existsSync(configPath)) {
-      fs.unlinkSync(configPath)
-      console.log('Logged out.')
-    } else {
-      console.log('Not logged in.')
+    clearConfig()
+    console.log('Logged out.')
+  })
+
+program
+  .command('whoami')
+  .description('Show the currently authenticated user')
+  .action(() => {
+    const config = readConfig()
+    if (!config) {
+      console.log('Not logged in. Run: lr login')
+      process.exit(1)
     }
+    console.log(config.user.email)
   })
 
 program
