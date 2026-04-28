@@ -3,6 +3,28 @@ import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+type StoredAnswer = {
+  questionId: string
+  prompt: string
+  type: string
+  correct: boolean
+  score: number
+  feedback: string
+}
+
+function isStoredAnswer(v: unknown): v is StoredAnswer {
+  if (typeof v !== 'object' || v === null) return false
+  const a = v as Record<string, unknown>
+  return (
+    typeof a.questionId === 'string' &&
+    typeof a.prompt === 'string' &&
+    typeof a.type === 'string' &&
+    typeof a.correct === 'boolean' &&
+    typeof a.score === 'number' &&
+    typeof a.feedback === 'string'
+  )
+}
+
 function makeSupabaseClient(cookieStore?: Awaited<ReturnType<typeof cookies>>) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,47 +54,7 @@ async function getAuthContext(request: Request) {
   return { user, db }
 }
 
-// GET — public quizzes are readable by anyone; owners can also read their own private quizzes
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-
-  // Try to get auth context so owners can see their own private quizzes
-  const { user, db } = await getAuthContext(request)
-
-  // First try: fetch as authenticated user (covers public + own private)
-  if (user) {
-    const { data, error } = await db
-      .from('quizzes')
-      .select('id, user_id, title, topic, difficulty, questions, is_public, share_code')
-      .eq('id', id)
-      .single()
-
-    if (!error && data) {
-      return NextResponse.json(data)
-    }
-  }
-
-  // Fallback: unauthenticated — only public quizzes
-  const anonDb = makeSupabaseClient()
-  const { data, error } = await anonDb
-    .from('quizzes')
-    .select('id, user_id, title, topic, difficulty, questions, is_public, share_code')
-    .eq('id', id)
-    .eq('is_public', true)
-    .single()
-
-  if (error || !data) {
-    return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
-  }
-
-  return NextResponse.json(data)
-}
-
-// PATCH — owner only, update is_public
-export async function PATCH(
+export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -90,23 +72,31 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { is_public } = body as { is_public?: boolean }
+  const { score, answers } = body as { score?: unknown; answers?: unknown }
 
-  if (typeof is_public !== 'boolean') {
-    return NextResponse.json({ error: 'is_public (boolean) is required' }, { status: 400 })
+  if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 100) {
+    return NextResponse.json({ error: 'score must be a finite number 0–100' }, { status: 400 })
+  }
+
+  if (!Array.isArray(answers) || !answers.every(isStoredAnswer)) {
+    return NextResponse.json({ error: 'answers must be an array of answer records' }, { status: 400 })
   }
 
   const { data, error } = await db
-    .from('quizzes')
-    .update({ is_public })
-    .eq('id', id)
-    .select('id, is_public')
+    .from('quiz_attempts')
+    .insert({
+      quiz_id: id,
+      user_id: user.id,
+      score,
+      answers,
+    })
+    .select('id, score')
     .single()
 
   if (error || !data) {
-    console.error('Quiz update error:', error)
-    return NextResponse.json({ error: 'Failed to update quiz' }, { status: 500 })
+    console.error('Attempt insert error:', error)
+    return NextResponse.json({ error: 'Failed to save attempt' }, { status: 500 })
   }
 
-  return NextResponse.json(data)
+  return NextResponse.json({ id: data.id, score: data.score })
 }
