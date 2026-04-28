@@ -1,4 +1,29 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+
+type UserStats = {
+  quizzesTaken: number
+  topicsExplored: number
+  quizzesGenerated: number
+  avgScore: number | null
+  streak: number
+  avgImprovement: number | null
+}
+
 export default function StatsPage() {
+  const { data: stats } = useQuery<UserStats>({
+    queryKey: ['user-stats'],
+    queryFn: ({ signal }) =>
+      fetch('/api/user/stats', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed to fetch stats'))
+      ),
+  })
+
+  const streak = stats ? `${stats.streak}d` : '--'
+  const topicsMastered = stats ? stats.topicsExplored.toString() : '--'
+  const avgImprovement = stats?.avgImprovement != null ? `+${stats.avgImprovement}%` : '--'
+
   return (
     <div className="flex flex-col gap-6 p-5 lg:p-8">
       {/* Heading */}
@@ -9,9 +34,9 @@ export default function StatsPage() {
 
       {/* Teaser stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <TeaserCard icon="🔥" label="Current Streak" />
-        <TeaserCard icon="🧠" label="Topics Mastered" />
-        <TeaserCard icon="📈" label="Avg Improvement" />
+        <TeaserCard icon="🔥" label="Current Streak" value={streak} />
+        <TeaserCard icon="🧠" label="Topics Mastered" value={topicsMastered} />
+        <TeaserCard icon="📈" label="Avg Improvement" value={avgImprovement} />
       </div>
 
       {/* Coming soon banner */}
@@ -45,13 +70,13 @@ export default function StatsPage() {
   )
 }
 
-function TeaserCard({ icon, label }: { icon: string; label: string }) {
+function TeaserCard({ icon, label, value }: { icon: string; label: string; value: string }) {
   return (
     <div className="rounded-[1.1rem] border-[3px] border-[#151515] bg-white/60 p-5 shadow-[4px_4px_0_#151515]">
       <div className="flex items-center gap-3">
         <span className="text-3xl">{icon}</span>
         <div>
-          <p className="text-3xl font-black leading-none tracking-[-0.06em] text-[#151515]/30">--</p>
+          <p className="text-3xl font-black leading-none tracking-[-0.06em] text-[#151515]">{value}</p>
           <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">{label}</p>
         </div>
       </div>
