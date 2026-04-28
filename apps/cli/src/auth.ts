@@ -135,8 +135,9 @@ export async function login(apiBase: string): Promise<AuthConfig> {
       const error = callbackUrl.searchParams.get('error')
 
       const respond = (html: string, err?: Error) => {
-        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.writeHead(200, { 'Content-Type': 'text/html', 'Connection': 'close' })
         res.end(html)
+        server.closeAllConnections()
         server.close()
         if (err) reject(err)
       }
