@@ -7,7 +7,18 @@ import {
   readContentInput,
   validateGenerateInput,
 } from './lib.js'
-import { login, readConfig, writeConfig, clearConfig } from './auth.js'
+import { login, readConfig, writeConfig, clearConfig, openBrowser, getValidToken } from './auth.js'
+
+const API_BASE = process.env.LEARNREP_API_URL ?? 'https://learnrep.ideabench.ai'
+
+async function requireAuth(): Promise<string> {
+  try {
+    return await getValidToken(API_BASE)
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : 'Not logged in. Run: lr login')
+    process.exit(1)
+  }
+}
 
 const program = new Command()
 
@@ -45,34 +56,92 @@ program
     const types = parseTypes(opts.types)
     const difficulty = normalizeDifficulty(opts.difficulty)
 
-    console.log(`Generating ${count} ${difficulty} question(s) on "${topic ?? 'content'}"...`)
-    if (opts.focus) console.log(`Focus: ${opts.focus}`)
-    if (types.length > 1 || types[0] !== 'multiple-choice') console.log(`Types: ${types.join(', ')}`)
+    const token = await requireAuth()
 
-    // TODO: call API once auth is wired
-    console.log('\nQuiz created: https://learnrep.ai/quiz/mock-id')
-    console.log('Share: lr share mock-id')
+    process.stdout.write(`Generating ${count} ${difficulty} question(s) on "${topic ?? 'content'}"...\n`)
+
+    let res: Response
+    try {
+      res = await fetch(`${API_BASE}/api/quiz/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          topic: (topic ?? '').trim() || undefined,
+          difficulty,
+          source: 'cli',
+        }),
+      })
+    } catch {
+      console.error(`Could not reach ${API_BASE}. Is LEARNREP_API_URL set correctly?`)
+      process.exit(1)
+    }
+
+    if (res.status === 401) {
+      console.error('Session expired. Run: lr login')
+      process.exit(1)
+    }
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => res.statusText)
+      console.error(`Generation failed: ${text}`)
+      process.exit(1)
+    }
+
+    const data = await res.json() as { id: string; title: string; shareUrl: string }
+    console.log(`\n${data.title}`)
+    console.log(data.shareUrl)
+    openBrowser(data.shareUrl)
   })
 
 program
   .command('share <quiz-id>')
-  .description('Make a quiz public and copy the share link to clipboard')
+  .description('Print the share link for a quiz and open it in the browser')
   .action((quizId: string) => {
-    const url = `https://learnrep.ai/quiz/${quizId}`
-    console.log(`Share link: ${url}`)
-    // clipboard copy requires platform-specific tooling; skip in initial release
-    console.log('Link ready to share.')
+    const url = `${API_BASE}/quiz/${quizId}/take`
+    console.log(url)
+    openBrowser(url)
   })
+
 
 program
   .command('stats')
   .description('Print your streak, topics mastered, and avg improvement')
-  .action(() => {
-    // TODO: fetch from API once auth is wired
-    console.log('Streak:         12 days')
-    console.log('Topics mastered: 4')
-    console.log('Avg improvement: +14%')
-    console.log('Quizzes taken:  23')
+  .action(async () => {
+    const token = await requireAuth()
+
+    let res: Response
+    try {
+      res = await fetch(`${API_BASE}/api/user/stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    } catch {
+      console.error(`Could not reach ${API_BASE}.`)
+      process.exit(1)
+    }
+
+    if (res.status === 401) {
+      console.error('Session expired. Run: lr login')
+      process.exit(1)
+    }
+
+    if (!res.ok) {
+      console.error('Stats not available yet.')
+      process.exit(1)
+    }
+
+    const data = await res.json() as {
+      streak: number
+      topicsExplored: number
+      quizzesTaken: number
+      avgImprovement: string
+    }
+    console.log(`Streak:           ${data.streak} day${data.streak !== 1 ? 's' : ''}`)
+    console.log(`Topics explored:  ${data.topicsExplored}`)
+    console.log(`Quizzes taken:    ${data.quizzesTaken}`)
+    console.log(`Avg improvement:  ${data.avgImprovement}`)
   })
 
 program
