@@ -110,7 +110,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen text-[#151515]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+    <div className="min-h-screen bg-[#fafaf8] text-[#151515]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
 
       {/* ── NAV ──────────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#151515]/10 bg-[#fafaf8]/90 px-6 py-4 backdrop-blur-sm sm:px-10">
@@ -139,7 +139,7 @@ export default function HomePage() {
       </header>
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 bg-[#fafaf8] px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
+      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
         {/* Left */}
         <div className="flex flex-col gap-6">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border-[2px] border-[#151515] bg-[#ffd426] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest">
