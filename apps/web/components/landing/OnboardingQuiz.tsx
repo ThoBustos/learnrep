@@ -84,7 +84,7 @@ export function OnboardingQuiz({ questions }: Props) {
   })
 
   return (
-    <section className="relative overflow-hidden bg-[#ffd426] px-6 py-12 sm:px-10 sm:py-16">
+    <section className="relative overflow-hidden border-t-[4px] border-[#151515] bg-[#ffd426] px-6 py-12 sm:px-10 sm:py-16">
       <div className="pointer-events-none absolute inset-0 opacity-[0.15] [background-image:radial-gradient(#151515_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
 
       <div className="relative z-10 mx-auto max-w-2xl">
