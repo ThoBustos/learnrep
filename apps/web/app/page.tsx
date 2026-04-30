@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useMountEffect } from '@/hooks/useMountEffect'
 import { useQuery } from '@tanstack/react-query'
-import { BookOpen, Check, Copy, ExternalLink } from 'lucide-react'
+import { ArrowRight, BookOpen, Check, Copy, ExternalLink } from 'lucide-react'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
 
@@ -27,7 +27,7 @@ const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 2500, line: { type: 'success', text: '✓ React Hooks — State, Effects, and Closures' } },
   { delay: 3000, line: { type: 'url',     text: 'https://learnrep.ai/quiz/abc123/take' } },
   { delay: 3600, line: { type: 'gap' } },
-  { delay: 3700, line: { type: 'info',    text: 'Share with your team → they\'ll see who scored highest' } },
+  { delay: 3700, line: { type: 'info',    text: 'Share with your team -> they\'ll see who scored highest' } },
 ]
 
 // ─── Demo quiz ────────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ export default function HomePage() {
               </button>
             </div>
             <Link href="/login" className="font-mono text-sm font-bold text-[#151515]/50 hover:text-[#151515]">
-              or sign in →
+              or sign in
             </Link>
           </div>
 
@@ -226,7 +226,7 @@ export default function HomePage() {
 
           <div className="rounded-[1.3rem] border-[3px] border-[#151515] bg-[#ffd426] p-4 shadow-[5px_5px_0_#151515]">
             <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#151515]/60">
-              Then in your browser →
+              Then in your browser <ArrowRight className="inline size-2.5" />
             </p>
             <p className="mt-2 text-lg font-black leading-snug">React Hooks — State, Effects, and Closures</p>
             <div className="mt-3 flex items-center gap-3">
@@ -443,7 +443,7 @@ function OnboardingSection() {
                   onClick={handleNext}
                   className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#ffd426] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
                 >
-                  Next Question →
+                  Next Question <ArrowRight className="inline size-5" />
                 </button>
               )}
             </div>
@@ -497,7 +497,7 @@ function OnboardingSection() {
               href="/login"
               className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-center text-lg font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5"
             >
-              Create account →
+              Create account <ArrowRight className="inline size-5" />
             </Link>
             <Link href="/docs" className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]">
               Read the docs
