@@ -183,7 +183,7 @@ export function OnboardingQuiz({ questions }: Props) {
                   onClick={() => dispatch({ type: 'ENTER' })}
                   disabled={selectedOption === null}
                   className={cn(
-                    'w-full rounded-[1rem] border-[3px] border-[#151515] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-all',
+                    'w-full rounded-[1rem] border-[3px] border-[#151515] py-4 text-lg font-black transition-all',
                     selectedOption !== null ? 'bg-[#151515] text-[#ffd426] hover:-translate-y-0.5' : 'cursor-not-allowed bg-[#151515]/20 text-[#151515]/40',
                   )}
                 >
