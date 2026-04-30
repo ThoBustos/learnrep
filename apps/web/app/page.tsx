@@ -5,7 +5,8 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useMountEffect } from '@/hooks/useMountEffect'
 import { useQuery } from '@tanstack/react-query'
-import { Check, Copy, ExternalLink, Star } from 'lucide-react'
+import { Check, Copy, ExternalLink } from 'lucide-react'
+import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
 
 const INSTALL_CMD = 'npm install -g learnrep'
@@ -124,20 +125,9 @@ export default function HomePage() {
           >
             Docs
           </Link>
-          <Link
-            href="https://github.com/ThoBustos/learnrep"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
-          >
-            <Star className="size-3 fill-[#151515]" />
-            GitHub
-            {stars != null && (
-              <span className="rounded-full border border-[#151515]/20 bg-[#151515]/8 px-1.5 py-0.5 tabular-nums">
-                {stars.toLocaleString()}
-              </span>
-            )}
-          </Link>
+          <div className="hidden sm:flex">
+            <GitHubStarButton stars={stars} />
+          </div>
           <Link
             href="/login"
             className="rounded-[0.6rem] border-[2.5px] border-[#151515] bg-[#ffd426] px-4 py-1.5 font-mono text-[11px] font-black uppercase tracking-widest text-[#151515] shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5"
