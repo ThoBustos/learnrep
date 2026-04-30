@@ -243,6 +243,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ── ONBOARDING QUIZ ──────────────────────────────────────────────────── */}
+      <OnboardingSection />
+
       {/* ── FEATURES ─────────────────────────────────────────────────────────── */}
       <section className="border-t-[3px] border-[#151515]/10 bg-white px-6 py-14 sm:px-10">
         <div className="mx-auto max-w-6xl">
@@ -261,9 +264,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ── ONBOARDING QUIZ ──────────────────────────────────────────────────── */}
-      <OnboardingSection />
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
       <footer className="flex items-center justify-between border-t-[3px] border-[#151515]/10 bg-[#fafaf8] px-6 py-5 sm:px-10">
