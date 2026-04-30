@@ -46,11 +46,11 @@ const COLORS = {
 }
 
 const FONTS = [
-  { name: 'Geist Sans',    cssVar: '--font-geist-sans',    role: 'UI · body text' },
-  { name: 'Geist Mono',    cssVar: '--font-geist-mono',    role: 'Code · terminal · labels' },
-  { name: 'Space Grotesk', cssVar: '--font-space-grotesk', role: 'Headings (alt)' },
-  { name: 'Space Mono',    cssVar: '--font-space-mono',    role: 'Monospace (alt)' },
-  { name: 'Bowlby One SC', cssVar: '--font-bowlby',        role: 'Display · hero' },
+  { name: 'Geist Sans',    cssVar: '--font-geist-sans',    role: 'UI · body text',           sample: 'Aa Bb Gg Qq 01' },
+  { name: 'Geist Mono',    cssVar: '--font-geist-mono',    role: 'Code · terminal · labels', sample: 'lr generate "hooks"' },
+  { name: 'Space Grotesk', cssVar: '--font-space-grotesk', role: 'Headings (alt)',            sample: 'Rr Oo Uu 0123' },
+  { name: 'Space Mono',    cssVar: '--font-space-mono',    role: 'Monospace (alt)',           sample: '$ npm install -g' },
+  { name: 'Bowlby One SC', cssVar: '--font-bowlby',        role: 'Display · hero',           sample: 'LearnRep' },
 ]
 
 const TYPE_SCALE = [
@@ -202,15 +202,20 @@ export default function BrandPage() {
             {FONTS.map((f) => (
               <div
                 key={f.name}
-                className="rounded-[0.85rem] border-[2px] border-[#E0DED8] bg-white px-4 py-3"
+                className="flex flex-col justify-between rounded-[0.85rem] border-[2px] border-[#E0DED8] bg-white px-5 py-4"
               >
                 <p
-                  className="text-xl font-bold leading-tight text-[#1C1C2E]"
+                  className="text-[2rem] font-bold leading-tight text-[#1C1C2E]"
                   style={{ fontFamily: `var(${f.cssVar})` }}
                 >
-                  {f.name}
+                  {f.sample}
                 </p>
-                <p className="mt-1 font-mono text-[10px] text-[#67606a]">{f.role}</p>
+                <div className="mt-3 border-t border-[#E0DED8] pt-3">
+                  <p className="text-[12px] font-black text-[#1C1C2E]" style={{ fontFamily: `var(${f.cssVar})` }}>
+                    {f.name}
+                  </p>
+                  <p className="font-mono text-[10px] text-[#67606a]">{f.role}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -220,15 +225,15 @@ export default function BrandPage() {
             {TYPE_SCALE.map((t) => (
               <div
                 key={t.name}
-                className="flex items-baseline gap-5 rounded-[0.85rem] border-[2px] border-[#E0DED8] bg-white px-5 py-4"
+                className="flex items-center gap-5 rounded-[0.85rem] border-[2px] border-[#E0DED8] bg-white px-5 py-4"
               >
-                <div className="w-20 shrink-0">
+                <div className="w-24 shrink-0">
                   <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[#67606a]">
                     {t.name}
                   </p>
                   <p className="mt-0.5 font-mono text-[9px] text-[#67606a]/60">{t.meta}</p>
                 </div>
-                <p className={cn(t.cls, 'text-[#1C1C2E]')}>{t.sample}</p>
+                <p className={cn(t.cls, 'text-[#1C1C2E] min-w-0')}>{t.sample}</p>
               </div>
             ))}
           </div>
