@@ -115,7 +115,10 @@ export default function AppShell({
                     className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
                   >
                     <Star className="size-3 fill-[#151515]" />
-                    {githubStars}
+                    GitHub
+                    <span className="rounded-full border border-[#151515]/20 bg-[#151515]/8 px-1.5 py-0.5 font-black tabular-nums">
+                      {githubStars.toLocaleString()}
+                    </span>
                   </a>
                 )}
 
