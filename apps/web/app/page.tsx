@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useMountEffect } from '@/hooks/useMountEffect'
 import { useQuery } from '@tanstack/react-query'
-import { Check, Copy, ExternalLink } from 'lucide-react'
+import { BookOpen, Check, Copy, ExternalLink } from 'lucide-react'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
 
@@ -121,8 +121,9 @@ export default function HomePage() {
         <nav className="flex items-center gap-5">
           <Link
             href="/docs"
-            className="hidden font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515] sm:block"
+            className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
           >
+            <BookOpen className="size-3" />
             Docs
           </Link>
           <div className="hidden sm:flex">
