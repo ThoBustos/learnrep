@@ -38,29 +38,29 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 11600, line: { type: 'gap' } },
   { delay: 11900, line: { type: 'success', text: '✓ "Auth Middleware Refactor" — quiz ready' } },
   { delay: 12500, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/x7k2p/take' } },
-  // 15s pause before next use case
-  { delay: 27500, line: { type: 'gap' } },
+  // 5s pause
+  { delay: 17500, line: { type: 'gap' } },
 
   // ── Use case 2: quiz from an article ─────────────────────
-  { delay: 28500, line: { type: 'prompt',  text: 'quiz my team on thenewstack.io/why-mcp-won' } },
-  { delay: 29200, line: { type: 'gap' } },
-  { delay: 29500, line: { type: 'step',    text: '● Fetching article…' } },
-  { delay: 30700, line: { type: 'step',    text: '● Extracting key concepts' } },
-  { delay: 31900, line: { type: 'step',    text: '● Generating 5 questions' } },
-  { delay: 32900, line: { type: 'gap' } },
-  { delay: 33200, line: { type: 'success', text: '✓ "Why the Model Context Protocol Won" — quiz ready' } },
-  { delay: 33800, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/m9n3q/take' } },
-  // 15s pause
-  { delay: 48800, line: { type: 'gap' } },
+  { delay: 18500, line: { type: 'prompt',  text: 'quiz my team on thenewstack.io/why-mcp-won' } },
+  { delay: 19200, line: { type: 'gap' } },
+  { delay: 19500, line: { type: 'step',    text: '● Fetching article…' } },
+  { delay: 20700, line: { type: 'step',    text: '● Extracting key concepts' } },
+  { delay: 21900, line: { type: 'step',    text: '● Generating 5 questions' } },
+  { delay: 22900, line: { type: 'gap' } },
+  { delay: 23200, line: { type: 'success', text: '✓ "Why the Model Context Protocol Won" — quiz ready' } },
+  { delay: 23800, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/m9n3q/take' } },
+  // 5s pause
+  { delay: 28800, line: { type: 'gap' } },
 
   // ── Use case 3: sprint summary ────────────────────────────
-  { delay: 49800, line: { type: 'prompt',  text: "quiz my team on what we shipped this sprint" } },
-  { delay: 50500, line: { type: 'gap' } },
-  { delay: 50800, line: { type: 'step',    text: '● Scanning git log since Monday…' } },
-  { delay: 52000, line: { type: 'step',    text: '● Generating 5 questions' } },
-  { delay: 53000, line: { type: 'gap' } },
-  { delay: 53300, line: { type: 'success', text: '✓ "Sprint 42 — What We Shipped" — quiz ready' } },
-  { delay: 53900, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/p4q8r/take' } },
+  { delay: 29800, line: { type: 'prompt',  text: "quiz my team on what we shipped this sprint" } },
+  { delay: 30500, line: { type: 'gap' } },
+  { delay: 30800, line: { type: 'step',    text: '● Scanning git log since Monday…' } },
+  { delay: 32000, line: { type: 'step',    text: '● Generating 5 questions' } },
+  { delay: 33000, line: { type: 'gap' } },
+  { delay: 33300, line: { type: 'success', text: '✓ "Sprint 42 — What We Shipped" — quiz ready' } },
+  { delay: 33900, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/p4q8r/take' } },
 ]
 
-export const SEQUENCE_DURATION = 53900
+export const SEQUENCE_DURATION = 33900

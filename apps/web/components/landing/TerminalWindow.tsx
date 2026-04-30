@@ -12,39 +12,26 @@ const SEP_CHAR = '─'.repeat(54)
 
 export function TerminalWindow({ sequence }: Props) {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
-  const cursorRef = useRef<HTMLSpanElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useMountEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     let active = true
-    let userScrolledUp = false
 
-    const container = containerRef.current
-    function handleScroll() {
-      if (!container) return
-      const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 32
-      userScrolledUp = !atBottom
-    }
-    container?.addEventListener('scroll', handleScroll, { passive: true })
-
-    function scrollCursor() {
-      if (userScrolledUp) return
-      requestAnimationFrame(() =>
-        cursorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      )
+    function scrollToBottom() {
+      const el = containerRef.current
+      if (el) el.scrollTop = el.scrollHeight
     }
 
     function play() {
       if (!active) return
-      userScrolledUp = false
       setTerminalLines([])
-      if (container) container.scrollTop = 0
+      if (containerRef.current) containerRef.current.scrollTop = 0
       sequence.forEach(({ delay, line }) => {
         const t = setTimeout(() => {
           if (!active) return
           setTerminalLines((prev) => [...prev, line])
-          scrollCursor()
+          scrollToBottom()
         }, delay)
         timers.push(t)
       })
@@ -56,7 +43,6 @@ export function TerminalWindow({ sequence }: Props) {
     return () => {
       active = false
       timers.forEach(clearTimeout)
-      container?.removeEventListener('scroll', handleScroll)
     }
   })
 
@@ -72,14 +58,13 @@ export function TerminalWindow({ sequence }: Props) {
         <span className="ml-2 font-mono text-[11px] font-bold text-white/25">zsh — ~/projects/openyoko</span>
       </div>
 
-      {/* Scrollable content */}
+      {/* Content — overflow-hidden, scrolled programmatically only */}
       <div
         ref={containerRef}
-        className="h-[280px] overflow-y-auto bg-[#151515] px-4 py-3 sm:h-[340px] [&::-webkit-scrollbar]:hidden"
-        style={{ scrollbarWidth: 'none' }}
+        className="h-[280px] overflow-hidden bg-[#151515] px-4 py-3 sm:h-[340px]"
       >
         {terminalLines.map((line, i) => <Line key={i} line={line} />)}
-        <span ref={cursorRef} className="inline-block h-[13px] w-[6px] animate-pulse bg-[#ffd426] align-middle" />
+        <span className="inline-block h-[13px] w-[6px] animate-pulse bg-[#ffd426] align-middle" />
         <div className="h-5" />
       </div>
     </div>
