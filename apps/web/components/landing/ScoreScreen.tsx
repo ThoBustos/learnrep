@@ -38,7 +38,7 @@ export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
           <InstallCommand command="npm install -g learnrep" />
         </div>
         <p className="mt-3 font-mono text-[10px] font-bold text-[#151515]/40">
-          Then: ask your agent to build a quiz with the CLI
+          Then: ask your agent to build any quiz with the CLI
         </p>
       </div>
 
