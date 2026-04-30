@@ -211,9 +211,6 @@ export function OnboardingQuiz({ questions }: Props) {
               )}
             </div>
 
-            <p className="mt-3 text-center font-mono text-[10px] text-[#151515]/30">
-              press A · B · C · D to select · Enter to submit
-            </p>
           </>
         ) : (
           <ScoreScreen pct={pct} correct={correctCount} total={total} onRetry={() => dispatch({ type: 'RESET' })} />
