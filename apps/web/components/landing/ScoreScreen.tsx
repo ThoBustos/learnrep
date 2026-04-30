@@ -1,23 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check, Copy } from 'lucide-react'
+import { ArrowRight, RotateCcw } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
-const INSTALL_CMD = 'npm install -g learnrep'
+import { InstallCommand } from './InstallCommand'
 
 type Props = { pct: number; correct: number; total: number; onRetry: () => void }
 
 export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
-  const [copied, setCopied] = useState(false)
   const isHigh = pct >= 67
-
-  function copyCLI() {
-    navigator.clipboard.writeText(INSTALL_CMD).catch(() => {})
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -43,18 +34,8 @@ export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
         <p className="mt-1 font-mono text-sm font-bold text-[#151515]/60">
           Generate your own on any topic in one command.
         </p>
-        <div className="mt-4 flex overflow-hidden rounded-[0.9rem] border-[3px] border-[#151515] shadow-[3px_3px_0_#151515]">
-          <div className="flex-1 bg-[#151515] px-4 py-3">
-            <code className="font-mono text-sm font-bold text-[#ffd426]">{INSTALL_CMD}</code>
-          </div>
-          <button
-            type="button"
-            onClick={copyCLI}
-            aria-label="Copy install command"
-            className="flex min-h-[44px] items-center gap-1.5 border-l-[3px] border-[#151515] bg-white px-4 py-3 font-mono text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-[#ffd426]"
-          >
-            {copied ? <Check className="size-3.5 text-[#1e6f38]" /> : <Copy className="size-3.5" />}
-          </button>
+        <div className="mt-4">
+          <InstallCommand command="npm install -g learnrep" />
         </div>
         <p className="mt-3 font-mono text-[10px] font-bold text-[#151515]/40">
           Then: <code>lr generate &quot;your topic&quot;</code>
@@ -71,8 +52,9 @@ export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
         <button
           type="button"
           onClick={onRetry}
-          className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]"
+          className="flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]"
         >
+          <RotateCcw className="size-3" />
           Try again
         </button>
         <Link href="/docs" className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]">
