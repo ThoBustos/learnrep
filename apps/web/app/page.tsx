@@ -162,16 +162,16 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex overflow-hidden rounded-[0.9rem] border-[3px] border-[#151515] shadow-[4px_4px_0_#151515]">
-              <div className="bg-[#151515] px-4 py-3">
+            <div className="group relative overflow-hidden rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] shadow-[4px_4px_0_#151515]">
+              <div className="px-4 py-3 pr-12">
                 <code className="font-mono text-sm font-bold text-[#ffd426]">{INSTALL_CMD}</code>
               </div>
               <button
                 type="button"
                 onClick={copyInstall}
-                className="flex items-center gap-1.5 border-l-[3px] border-[#151515] bg-white px-3 py-3 font-mono text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-[#ffd426]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex size-7 items-center justify-center rounded-[0.5rem] border-[2px] border-[#ffd426]/40 bg-white/10 text-[#ffd426] transition-all hover:border-[#ffd426]/70 hover:bg-white/20"
               >
-                {installCopied ? <Check className="size-3 text-[#1e6f38]" /> : <Copy className="size-3" />}
+                {installCopied ? <Check className="size-3.5 text-[#d9ff69]" /> : <Copy className="size-3.5" />}
               </button>
             </div>
             <Link href="/login" className="font-mono text-sm font-bold text-[#151515]/50 hover:text-[#151515]">
