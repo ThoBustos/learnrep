@@ -277,6 +277,7 @@ export default function HomePage() {
         <p className="font-mono text-[11px] font-bold text-[#151515]/40">LearnRep · Open source · MIT</p>
         <div className="flex gap-5">
           <Link href="/docs" className="font-mono text-[11px] font-bold text-[#151515]/40 hover:text-[#151515]">Docs</Link>
+          <Link href="/brand" className="font-mono text-[11px] font-bold text-[#151515]/40 hover:text-[#151515]">Brand</Link>
           <Link href="https://github.com/ThoBustos/learnrep" target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] font-bold text-[#151515]/40 hover:text-[#151515]">GitHub</Link>
         </div>
       </footer>
