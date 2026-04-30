@@ -39,7 +39,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 5400, line: { type: 'step',    text: '● Publishing quiz' } },
   { delay: 6000, line: { type: 'gap' } },
   { delay: 6100, line: { type: 'success', text: '✓ "Auth Middleware Refactor" — quiz ready' } },
-  { delay: 6350, line: { type: 'url',     text: '  → learnrep.ai/quiz/x7k2p/take' } },
+  { delay: 6350, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/x7k2p/take' } },
   { delay: 6800, line: { type: 'gap' } },
 
   // ── Use case 2: quiz from an article ─────────────────────
@@ -50,7 +50,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 9100, line: { type: 'step',    text: '● Generating 5 questions' } },
   { delay: 9700, line: { type: 'gap' } },
   { delay: 9800, line: { type: 'success', text: '✓ "Why the Model Context Protocol Won" — quiz ready' } },
-  { delay: 10050, line: { type: 'url',    text: '  → learnrep.ai/quiz/m9n3q/take' } },
+  { delay: 10050, line: { type: 'url',    text: '  → learnrep.ideabench.ai/quiz/m9n3q/take' } },
   { delay: 10500, line: { type: 'gap' } },
 
   // ── Use case 3: sprint summary ────────────────────────────
@@ -60,7 +60,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 12200, line: { type: 'step',   text: '● Generating 5 questions' } },
   { delay: 12700, line: { type: 'gap' } },
   { delay: 12800, line: { type: 'success', text: '✓ "Sprint 42 — What We Shipped" — quiz ready' } },
-  { delay: 13050, line: { type: 'url',    text: '  → learnrep.ai/quiz/p4q8r/take' } },
+  { delay: 13050, line: { type: 'url',    text: '  → learnrep.ideabench.ai/quiz/p4q8r/take' } },
 ]
 
 export const SEQUENCE_DURATION = 13050

@@ -19,7 +19,7 @@ export function TerminalWindow({ sequence }: Props) {
     let active = true
 
     function scrollCursor() {
-      requestAnimationFrame(() => cursorRef.current?.scrollIntoView({ block: 'nearest' }))
+      requestAnimationFrame(() => cursorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
     }
 
     function play() {
@@ -63,6 +63,7 @@ export function TerminalWindow({ sequence }: Props) {
       >
         {terminalLines.map((line, i) => <Line key={i} line={line} />)}
         <span ref={cursorRef} className="inline-block h-[13px] w-[6px] animate-pulse bg-[#ffd426] align-middle" />
+        <div className="h-4" />
       </div>
     </div>
   )
