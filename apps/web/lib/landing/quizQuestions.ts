@@ -31,7 +31,7 @@ export const QUESTIONS: QuestionDef[] = [
     ],
     correctIndex: 3,
     feedback:
-      "Tokens consumed. Not revenue, not retained users, not problems solved — tokens. It's the only number that goes up automatically while you figure out if any of this actually works.",
+      "Tokens consumed. Not revenue, not retained users, not problems solved. Tokens. It's the only number that goes up automatically while you figure out if any of this actually works.",
   },
   {
     id: 3,
