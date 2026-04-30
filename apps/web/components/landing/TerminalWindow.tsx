@@ -13,18 +13,33 @@ const SEP_CHAR = '─'.repeat(54)
 export function TerminalWindow({ sequence }: Props) {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
   const cursorRef = useRef<HTMLSpanElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useMountEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     let active = true
+    let userScrolledUp = false
+
+    const container = containerRef.current
+    function handleScroll() {
+      if (!container) return
+      const atBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 32
+      userScrolledUp = !atBottom
+    }
+    container?.addEventListener('scroll', handleScroll, { passive: true })
 
     function scrollCursor() {
-      requestAnimationFrame(() => cursorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
+      if (userScrolledUp) return
+      requestAnimationFrame(() =>
+        cursorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      )
     }
 
     function play() {
       if (!active) return
+      userScrolledUp = false
       setTerminalLines([])
+      if (container) container.scrollTop = 0
       sequence.forEach(({ delay, line }) => {
         const t = setTimeout(() => {
           if (!active) return
@@ -33,7 +48,7 @@ export function TerminalWindow({ sequence }: Props) {
         }, delay)
         timers.push(t)
       })
-      const t = setTimeout(() => play(), SEQUENCE_DURATION + 4000)
+      const t = setTimeout(() => play(), SEQUENCE_DURATION + 8000)
       timers.push(t)
     }
 
@@ -41,6 +56,7 @@ export function TerminalWindow({ sequence }: Props) {
     return () => {
       active = false
       timers.forEach(clearTimeout)
+      container?.removeEventListener('scroll', handleScroll)
     }
   })
 
@@ -58,12 +74,13 @@ export function TerminalWindow({ sequence }: Props) {
 
       {/* Scrollable content */}
       <div
+        ref={containerRef}
         className="h-[280px] overflow-y-auto bg-[#151515] px-4 py-3 sm:h-[340px] [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: 'none' }}
       >
         {terminalLines.map((line, i) => <Line key={i} line={line} />)}
         <span ref={cursorRef} className="inline-block h-[13px] w-[6px] animate-pulse bg-[#ffd426] align-middle" />
-        <div className="h-4" />
+        <div className="h-5" />
       </div>
     </div>
   )
@@ -91,8 +108,13 @@ function Line({ line }: { line: TerminalLine }) {
 
     case 'logo':
       return (
-        <div className="leading-snug">
-          <span className="font-mono text-[11px] text-white/80">{line.text}</span>
+        <div className="leading-[1.7]">
+          <span className={cn(
+            'font-mono text-[11px]',
+            line.text.startsWith('◆') ? 'font-bold text-white/90' : 'text-white/50',
+          )}>
+            {line.text}
+          </span>
         </div>
       )
 
@@ -106,7 +128,7 @@ function Line({ line }: { line: TerminalLine }) {
     case 'separator':
       return (
         <div className="my-0.5">
-          <span className="font-mono text-[10px] text-white/15">{SEP_CHAR}</span>
+          <span className="font-mono text-[10px] text-white/[0.12]">{SEP_CHAR}</span>
         </div>
       )
 
