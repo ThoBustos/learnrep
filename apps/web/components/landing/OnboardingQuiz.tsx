@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useReducer } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useMountEffect } from '@/hooks/useMountEffect'
 import { ScoreScreen } from './ScoreScreen'
 import type { QuestionDef } from '@/lib/landing/quizQuestions'
 
@@ -10,14 +11,55 @@ type QuizPhase = 'question' | 'feedback'
 
 const LETTERS = ['A', 'B', 'C', 'D']
 
+type State = {
+  questions: QuestionDef[]
+  questionIndex: number
+  phase: QuizPhase
+  selectedOption: number | null
+  answers: { correct: boolean }[]
+  done: boolean
+}
+
+type Action =
+  | { type: 'SELECT'; index: number }
+  | { type: 'ENTER' }
+  | { type: 'NEXT' }
+
+function quizReducer(state: State, action: Action): State {
+  if (state.done) return state
+  const q = state.questions[state.questionIndex]
+  switch (action.type) {
+    case 'SELECT':
+      if (state.phase !== 'question') return state
+      return { ...state, selectedOption: action.index }
+    case 'ENTER':
+      if (state.phase === 'question' && state.selectedOption !== null) {
+        return {
+          ...state,
+          answers: [...state.answers, { correct: state.selectedOption === q.correctIndex }],
+          phase: 'feedback',
+        }
+      }
+      if (state.phase === 'feedback') {
+        if (state.questionIndex === state.questions.length - 1) return { ...state, done: true }
+        return { ...state, questionIndex: state.questionIndex + 1, phase: 'question', selectedOption: null }
+      }
+      return state
+    case 'NEXT':
+      if (state.phase !== 'feedback') return state
+      if (state.questionIndex === state.questions.length - 1) return { ...state, done: true }
+      return { ...state, questionIndex: state.questionIndex + 1, phase: 'question', selectedOption: null }
+  }
+}
+
 type Props = { questions: QuestionDef[] }
 
 export function OnboardingQuiz({ questions }: Props) {
-  const [questionIndex, setQuestionIndex] = useState(0)
-  const [phase, setPhase] = useState<QuizPhase>('question')
-  const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [answers, setAnswers] = useState<{ correct: boolean }[]>([])
-  const [done, setDone] = useState(false)
+  const [{ questionIndex, phase, selectedOption, answers, done }, dispatch] = useReducer(
+    quizReducer,
+    questions,
+    (qs): State => ({ questions: qs, questionIndex: 0, phase: 'question', selectedOption: null, answers: [], done: false }),
+  )
 
   const question = questions[questionIndex]
   const isLast = questionIndex === questions.length - 1
@@ -26,21 +68,17 @@ export function OnboardingQuiz({ questions }: Props) {
   const pct = Math.round((correctCount / total) * 100)
   const progress = ((questionIndex + (phase === 'feedback' ? 1 : 0)) / total) * 100
 
-  function handleSubmit() {
-    if (selectedOption === null) return
-    setAnswers((a) => [...a, { correct: selectedOption === question.correctIndex }])
-    setPhase('feedback')
-  }
-
-  function handleNext() {
-    if (isLast) {
-      setDone(true)
-    } else {
-      setQuestionIndex((i) => i + 1)
-      setSelectedOption(null)
-      setPhase('question')
+  useMountEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 }
+      const idx = keyMap[e.key.toLowerCase()]
+      if (idx !== undefined && idx < questions.length) dispatch({ type: 'SELECT', index: idx })
+      if (e.key === 'Enter') dispatch({ type: 'ENTER' })
+      if (e.key === ' ') { e.preventDefault(); dispatch({ type: 'NEXT' }) }
     }
-  }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  })
 
   return (
     <section className="relative overflow-hidden bg-[#ffd426] px-6 py-12 sm:px-10 sm:py-16">
@@ -64,15 +102,22 @@ export function OnboardingQuiz({ questions }: Props) {
             </div>
 
             <div className="mb-6">
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#151515]/20">
+              <div className="flex items-center justify-between">
+                <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#151515]/50">
+                  Q{questionIndex + 1} of {total}
+                </p>
+                {answers.length > 0 && (
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#151515]/50">
+                    {correctCount} correct
+                  </p>
+                )}
+              </div>
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#151515]/20">
                 <div
                   className="h-full rounded-full bg-[#151515] transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="mt-2 font-mono text-[10px] font-bold uppercase tracking-widest text-[#151515]/50">
-                Q{questionIndex + 1} of {total}
-              </p>
             </div>
 
             <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white/90 p-6 shadow-[6px_6px_0_#151515]">
@@ -85,7 +130,7 @@ export function OnboardingQuiz({ questions }: Props) {
                 selectedOption === question.correctIndex ? 'bg-[#d9ff69]' : 'bg-[#ff6b62]',
               )}>
                 <p className={cn('text-sm font-black', selectedOption === question.correctIndex ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
-                  {selectedOption === question.correctIndex ? 'Correct!' : 'Not quite.'}
+                  {selectedOption === question.correctIndex ? 'Correct.' : 'Nope.'}
                 </p>
                 <p className={cn('mt-1 text-sm leading-relaxed', selectedOption === question.correctIndex ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
                   {question.feedback}
@@ -114,7 +159,7 @@ export function OnboardingQuiz({ questions }: Props) {
                     key={i}
                     type="button"
                     disabled={phase !== 'question'}
-                    onClick={() => setSelectedOption(i)}
+                    onClick={() => dispatch({ type: 'SELECT', index: i })}
                     className={cn(
                       'flex items-center gap-4 rounded-[1rem] border-[3px] p-4 text-left shadow-[3px_3px_0_#151515] transition-all',
                       cardStyle,
@@ -135,19 +180,19 @@ export function OnboardingQuiz({ questions }: Props) {
               {phase === 'question' ? (
                 <button
                   type="button"
-                  onClick={handleSubmit}
+                  onClick={() => dispatch({ type: 'ENTER' })}
                   disabled={selectedOption === null}
                   className={cn(
                     'w-full rounded-[1rem] border-[3px] border-[#151515] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-all',
                     selectedOption !== null ? 'bg-[#151515] text-[#ffd426] hover:-translate-y-0.5' : 'cursor-not-allowed bg-[#151515]/20 text-[#151515]/40',
                   )}
                 >
-                  Submit Answer
+                  Submit
                 </button>
               ) : isLast ? (
                 <button
                   type="button"
-                  onClick={handleNext}
+                  onClick={() => dispatch({ type: 'NEXT' })}
                   className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-lg font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5"
                 >
                   See Results
@@ -155,13 +200,17 @@ export function OnboardingQuiz({ questions }: Props) {
               ) : (
                 <button
                   type="button"
-                  onClick={handleNext}
+                  onClick={() => dispatch({ type: 'NEXT' })}
                   className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#ffd426] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
                 >
-                  Next Question <ArrowRight className="inline size-5" />
+                  Next <ArrowRight className="inline size-5" />
                 </button>
               )}
             </div>
+
+            <p className="mt-3 text-center font-mono text-[10px] text-[#151515]/30">
+              press A · B · C · D to select · Enter to submit
+            </p>
           </>
         ) : (
           <ScoreScreen pct={pct} correct={correctCount} total={total} />

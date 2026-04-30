@@ -36,7 +36,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 9400,  line: { type: 'step',    text: '● Generating 5 questions' } },
   { delay: 10600, line: { type: 'step',    text: '● Publishing quiz' } },
   { delay: 11600, line: { type: 'gap' } },
-  { delay: 11900, line: { type: 'success', text: '✓ "Auth Middleware Refactor" — quiz ready' } },
+  { delay: 11900, line: { type: 'success', text: '✓ "Auth Middleware Refactor" · quiz ready' } },
   { delay: 12500, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/x7k2p/take' } },
   // 5s pause
   { delay: 17500, line: { type: 'gap' } },
@@ -48,7 +48,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 20700, line: { type: 'step',    text: '● Extracting key concepts' } },
   { delay: 21900, line: { type: 'step',    text: '● Generating 5 questions' } },
   { delay: 22900, line: { type: 'gap' } },
-  { delay: 23200, line: { type: 'success', text: '✓ "Why the Model Context Protocol Won" — quiz ready' } },
+  { delay: 23200, line: { type: 'success', text: '✓ "Why the Model Context Protocol Won" · quiz ready' } },
   { delay: 23800, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/m9n3q/take' } },
   // 5s pause
   { delay: 28800, line: { type: 'gap' } },
@@ -59,7 +59,7 @@ export const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 30800, line: { type: 'step',    text: '● Scanning git log since Monday…' } },
   { delay: 32000, line: { type: 'step',    text: '● Generating 5 questions' } },
   { delay: 33000, line: { type: 'gap' } },
-  { delay: 33300, line: { type: 'success', text: '✓ "Sprint 42 — What We Shipped" — quiz ready' } },
+  { delay: 33300, line: { type: 'success', text: '✓ "Sprint 42: What We Shipped" · quiz ready' } },
   { delay: 33900, line: { type: 'url',     text: '  → learnrep.ideabench.ai/quiz/p4q8r/take' } },
 ]
 

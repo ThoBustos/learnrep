@@ -9,41 +9,41 @@ export type QuestionDef = {
 export const QUESTIONS: QuestionDef[] = [
   {
     id: 1,
-    prompt: 'In React, what does the `key` prop on list items primarily help with?',
+    prompt: "In AI development, what is an 'agent harness'?",
     options: [
-      'Styling list items independently',
-      'Reconciling which items changed between renders',
-      'Creating unique IDs for form inputs',
-      'Registering event handlers on each item',
-    ],
-    correctIndex: 1,
-    feedback:
-      "React uses `key` to track list items across re-renders. Without it, React can't tell which items were added, removed, or reordered, leading to subtle bugs and performance issues.",
-  },
-  {
-    id: 2,
-    prompt: 'Which Git command shows who last modified each line of a file?',
-    options: [
-      'git log --lines',
-      'git diff --author',
-      'git blame',
-      'git show --per-line',
+      'A safety vest for robot arms',
+      'The repo where you store your .env',
+      'Everything around the model: tools, prompts, context, evals',
+      "The PM's Jira board for sprint planning",
     ],
     correctIndex: 2,
     feedback:
-      '`git blame <file>` annotates each line with the commit hash, author, and timestamp of the last change. Essential for tracking down when a bug was introduced.',
+      "The harness is everything except the model itself. Tools, system prompts, context management, eval loops. That's what actually ships. \"2025 was agents. 2026 is agent harnesses.\"",
+  },
+  {
+    id: 2,
+    prompt: "Your AI initiative is 6 months in. Leadership asks for ROI. Which metric goes on the slide?",
+    options: [
+      'Revenue unlocked by AI features',
+      'New customers retained by the product',
+      'Customer problems eliminated per week',
+      'Tokens consumed',
+    ],
+    correctIndex: 3,
+    feedback:
+      "Tokens consumed. Not revenue, not retained users, not problems solved — tokens. It's the only number that goes up automatically while you figure out if any of this actually works.",
   },
   {
     id: 3,
-    prompt: 'What does `npm ci` do differently from `npm install`?',
+    prompt: 'Claude Code lets agents run commands without asking. The flag is called...',
     options: [
-      'Only installs devDependencies',
-      "Installs from package-lock.json without modifying it",
-      'Clears the npm cache before installing',
-      'Runs install in a temporary directory',
+      '--trust-me-bro',
+      '--dangerously-skip-permissions',
+      '--no-confirm',
+      '--yolo',
     ],
     correctIndex: 1,
     feedback:
-      "`npm ci` reads exactly from package-lock.json and errors if it doesn't match package.json. Reproducible, strict, and faster. The right command for CI/CD.",
+      'Real flag, real name. --dangerously-skip-permissions ships in production Claude Code. Anthropic named it that on purpose. You can see it in the terminal above.',
   },
 ]

@@ -55,7 +55,7 @@ export function TerminalWindow({ sequence }: Props) {
           <div className="size-3 rounded-full bg-[#ffd426]" />
           <div className="size-3 rounded-full bg-[#d9ff69]" />
         </div>
-        <span className="ml-2 font-mono text-[11px] font-bold text-white/25">zsh — ~/projects/openyoko</span>
+        <span className="ml-2 font-mono text-[11px] font-bold text-white/25">zsh · ~/projects/openyoko</span>
       </div>
 
       {/* Content — overflow-hidden, scrolled programmatically only */}
