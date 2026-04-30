@@ -128,12 +128,12 @@ export default function HomePage() {
             href="https://github.com/ThoBustos/learnrep"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515] sm:flex"
+            className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
           >
-            <Star className="size-3 fill-current" />
+            <Star className="size-3 fill-[#151515]" />
             GitHub
             {stars != null && (
-              <span className="rounded-full border border-[#151515]/20 bg-[#151515]/8 px-1.5 py-0.5 text-[10px] font-black">
+              <span className="rounded-full border border-[#151515]/20 bg-[#151515]/8 px-1.5 py-0.5 tabular-nums">
                 {stars.toLocaleString()}
               </span>
             )}
