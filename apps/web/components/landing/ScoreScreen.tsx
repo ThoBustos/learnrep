@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils'
 
 const INSTALL_CMD = 'npm install -g learnrep'
 
-type Props = { pct: number; correct: number; total: number }
+type Props = { pct: number; correct: number; total: number; onRetry: () => void }
 
-export function ScoreScreen({ pct, correct, total }: Props) {
+export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
   const [copied, setCopied] = useState(false)
   const isHigh = pct >= 67
 
@@ -67,9 +67,18 @@ export function ScoreScreen({ pct, correct, total }: Props) {
       >
         Create account <ArrowRight className="inline size-5" />
       </Link>
-      <Link href="/docs" className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]">
-        Read the docs
-      </Link>
+      <div className="flex gap-6">
+        <button
+          type="button"
+          onClick={onRetry}
+          className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]"
+        >
+          Try again
+        </button>
+        <Link href="/docs" className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515]">
+          Read the docs
+        </Link>
+      </div>
     </div>
   )
 }

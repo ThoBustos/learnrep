@@ -24,6 +24,7 @@ type Action =
   | { type: 'SELECT'; index: number }
   | { type: 'ENTER' }
   | { type: 'NEXT' }
+  | { type: 'RESET' }
 
 function quizReducer(state: State, action: Action): State {
   if (state.done) return state
@@ -49,6 +50,8 @@ function quizReducer(state: State, action: Action): State {
       if (state.phase !== 'feedback') return state
       if (state.questionIndex === state.questions.length - 1) return { ...state, done: true }
       return { ...state, questionIndex: state.questionIndex + 1, phase: 'question', selectedOption: null }
+    case 'RESET':
+      return { questions: state.questions, questionIndex: 0, phase: 'question', selectedOption: null, answers: [], done: false }
   }
 }
 
@@ -213,7 +216,7 @@ export function OnboardingQuiz({ questions }: Props) {
             </p>
           </>
         ) : (
-          <ScoreScreen pct={pct} correct={correctCount} total={total} />
+          <ScoreScreen pct={pct} correct={correctCount} total={total} onRetry={() => dispatch({ type: 'RESET' })} />
         )}
       </div>
     </section>
