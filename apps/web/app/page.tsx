@@ -193,7 +193,7 @@ export default function HomePage() {
 
         {/* Right — terminal + quiz preview */}
         <div className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-[1.3rem] bg-[#151515] shadow-[0_12px_32px_rgba(21,21,21,0.2)]">
+          <div className="overflow-hidden rounded-[1.3rem] bg-[#151515] shadow-[8px_8px_0_#ffd426]">
             <div className="flex items-center gap-2 border-b-[3px] border-[#151515] bg-[#151515] px-4 py-3">
               <div className="flex gap-1.5">
                 <div className="size-3 rounded-full bg-[#ff6b62]" />
