@@ -15,7 +15,7 @@ export function LandingNav({ stars }: Props) {
       <nav className="flex items-center gap-5">
         <Link
           href="/docs"
-          className="hidden min-h-[44px] items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
+          className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
         >
           <BookOpen className="size-3" />
           Docs
@@ -25,7 +25,7 @@ export function LandingNav({ stars }: Props) {
         </div>
         <Link
           href="/login"
-          className="rounded-[0.6rem] border-[2.5px] border-[#151515] bg-[#ffd426] px-5 py-2.5 font-mono text-[11px] font-black uppercase tracking-widest text-[#151515] shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5 sm:px-4 sm:py-1.5"
+          className="rounded-[0.6rem] border-[3px] border-[#151515] bg-[#ffd426] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-widest text-[#151515] shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5"
         >
           Sign in
         </Link>
