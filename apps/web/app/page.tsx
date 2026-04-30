@@ -162,7 +162,7 @@ export default function HomePage() {
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="group relative overflow-hidden rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] shadow-[4px_4px_0_#151515]">
+            <div className="group relative overflow-hidden rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] shadow-[4px_4px_0_#ffd426]">
               <div className="px-4 py-3 pr-12">
                 <code className="font-mono text-sm font-bold text-[#ffd426]">{INSTALL_CMD}</code>
               </div>
@@ -193,7 +193,7 @@ export default function HomePage() {
 
         {/* Right — terminal + quiz preview */}
         <div className="flex flex-col gap-4">
-          <div className="overflow-hidden rounded-[1.3rem] border-[3px] border-[#151515] shadow-[8px_8px_0_#151515]">
+          <div className="overflow-hidden rounded-[1.3rem] border-[3px] border-[#151515] shadow-[8px_8px_0_#ffd426]">
             <div className="flex items-center gap-2 border-b-[3px] border-[#151515] bg-[#151515] px-4 py-3">
               <div className="flex gap-1.5">
                 <div className="size-3 rounded-full bg-[#ff6b62]" />
