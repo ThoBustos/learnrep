@@ -11,26 +11,26 @@ import { cn } from '@/lib/utils'
 
 const INSTALL_CMD = 'npm install -g learnrep'
 
-// ─── Terminal animation ───────────────────────────────────────────────────────
+const AGENTS = ['Claude Code', 'Codex CLI', 'Amp', 'Gemini CLI', 'Copilot CLI', 'Aider', 'Goose', 'Cline']
 
 type TerminalLine =
   | { type: 'prompt'; text: string }
+  | { type: 'agent'; text: string }
   | { type: 'info'; text: string }
   | { type: 'success'; text: string }
   | { type: 'url'; text: string }
   | { type: 'gap' }
 
 const SEQUENCE: { delay: number; line: TerminalLine }[] = [
-  { delay: 400,  line: { type: 'prompt',  text: '$ lr generate "react hooks"' } },
-  { delay: 1200, line: { type: 'info',    text: 'Generating 5 medium questions on "react hooks"...' } },
+  { delay: 400,  line: { type: 'prompt',  text: '$ claude "quiz my team on react hooks"' } },
+  { delay: 1000, line: { type: 'info',    text: 'Running learnrep...' } },
+  { delay: 1600, line: { type: 'agent',   text: '> lr generate "react hooks" --questions 5' } },
   { delay: 2400, line: { type: 'gap' } },
   { delay: 2500, line: { type: 'success', text: '✓ React Hooks: State, Effects, and Closures' } },
   { delay: 3000, line: { type: 'url',     text: 'https://learnrep.ai/quiz/abc123/take' } },
   { delay: 3600, line: { type: 'gap' } },
   { delay: 3700, line: { type: 'info',    text: 'Share with your team -> they\'ll see who scored highest' } },
 ]
-
-// ─── Demo quiz ────────────────────────────────────────────────────────────────
 
 type QuestionDef = {
   id: number
@@ -80,8 +80,6 @@ const QUESTIONS: QuestionDef[] = [
 ]
 
 const LETTERS = ['A', 'B', 'C', 'D']
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
@@ -140,10 +138,9 @@ export default function HomePage() {
 
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
       <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-16 sm:px-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-24">
-        {/* Left */}
         <div className="flex flex-col gap-6">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border-[2px] border-[#151515] bg-[#ffd426] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-widest">
-            Terminal-first quiz tool
+            CLI tool for AI agents
           </div>
 
           <h1 className="text-[clamp(2.6rem,5.5vw,4rem)] font-black leading-[1.0] tracking-[-0.05em]">
@@ -158,7 +155,7 @@ export default function HomePage() {
           </h1>
 
           <p className="max-w-sm text-base leading-relaxed text-[#151515]/60">
-            One command from your terminal. A live link your whole team can take.
+            One command from your agent or terminal. A live link your whole team can take.
             See who scores highest.
           </p>
 
@@ -180,15 +177,19 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 pt-1">
-            <div className="flex -space-x-2">
-              {['#ff6b62', '#7bd8ef', '#d9ff69', '#b995ff'].map((bg) => (
-                <div key={bg} className="size-8 rounded-full border-[2px] border-[#fafaf8] shadow-sm" style={{ backgroundColor: bg }} />
+          {/* Agent badge strip */}
+          <div className="flex flex-col gap-2 pt-1">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#151515]/40">Works inside</p>
+            <div className="flex flex-wrap gap-1.5">
+              {AGENTS.map((name) => (
+                <span
+                  key={name}
+                  className="rounded-full border-[2px] border-[#151515]/20 bg-white px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#151515]/60"
+                >
+                  {name}
+                </span>
               ))}
             </div>
-            <p className="font-mono text-xs font-bold text-[#151515]/50">
-              Engineers quizzing their teams from the terminal
-            </p>
           </div>
         </div>
 
@@ -211,6 +212,7 @@ export default function HomePage() {
                     <span className={cn(
                       'font-mono text-sm leading-relaxed',
                       line.type === 'prompt' && 'font-bold text-[#ffd426]',
+                      line.type === 'agent' && 'font-bold text-white/70',
                       line.type === 'info' && 'text-white/50',
                       line.type === 'success' && 'font-bold text-[#d9ff69]',
                       line.type === 'url' && 'font-bold text-[#7bd8ef] underline',
