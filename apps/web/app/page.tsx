@@ -204,7 +204,7 @@ export default function HomePage() {
               </div>
               <span className="ml-2 font-mono text-[11px] font-bold text-white/40">zsh · 80×24</span>
             </div>
-            <div className="min-h-[160px] bg-[#151515] px-5 py-4">
+            <div className="h-[220px] overflow-hidden bg-[#151515] px-5 py-4">
               {terminalLines.map((line, i) => {
                 if (line.type === 'gap') return <div key={i} className="h-3" />
                 return (
