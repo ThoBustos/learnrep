@@ -1,9 +1,52 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
+
+const DESIGN_TOKENS_CSS = `/* LearnRep Design Tokens */
+:root {
+  /* Brand */
+  --brand-yellow: #FDC229;
+  --brand-black: #0F0E0D;
+
+  /* Landing accents */
+  --accent-sun: #FFD426;
+  --accent-lime: #D9FF69;
+  --accent-sky: #7BD8EF;
+  --accent-lavender: #B995FF;
+  --accent-violet: #5735A7;
+
+  /* UI base */
+  --background: #F5F4F0;
+  --foreground: #1C1C2E;
+  --surface: #FFFFFF;
+  --secondary: #ECEAE4;
+  --muted-foreground: #6B6A7A;
+  --border: #E0DED8;
+  --destructive: #C0544A;
+  --streak: #C0A84A;
+
+  /* Difficulty */
+  --difficulty-easy: #4A9E6E;
+  --difficulty-medium: #4A7FC0;
+  --difficulty-hard: #C0544A;
+  --difficulty-expert: #7C5AC0;
+
+  /* Typography */
+  --font-sans: "Geist Sans", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-display: "Bowlby One SC", sans-serif;
+
+  /* Radius */
+  --radius: 0.75rem;
+  --radius-sm: 0.45rem;
+  --radius-lg: 1.05rem;
+  --radius-xl: 1.35rem;
+  --radius-2xl: 1.6rem;
+}`
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -132,20 +175,51 @@ function ColorGroup({ label, swatches, cols }: { label: string; swatches: { name
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BrandPage() {
+  const [tokensCopied, setTokensCopied] = useState(false)
+
+  function copyTokens() {
+    navigator.clipboard.writeText(DESIGN_TOKENS_CSS).catch(() => {})
+    setTokensCopied(true)
+    setTimeout(() => setTokensCopied(false), 2000)
+  }
+
   return (
-    <div className="min-h-screen bg-[#fafaf8]">
-      {/* Header */}
-      <header className="border-b-[3px] border-[#0F0E0D] bg-[#FDC229] px-8 py-10">
-        <div className="mx-auto max-w-4xl">
-          <p className="font-mono text-[11px] font-black uppercase tracking-[0.24em] text-[#0F0E0D]/50">
-            LearnRep · Brand
-          </p>
-          <h1 className="mt-1 text-5xl font-black tracking-[-0.04em] text-[#0F0E0D]">Brand Assets</h1>
-          <p className="mt-2 max-w-md font-mono text-sm leading-relaxed text-[#0F0E0D]/60">
-            Colors, type, logos, and voice. Copyable hex values. Downloadable SVGs. No Figma account required.
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#fafaf8]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+
+      {/* ── NAV — same as landing ──────────────────────────────────────────── */}
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#151515]/10 bg-[#fafaf8]/90 px-6 py-4 backdrop-blur-sm sm:px-10">
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image src="/logos/logo.svg" alt="LearnRep" width={44} height={44} className="size-11" />
+          <span className="text-lg font-black tracking-[-0.03em]">LearnRep</span>
+        </Link>
+        <nav className="flex items-center gap-5">
+          <span className="hidden font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/40 sm:block">
+            Brand
+          </span>
+          <Link
+            href="/docs"
+            className="hidden font-mono text-[11px] font-bold uppercase tracking-widest text-[#151515]/50 hover:text-[#151515] sm:block"
+          >
+            Docs
+          </Link>
+          <button
+            onClick={copyTokens}
+            className="flex items-center gap-1.5 rounded-[0.6rem] border-[2.5px] border-[#151515] bg-[#ffd426] px-4 py-1.5 font-mono text-[11px] font-black uppercase tracking-widest text-[#151515] shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5"
+          >
+            {tokensCopied
+              ? <><Check className="size-3" /> Copied</>
+              : <><Copy className="size-3" /> Copy tokens</>}
+          </button>
+        </nav>
       </header>
+
+      {/* ── PAGE TITLE ────────────────────────────────────────────────────────── */}
+      <div className="mx-auto max-w-4xl px-8 pt-10 pb-2">
+        <h1 className="text-4xl font-black tracking-[-0.04em] text-[#151515]">Brand</h1>
+        <p className="mt-1 font-mono text-sm text-[#67606a]">
+          Logos, colors, type, and voice — for contributors, press, and AI assistants.
+        </p>
+      </div>
 
       <main className="mx-auto max-w-4xl px-8 pb-24">
 
