@@ -24,7 +24,7 @@ const SEQUENCE: { delay: number; line: TerminalLine }[] = [
   { delay: 400,  line: { type: 'prompt',  text: '$ lr generate "react hooks"' } },
   { delay: 1200, line: { type: 'info',    text: 'Generating 5 medium questions on "react hooks"...' } },
   { delay: 2400, line: { type: 'gap' } },
-  { delay: 2500, line: { type: 'success', text: '✓ React Hooks — State, Effects, and Closures' } },
+  { delay: 2500, line: { type: 'success', text: '✓ React Hooks: State, Effects, and Closures' } },
   { delay: 3000, line: { type: 'url',     text: 'https://learnrep.ai/quiz/abc123/take' } },
   { delay: 3600, line: { type: 'gap' } },
   { delay: 3700, line: { type: 'info',    text: 'Share with your team -> they\'ll see who scored highest' } },
@@ -51,7 +51,7 @@ const QUESTIONS: QuestionDef[] = [
       'Registering event handlers on each item',
     ],
     correctIndex: 1,
-    feedback: 'React uses `key` to track list items across re-renders. Without it, React can\'t tell which items were added, removed, or reordered — leading to subtle bugs and performance issues.',
+    feedback: 'React uses `key` to track list items across re-renders. Without it, React can\'t tell which items were added, removed, or reordered, leading to subtle bugs and performance issues.',
   },
   {
     id: 2,
@@ -75,7 +75,7 @@ const QUESTIONS: QuestionDef[] = [
       'Runs install in a temporary directory',
     ],
     correctIndex: 1,
-    feedback: '`npm ci` reads exactly from package-lock.json and errors if it doesn\'t match package.json. Reproducible, strict, and faster — the right command for CI/CD.',
+    feedback: '`npm ci` reads exactly from package-lock.json and errors if it doesn\'t match package.json. Reproducible, strict, and faster. The right command for CI/CD.',
   },
 ]
 
@@ -201,7 +201,7 @@ export default function HomePage() {
                 <div className="size-3 rounded-full bg-[#ffd426]" />
                 <div className="size-3 rounded-full bg-[#d9ff69]" />
               </div>
-              <span className="ml-2 font-mono text-[11px] font-bold text-white/40">zsh — 80×24</span>
+              <span className="ml-2 font-mono text-[11px] font-bold text-white/40">zsh · 80×24</span>
             </div>
             <div className="min-h-[160px] bg-[#151515] px-5 py-4">
               {terminalLines.map((line, i) => {
@@ -226,9 +226,9 @@ export default function HomePage() {
 
           <div className="rounded-[1.3rem] border-[3px] border-[#151515] bg-[#ffd426] p-4 shadow-[5px_5px_0_#151515]">
             <p className="font-mono text-[10px] font-black uppercase tracking-widest text-[#151515]/60">
-              Then in your browser <ArrowRight className="inline size-2.5" />
+              Then in your browser
             </p>
-            <p className="mt-2 text-lg font-black leading-snug">React Hooks — State, Effects, and Closures</p>
+            <p className="mt-2 text-lg font-black leading-snug">React Hooks: State, Effects, and Closures</p>
             <div className="mt-3 flex items-center gap-3">
               <div className="flex-1 rounded-[0.6rem] border-[2px] border-[#151515] bg-white px-3 py-2">
                 <p className="font-mono text-xs font-bold text-[#151515]/60">5 questions · medium · 0 attempts</p>
@@ -246,7 +246,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-6 sm:grid-cols-3">
             {[
-              { icon: '⚡', title: 'One command to generate', body: 'lr generate "topic" — done. A live quiz URL in your terminal in seconds.', bg: 'bg-[#ffd426]' },
+              { icon: '⚡', title: 'One command to generate', body: 'lr generate "topic". A live quiz URL in your terminal in seconds.', bg: 'bg-[#ffd426]' },
               { icon: '🔗', title: 'Share with anyone', body: 'Send the link to your team, a friend, or make it public. No account required to take it.', bg: 'bg-[#d9ff69]' },
               { icon: '🏆', title: 'Compete on the leaderboard', body: 'Every attempt is ranked. See who scored highest and who improved the most.', bg: 'bg-[#7bd8ef]' },
             ].map((f) => (
