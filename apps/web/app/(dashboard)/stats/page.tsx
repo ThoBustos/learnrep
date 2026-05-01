@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { BrainIcon } from '@/components/icons/BrainIcon'
+import { TrendIcon } from '@/components/icons/TrendIcon'
 
 type UserStats = {
   quizzesTaken: number
@@ -38,7 +39,7 @@ export default function StatsPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <TeaserCard icon={<FlameIcon size={30} />} label="Current Streak" value={streak} />
         <TeaserCard icon={<BrainIcon size={30} />} label="Topics Mastered" value={topicsMastered} />
-        <TeaserCard icon="📈" label="Avg Improvement" value={avgImprovement} />
+        <TeaserCard icon={<TrendIcon size={30} />} label="Avg Improvement" value={avgImprovement} />
       </div>
 
       {/* Coming soon banner */}
