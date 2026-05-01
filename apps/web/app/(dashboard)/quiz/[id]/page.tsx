@@ -24,6 +24,9 @@ type Quiz = {
 type LeaderboardEntry = {
   id: string
   score: number
+  firstScore: number
+  delta: number | null
+  attemptCount: number
   completed_at: string
   display_name: string | null
   avatar_url: string | null
@@ -240,10 +243,23 @@ export default function QuizDetailPage() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-black">{displayName}</p>
                     <p className="font-mono text-[10px] font-bold text-[#67606a]">
+                      {entry.attemptCount > 1 ? `${entry.attemptCount} attempts · ` : ''}
                       {new Date(entry.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
-                  <p className="text-lg font-black">{entry.score}%</p>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {entry.delta !== null && (
+                      <span className={cn(
+                        'rounded-full border-[2px] px-2 py-0.5 font-mono text-[9px] font-black',
+                        entry.delta >= 0
+                          ? 'border-[#1e6f38] bg-[#d9ff69] text-[#1e6f38]'
+                          : 'border-[#9c231d] bg-[#ff6b62] text-[#9c231d]'
+                      )}>
+                        {entry.delta >= 0 ? '+' : ''}{entry.delta}%
+                      </span>
+                    )}
+                    <p className="text-lg font-black">{entry.score}%</p>
+                  </div>
                 </div>
               )
             })}
