@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check } from 'lucide-react'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, X } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
-import { mockNotifications } from '@/lib/mock-data'
-import type { MockNotification } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase/client'
 import { NotifContext } from './NotifContext'
+import type { AppNotification } from '@/lib/types'
 
 const navItems = [
   { label: 'Feed', href: '/dashboard', Icon: Home },
@@ -28,12 +29,36 @@ export default function AppShell({
 }) {
   const pathname = usePathname()
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifications, setNotifications] = useState<MockNotification[]>(mockNotifications)
-  const unreadCount = notifications.length
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
 
-  function dismissAll(id: string) {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
-  }
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => createClient().auth.getUser().then(({ data }) => data.user ?? null),
+  })
+
+  const { data: stats } = useQuery<{ streak: number; avgScore: number | null }>({
+    queryKey: ['user-stats'],
+    queryFn: ({ signal }) =>
+      fetch('/api/user/stats', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed'))
+      ),
+  })
+
+  const { data: notifications = [] } = useQuery<AppNotification[]>({
+    queryKey: ['notifications'],
+    queryFn: ({ signal }) =>
+      fetch('/api/notifications', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : []
+      ),
+    refetchInterval: 60_000,
+  })
+
+  const visibleNotifs = notifications.filter((n) => !dismissed.has(n.id))
+  const unreadCount = visibleNotifs.length
+
+  const displayName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'You'
+  const initials = displayName[0]?.toUpperCase() ?? '?'
+  const streak = stats?.streak ?? 0
 
   return (
     <NotifContext.Provider value={{ openNotif: () => setNotifOpen(true), unreadCount }}>
@@ -77,11 +102,13 @@ export default function AppShell({
             <div className="mt-auto">
               <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-[#151515] bg-white/60 px-4 py-3">
                 <div className="flex size-8 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-mono text-xs font-black text-[#ffd426]">
-                  T
+                  {initials}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-black">Thomas B.</p>
-                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-[#67606a]">@thomas · <FlameIcon size={12} /> 12</p>
+                  <p className="truncate text-sm font-black">{displayName}</p>
+                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-[#67606a]">
+                    <FlameIcon size={12} /> {streak} day streak
+                  </p>
                 </div>
               </div>
             </div>
@@ -91,16 +118,18 @@ export default function AppShell({
           <div className="flex min-w-0 flex-1 flex-col">
             <header className="flex items-center justify-between border-b-[3px] border-[#151515] bg-[#ffd426] px-5 py-4">
               <div>
-                <h1 className="text-xl font-black leading-tight tracking-[-0.04em]">Good morning, Thomas</h1>
+                <h1 className="text-xl font-black leading-tight tracking-[-0.04em]">
+                  Good {getTimeOfDay()}, {displayName.split(' ')[0]}
+                </h1>
               </div>
               <div className="flex items-center gap-3">
-                {/* Streak */}
-                <div className="hidden items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] px-4 py-2 text-[#ffd426] sm:flex">
-                  <FlameIcon size={20} />
-                  <span className="font-black">12 day streak</span>
-                </div>
+                {streak > 0 && (
+                  <div className="hidden items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] px-4 py-2 text-[#ffd426] sm:flex">
+                    <FlameIcon size={20} />
+                    <span className="font-black">{streak} day streak</span>
+                  </div>
+                )}
 
-                {/* Docs */}
                 <Link
                   href="/docs"
                   className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
@@ -108,12 +137,10 @@ export default function AppShell({
                   Docs
                 </Link>
 
-                {/* GitHub stars */}
                 <div className="hidden sm:flex">
                   <GitHubStarButton stars={githubStars} />
                 </div>
 
-                {/* Bell */}
                 <button
                   type="button"
                   onClick={() => setNotifOpen(true)}
@@ -178,17 +205,18 @@ export default function AppShell({
               </div>
 
               <div className="flex flex-col gap-3 overflow-y-auto p-4">
-                {notifications.map((notif) => (
-                  <NotifCard
-                    key={notif.id}
-                    notif={notif}
-                    onDismiss={() => dismissAll(notif.id)}
-                  />
-                ))}
-                {notifications.length === 0 && (
+                {visibleNotifs.length === 0 ? (
                   <div className="py-12 text-center">
                     <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#67606a]">All caught up</p>
                   </div>
+                ) : (
+                  visibleNotifs.map((notif) => (
+                    <NotifCard
+                      key={notif.id}
+                      notif={notif}
+                      onDismiss={() => setDismissed((prev) => new Set([...prev, notif.id]))}
+                    />
+                  ))
                 )}
               </div>
             </div>
@@ -199,105 +227,44 @@ export default function AppShell({
   )
 }
 
-function NotifCard({ notif, onDismiss }: { notif: MockNotification; onDismiss: () => void }) {
-  const [actioned, setActioned] = useState<'accepted' | 'declined' | 'approved' | 'rejected' | null>(null)
-
-  function action(type: 'accepted' | 'declined' | 'approved' | 'rejected') {
-    setActioned(type)
-  }
-
+function NotifCard({ notif, onDismiss }: { notif: AppNotification; onDismiss: () => void }) {
   return (
     <div className="rounded-[1rem] border-[3px] border-[#151515] bg-white p-4 shadow-[3px_3px_0_#151515]">
-      {notif.type === 'invite' && (
-        <>
-          <p className="text-sm font-black leading-snug">
-            <span className="text-[#5735a7]">{notif.from}</span> invited you to{' '}
-            <span className="underline decoration-2">{notif.quizTitle}</span>
-          </p>
-          <p className="mt-1 font-mono text-[10px] font-bold text-[#67606a]">{formatTime(notif.createdAt)}</p>
-          {actioned ? (
-            <p className="mt-3 font-mono text-[10px] font-black uppercase tracking-widest text-[#1e6f38]">
-              {actioned === 'accepted' ? 'Accepted' : 'Declined'}
-            </p>
-          ) : (
-            <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={() => action('accepted')}
-                className="flex items-center gap-1 rounded-[0.6rem] border-[3px] border-[#1e6f38] bg-[#d9ff69] px-3 py-1.5 font-mono text-[10px] font-black uppercase text-[#1e6f38] shadow-[2px_2px_0_#1e6f38] transition-transform hover:-translate-y-0.5"
-              >
-                <Check className="size-3" /> Accept
-              </button>
-              <button
-                type="button"
-                onClick={() => action('declined')}
-                className="flex items-center gap-1 rounded-[0.6rem] border-[3px] border-[#9c231d] bg-[#ff6b62] px-3 py-1.5 font-mono text-[10px] font-black uppercase text-[#9c231d] shadow-[2px_2px_0_#9c231d] transition-transform hover:-translate-y-0.5"
-              >
-                <X className="size-3" /> Decline
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      {notif.type === 'access_request' && (
-        <>
-          <p className="text-sm font-black leading-snug">
-            <span className="text-[#0d5c75]">{notif.from}</span> requested access to{' '}
-            <span className="underline decoration-2">{notif.quizTitle}</span>
-          </p>
-          <p className="mt-1 font-mono text-[10px] font-bold text-[#67606a]">{formatTime(notif.createdAt)}</p>
-          {actioned ? (
-            <p className="mt-3 font-mono text-[10px] font-black uppercase tracking-widest text-[#1e6f38]">
-              {actioned === 'approved' ? 'Approved' : 'Rejected'}
-            </p>
-          ) : (
-            <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={() => action('approved')}
-                className="flex items-center gap-1 rounded-[0.6rem] border-[3px] border-[#1e6f38] bg-[#d9ff69] px-3 py-1.5 font-mono text-[10px] font-black uppercase text-[#1e6f38] shadow-[2px_2px_0_#1e6f38] transition-transform hover:-translate-y-0.5"
-              >
-                <Check className="size-3" /> Approve
-              </button>
-              <button
-                type="button"
-                onClick={() => action('rejected')}
-                className="flex items-center gap-1 rounded-[0.6rem] border-[3px] border-[#9c231d] bg-[#ff6b62] px-3 py-1.5 font-mono text-[10px] font-black uppercase text-[#9c231d] shadow-[2px_2px_0_#9c231d] transition-transform hover:-translate-y-0.5"
-              >
-                <X className="size-3" /> Reject
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      {notif.type === 'approved' && (
-        <>
-          <p className="text-sm font-black leading-snug">
-            Your request to access{' '}
-            <span className="underline decoration-2">{notif.quizTitle}</span> was{' '}
-            <span className="text-[#1e6f38]">approved</span>
-          </p>
-          <p className="mt-1 font-mono text-[10px] font-bold text-[#67606a]">{formatTime(notif.createdAt)}</p>
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="mt-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a] underline"
-          >
-            Dismiss
-          </button>
-        </>
-      )}
+      <p className="text-sm font-black leading-snug">
+        <span className="text-[#5735a7]">{notif.takerName}</span> scored{' '}
+        <span className="text-[#1e6f38]">{notif.score}%</span> on{' '}
+        <Link
+          href={`/quiz/${notif.quizId}`}
+          className="underline decoration-2"
+          onClick={onDismiss}
+        >
+          {notif.quizTitle}
+        </Link>
+      </p>
+      <p className="mt-1 font-mono text-[10px] font-bold text-[#67606a]">{formatTime(notif.createdAt)}</p>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="mt-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a] underline"
+      >
+        Dismiss
+      </button>
     </div>
   )
 }
 
+function getTimeOfDay(): string {
+  const h = new Date().getHours()
+  if (h < 12) return 'morning'
+  if (h < 17) return 'afternoon'
+  return 'evening'
+}
+
 function formatTime(iso: string): string {
   const d = new Date(iso)
-  const now = new Date('2026-04-27T12:00:00Z')
+  const now = new Date()
   const diffMs = now.getTime() - d.getTime()
-  const diffH = Math.floor(diffMs / 3600000)
+  const diffH = Math.floor(diffMs / 3_600_000)
   if (diffH < 1) return 'Just now'
   if (diffH < 24) return `${diffH}h ago`
   const diffD = Math.floor(diffH / 24)
