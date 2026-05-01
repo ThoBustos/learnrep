@@ -8,19 +8,14 @@ import { TerminalWindow } from '@/components/landing/TerminalWindow'
 import { QuizPreviewCard } from '@/components/landing/QuizPreviewCard'
 import { AgentBadgeStrip } from '@/components/landing/AgentBadgeStrip'
 import { InstallCommand } from '@/components/landing/InstallCommand'
-import { FeatureCard } from '@/components/landing/FeatureCard'
 import { OnboardingQuiz } from '@/components/landing/OnboardingQuiz'
+import { HowItWorks } from '@/components/landing/HowItWorks'
 import { AGENTS } from '@/lib/landing/agents'
 import { SEQUENCE } from '@/lib/landing/terminalSequence'
 import { QUESTIONS } from '@/lib/landing/quizQuestions'
 
 const INSTALL_CMD = 'npm install -g learnrep'
 
-const FEATURES = [
-  { icon: '⚡', title: 'One command to generate', body: 'lr generate "topic". A live quiz URL in your terminal in seconds.', bg: 'bg-[#ffd426]' },
-  { icon: '🔗', title: 'Share with anyone', body: 'Send the link to your team, a friend, or make it public. No account required to take it.', bg: 'bg-[#d9ff69]' },
-  { icon: '🏆', title: 'Compete on the leaderboard', body: 'Every attempt is ranked. See who scored highest and who improved the most.', bg: 'bg-[#7bd8ef]' },
-]
 
 export default function HomePage() {
   const { data: stars } = useQuery<number | null>({
@@ -82,16 +77,8 @@ export default function HomePage() {
       {/* ── ONBOARDING QUIZ ──────────────────────────────────────────────────── */}
       <OnboardingQuiz questions={QUESTIONS} />
 
-      {/* ── FEATURES ─────────────────────────────────────────────────────────── */}
-      <section className="border-t-[3px] border-[#151515]/10 bg-white px-6 py-14 sm:px-10">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <FeatureCard key={f.title} {...f} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── HOW IT WORKS ─────────────────────────────────────────────────────── */}
+      <HowItWorks />
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
       <footer className="flex flex-col gap-3 border-t-[3px] border-[#151515]/10 bg-[#fafaf8] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
