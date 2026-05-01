@@ -1,15 +1,15 @@
 'use client'
 
-import { useReducer } from 'react'
+import { useReducer, type KeyboardEvent } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useMountEffect } from '@/hooks/useMountEffect'
 import { ScoreScreen } from './ScoreScreen'
 import type { QuestionDef } from '@/lib/landing/quizQuestions'
 
 type QuizPhase = 'question' | 'feedback'
 
 const LETTERS = ['A', 'B', 'C', 'D']
+const INTERACTIVE_TARGETS = 'button,a,input,textarea,select,[contenteditable="true"]'
 
 type State = {
   questions: QuestionDef[]
@@ -70,21 +70,40 @@ export function OnboardingQuiz({ questions }: Props) {
   const correctCount = answers.filter((a) => a.correct).length
   const pct = Math.round((correctCount / total) * 100)
   const progress = ((questionIndex + (phase === 'feedback' ? 1 : 0)) / total) * 100
+  const questionId = `onboarding-question-${question.id}`
+  const feedbackId = `onboarding-feedback-${question.id}`
 
-  useMountEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 }
-      const idx = keyMap[e.key.toLowerCase()]
-      if (idx !== undefined && idx < questions.length) dispatch({ type: 'SELECT', index: idx })
-      if (e.key === 'Enter') dispatch({ type: 'ENTER' })
-      if (e.key === ' ') { e.preventDefault(); dispatch({ type: 'NEXT' }) }
+  function handleKeyDown(e: KeyboardEvent<HTMLElement>) {
+    const target = e.target
+    if (target instanceof HTMLElement && target.closest(INTERACTIVE_TARGETS)) return
+    if (done) return
+
+    const keyMap: Record<string, number> = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 }
+    const idx = keyMap[e.key.toLowerCase()]
+    if (idx !== undefined && idx < question.options.length && phase === 'question') {
+      e.preventDefault()
+      dispatch({ type: 'SELECT', index: idx })
+      return
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  })
+    if (e.key === 'Enter' && (phase === 'feedback' || selectedOption !== null)) {
+      e.preventDefault()
+      dispatch({ type: 'ENTER' })
+      return
+    }
+    if (e.key === ' ' && phase === 'feedback') {
+      e.preventDefault()
+      dispatch({ type: 'NEXT' })
+    }
+  }
 
   return (
-    <section className="relative overflow-hidden border-t-[4px] border-[#151515] bg-[#ffd426] px-6 py-12 sm:px-10 sm:py-16">
+    <section
+      className="relative overflow-hidden border-t-[4px] border-[var(--lr-ink)] bg-[var(--lr-yellow)] px-6 py-12 sm:px-10 sm:py-16"
+      tabIndex={0}
+      role="region"
+      aria-label="Sample LearnRep quiz"
+      onKeyDown={handleKeyDown}
+    >
       <div className="pointer-events-none absolute inset-0 opacity-[0.15] [background-image:radial-gradient(#151515_1.5px,transparent_1.5px)] [background-size:24px_24px]" />
 
       <div className="relative z-10 mx-auto max-w-2xl">
@@ -115,7 +134,14 @@ export function OnboardingQuiz({ questions }: Props) {
                   </p>
                 )}
               </div>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#151515]/20">
+              <div
+                className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[#151515]/20"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(progress)}
+                aria-label="Quiz progress"
+              >
                 <div
                   className="h-full rounded-full bg-[#151515] transition-all duration-500"
                   style={{ width: `${progress}%` }}
@@ -124,11 +150,11 @@ export function OnboardingQuiz({ questions }: Props) {
             </div>
 
             <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white/90 p-6 shadow-[6px_6px_0_#151515]">
-              <p className="text-xl font-black leading-snug sm:text-2xl">{question.prompt}</p>
+              <p id={questionId} className="text-xl font-black leading-snug sm:text-2xl">{question.prompt}</p>
             </div>
 
             {phase === 'feedback' && (
-              <div className={cn(
+              <div id={feedbackId} aria-live="polite" className={cn(
                 'mt-4 rounded-[1rem] border-[3px] border-[#151515] p-4 shadow-[4px_4px_0_#151515]',
                 selectedOption === question.correctIndex ? 'bg-[#d9ff69]' : 'bg-[#ff6b62]',
               )}>
@@ -141,7 +167,7 @@ export function OnboardingQuiz({ questions }: Props) {
               </div>
             )}
 
-            <div className="mt-4 flex flex-col gap-2.5">
+            <div className="mt-4 flex flex-col gap-2.5" role="radiogroup" aria-labelledby={questionId}>
               {question.options.map((option, i) => {
                 const isSelected = selectedOption === i
                 const isCorrect = i === question.correctIndex
@@ -161,6 +187,9 @@ export function OnboardingQuiz({ questions }: Props) {
                   <button
                     key={i}
                     type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    aria-describedby={phase === 'feedback' ? feedbackId : undefined}
                     disabled={phase !== 'question'}
                     onClick={() => dispatch({ type: 'SELECT', index: i })}
                     className={cn(

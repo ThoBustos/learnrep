@@ -1,7 +1,5 @@
-'use client'
-
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroBadge } from '@/components/landing/HeroBadge'
 import { TerminalWindow } from '@/components/landing/TerminalWindow'
@@ -13,23 +11,37 @@ import { HowItWorks } from '@/components/landing/HowItWorks'
 import { AGENTS } from '@/lib/landing/agents'
 import { SEQUENCE } from '@/lib/landing/terminalSequence'
 import { QUESTIONS } from '@/lib/landing/quizQuestions'
+import { landingColorVars } from '@/lib/tokens'
 
 const INSTALL_CMD = 'npm install -g learnrep'
 
+type GitHubRepoResponse = {
+  stargazers_count?: unknown
+}
 
-export default function HomePage() {
-  const { data: stars } = useQuery<number | null>({
-    queryKey: ['github-stars'],
-    queryFn: () =>
-      fetch('https://api.github.com/repos/ThoBustos/learnrep')
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => (d ? (d.stargazers_count as number) : null))
-        .catch(() => null),
-    staleTime: 1000 * 60 * 60,
-  })
+async function getGitHubStars() {
+  try {
+    const res = await fetch('https://api.github.com/repos/ThoBustos/learnrep', {
+      headers: { Accept: 'application/vnd.github+json' },
+      next: { revalidate: 60 * 60 },
+    })
+    if (!res.ok) return null
+    const data = (await res.json()) as GitHubRepoResponse
+    return typeof data.stargazers_count === 'number' ? data.stargazers_count : null
+  } catch {
+    return null
+  }
+}
+
+export default async function HomePage() {
+  const stars = await getGitHubStars()
+  const pageStyle = {
+    ...landingColorVars,
+    fontFamily: 'var(--font-space-grotesk)',
+  } as CSSProperties
 
   return (
-    <div className="min-h-screen bg-[#fafaf8] text-[#151515]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
+    <div className="min-h-screen bg-[var(--lr-cream)] text-[var(--lr-ink)]" style={pageStyle}>
 
       <LandingNav stars={stars} />
 
@@ -45,7 +57,7 @@ export default function HomePage() {
             <br />
             <span className="relative inline-block">
               your team.
-              <span className="absolute -bottom-1 left-0 h-[5px] w-full rounded-full bg-[#ffd426]" />
+              <span className="absolute -bottom-1 left-0 h-[5px] w-full rounded-full bg-[var(--lr-yellow)]" />
             </span>
           </h1>
 
@@ -81,7 +93,7 @@ export default function HomePage() {
       <HowItWorks />
 
       {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
-      <footer className="flex flex-col gap-3 border-t-[3px] border-[#151515]/10 bg-[#fafaf8] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+      <footer className="flex flex-col gap-3 border-t-[3px] border-[color:color-mix(in_srgb,var(--lr-ink)_10%,transparent)] bg-[var(--lr-cream)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <p className="font-mono text-[11px] font-bold text-[#151515]/40">LearnRep · Open source · MIT</p>
         <div className="flex gap-5">
           <Link href="/docs" className="py-1 font-mono text-[11px] font-bold text-[#151515]/40 hover:text-[#151515]">Docs</Link>

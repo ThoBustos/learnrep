@@ -11,10 +11,10 @@ export function ScoreScreen({ pct, correct, total, onRetry }: Props) {
   const isHigh = pct >= 67
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6" aria-live="polite">
       <div className={cn(
-        'flex w-full flex-col items-center gap-3 rounded-[1.5rem] border-[3px] border-[#151515] py-10 shadow-[7px_7px_0_#151515]',
-        isHigh ? 'bg-[#d9ff69]' : 'bg-white/90',
+        'flex w-full flex-col items-center gap-3 rounded-[1.5rem] border-[3px] border-[var(--lr-ink)] py-10 shadow-[7px_7px_0_var(--lr-ink)]',
+        isHigh ? 'bg-[var(--lr-green)]' : 'bg-white/90',
       )}>
         {isHigh && (
           <span className="rounded-full border-[2.5px] border-[#1e6f38] bg-[#151515] px-4 py-1 font-mono text-[11px] font-black uppercase tracking-widest text-[#d9ff69]">

@@ -5,18 +5,19 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Check, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { brandColors, colors } from '@/lib/tokens'
 
 const DESIGN_TOKENS_CSS = `/* LearnRep Design Tokens */
 :root {
   /* Brand */
-  --brand-yellow: #FDC229;
-  --brand-black: #0F0E0D;
+  --brand-yellow: ${brandColors.yellow};
+  --brand-black: ${brandColors.black};
 
   /* Landing accents */
-  --accent-sun: #FFD426;
-  --accent-lime: #D9FF69;
-  --accent-sky: #7BD8EF;
-  --accent-lavender: #B995FF;
+  --accent-sun: ${colors.yellow};
+  --accent-lime: ${colors.green};
+  --accent-sky: ${colors.blue};
+  --accent-lavender: ${colors.purple};
   --accent-violet: #5735A7;
 
   /* UI base */
@@ -52,22 +53,22 @@ const DESIGN_TOKENS_CSS = `/* LearnRep Design Tokens */
 
 const LOGO_VARIANTS = [
   { name: 'Default',    file: '/logos/logo.svg',           bg: '#F5F4F0', wide: false },
-  { name: 'Dark',       file: '/logos/logo-dark.svg',      bg: '#0F0E0D', wide: false },
-  { name: 'Mono Black', file: '/logos/logo-mono-black.svg', bg: '#FFFFFF', wide: false },
-  { name: 'Mono White', file: '/logos/logo-mono-white.svg', bg: '#0F0E0D', wide: false },
+  { name: 'Dark',       file: '/logos/logo-dark.svg',      bg: brandColors.black, wide: false },
+  { name: 'Mono Black', file: '/logos/logo-mono-black.svg', bg: colors.white, wide: false },
+  { name: 'Mono White', file: '/logos/logo-mono-white.svg', bg: brandColors.black, wide: false },
   { name: 'Wordmark',   file: '/logos/logo-wordmark.svg',  bg: '#F5F4F0', wide: true  },
 ]
 
 const COLORS = {
   brand: [
-    { name: 'Brand Yellow', hex: '#FDC229' },
-    { name: 'Brand Black',  hex: '#0F0E0D' },
+    { name: 'Brand Yellow', hex: brandColors.yellow },
+    { name: 'Brand Black',  hex: brandColors.black },
   ],
   accents: [
-    { name: 'Sun',      hex: '#FFD426' },
-    { name: 'Lime',     hex: '#D9FF69' },
-    { name: 'Sky',      hex: '#7BD8EF' },
-    { name: 'Lavender', hex: '#B995FF' },
+    { name: 'Sun',      hex: colors.yellow },
+    { name: 'Lime',     hex: colors.green },
+    { name: 'Sky',      hex: colors.blue },
+    { name: 'Lavender', hex: colors.purple },
     { name: 'Violet',   hex: '#5735A7' },
   ],
   ui: [

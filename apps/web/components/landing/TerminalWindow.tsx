@@ -13,18 +13,44 @@ const SEP_CHAR = '─'.repeat(54)
 export function TerminalWindow({ sequence }: Props) {
   const [terminalLines, setTerminalLines] = useState<TerminalLine[]>([])
   const containerRef = useRef<HTMLDivElement>(null)
+  const shellRef = useRef<HTMLDivElement>(null)
 
   useMountEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
     let active = true
+    let inView = true
+
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     function scrollToBottom() {
       const el = containerRef.current
       if (el) el.scrollTop = el.scrollHeight
     }
 
+    function clearTimers() {
+      while (timers.length > 0) {
+        const timer = timers.pop()
+        if (timer) clearTimeout(timer)
+      }
+    }
+
+    function renderFinalState() {
+      clearTimers()
+      setTerminalLines(sequence.map(({ line }) => line))
+      requestAnimationFrame(scrollToBottom)
+    }
+
+    function canAnimate() {
+      return active && inView && !document.hidden && !reducedMotionQuery.matches
+    }
+
     function play() {
-      if (!active) return
+      if (reducedMotionQuery.matches) {
+        renderFinalState()
+        return
+      }
+      if (!canAnimate()) return
+      clearTimers()
       setTerminalLines([])
       if (containerRef.current) containerRef.current.scrollTop = 0
       sequence.forEach(({ delay, line }) => {
@@ -39,21 +65,57 @@ export function TerminalWindow({ sequence }: Props) {
       timers.push(t)
     }
 
+    function handleMotionChange() {
+      if (reducedMotionQuery.matches) {
+        renderFinalState()
+      } else {
+        play()
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        clearTimers()
+      } else {
+        play()
+      }
+    }
+
     play()
+    reducedMotionQuery.addEventListener('change', handleMotionChange)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry?.isIntersecting ?? true
+      if (inView) {
+        play()
+      } else {
+        clearTimers()
+      }
+    })
+    if (shellRef.current) observer.observe(shellRef.current)
+
     return () => {
       active = false
-      timers.forEach(clearTimeout)
+      clearTimers()
+      reducedMotionQuery.removeEventListener('change', handleMotionChange)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      observer.disconnect()
     }
   })
 
   return (
-    <div className="overflow-hidden rounded-[1.3rem] bg-[#151515] shadow-[8px_8px_0_#ffd426]">
+    <div
+      ref={shellRef}
+      aria-label="Animated terminal demo"
+      className="overflow-hidden rounded-[1.3rem] bg-[var(--lr-ink)] shadow-[8px_8px_0_var(--lr-yellow)]"
+    >
       {/* Title bar */}
       <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#1c1c1c] px-4 py-2.5">
         <div className="flex gap-1.5">
-          <div className="size-3 rounded-full bg-[#ff6b62]" />
-          <div className="size-3 rounded-full bg-[#ffd426]" />
-          <div className="size-3 rounded-full bg-[#d9ff69]" />
+          <div className="size-3 rounded-full bg-[var(--lr-red)]" />
+          <div className="size-3 rounded-full bg-[var(--lr-yellow)]" />
+          <div className="size-3 rounded-full bg-[var(--lr-green)]" />
         </div>
         <span className="ml-2 font-mono text-[11px] font-bold text-white/25">zsh · ~/projects/openyoko</span>
       </div>
@@ -61,10 +123,10 @@ export function TerminalWindow({ sequence }: Props) {
       {/* Content — overflow-hidden, scrolled programmatically only */}
       <div
         ref={containerRef}
-        className="h-[280px] overflow-hidden bg-[#151515] px-4 py-3 sm:h-[340px]"
+        className="h-[280px] overflow-hidden bg-[var(--lr-ink)] px-4 py-3 sm:h-[340px]"
       >
         {terminalLines.map((line, i) => <Line key={i} line={line} />)}
-        <span className="inline-block h-[13px] w-[6px] animate-pulse bg-[#ffd426] align-middle" />
+        <span aria-hidden="true" className="inline-block h-[13px] w-[6px] animate-pulse bg-[var(--lr-yellow)] align-middle motion-reduce:animate-none" />
         <div className="h-5" />
       </div>
     </div>
