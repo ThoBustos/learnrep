@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check, Star } from 'lucide-react'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check } from 'lucide-react'
+import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
 import { mockNotifications } from '@/lib/mock-data'
 import type { MockNotification } from '@/lib/mock-data'
@@ -107,17 +108,9 @@ export default function AppShell({
                 </Link>
 
                 {/* GitHub stars */}
-                {githubStars !== undefined && (
-                  <a
-                    href="https://github.com/ThoBustos/learnrep"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
-                  >
-                    <Star className="size-3 fill-[#151515]" />
-                    {githubStars}
-                  </a>
-                )}
+                <div className="hidden sm:flex">
+                  <GitHubStarButton stars={githubStars} />
+                </div>
 
                 {/* Bell */}
                 <button

@@ -179,8 +179,6 @@ export default function TakePage() {
     (question.type === 'multi-select' && selectedOptions.size > 0) ||
     (['open-ended', 'code-writing'].includes(question.type) && textAnswer.trim().length > 0)
 
-  const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
-
   return (
     <div
       className="relative flex min-h-screen flex-col bg-[#ffd426] text-[#151515]"
