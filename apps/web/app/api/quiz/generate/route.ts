@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     difficulty: quiz.difficulty,
     questions: quiz.questions,
     source: quiz.source,
-    is_public: true,
+    is_public: false,
     share_code: shareCode,
     created_at: quiz.createdAt,
   })

@@ -30,11 +30,21 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/callback')
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/quizzes') || pathname.startsWith('/library') || pathname.startsWith('/stats') || pathname.startsWith('/team')
+
+  // Quiz take and result pages require auth; the quiz detail/leaderboard page is public
+  const isQuizActionRoute = /^\/quiz\/[^/]+\/(take|result)/.test(pathname)
+  const isProtectedRoute =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/quizzes') ||
+    pathname.startsWith('/library') ||
+    pathname.startsWith('/stats') ||
+    pathname.startsWith('/team') ||
+    isQuizActionRoute
 
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('next', pathname)
     return NextResponse.redirect(url)
   }
 
