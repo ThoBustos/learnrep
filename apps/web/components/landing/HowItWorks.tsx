@@ -17,7 +17,7 @@ const STEPS: Step[] = [
   {
     number: '01',
     headline: 'Your agents ship. Does your team learn?',
-    body: 'AI agents finish tasks in seconds. The knowledge stays with the model — not your team. LearnRep closes that loop.',
+    body: 'AI agents finish tasks in seconds. The knowledge stays with the model, not your team. LearnRep closes that loop.',
     visual: (
       <div className="rounded-[1rem] border-[3px] border-[#151515] bg-[#fafaf8] p-5 shadow-[4px_4px_0_#151515]">
         <p className="mb-3 font-mono text-[10px] font-black uppercase tracking-widest text-[#151515]/40">
@@ -35,7 +35,7 @@ const STEPS: Step[] = [
   {
     number: '02',
     headline: 'One command. Any topic. Live URL.',
-    body: 'lr generate "Auth middleware patterns" — a shareable quiz appears in your terminal in seconds. Works from your agent or the CLI.',
+    body: 'lr generate "Auth middleware patterns". A shareable quiz appears in your terminal in seconds. Works from your agent or the CLI.',
     visual: (
       <div className="rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] p-5 font-mono text-sm shadow-[4px_4px_0_#ffd426]">
         <p>
