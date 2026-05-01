@@ -1,6 +1,8 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { FlameIcon } from '@/components/icons/FlameIcon'
+import { BrainIcon } from '@/components/icons/BrainIcon'
 
 type UserStats = {
   quizzesTaken: number
@@ -34,8 +36,8 @@ export default function StatsPage() {
 
       {/* Teaser stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <TeaserCard icon="🔥" label="Current Streak" value={streak} />
-        <TeaserCard icon="🧠" label="Topics Mastered" value={topicsMastered} />
+        <TeaserCard icon={<FlameIcon size={30} />} label="Current Streak" value={streak} />
+        <TeaserCard icon={<BrainIcon size={30} />} label="Topics Mastered" value={topicsMastered} />
         <TeaserCard icon="📈" label="Avg Improvement" value={avgImprovement} />
       </div>
 
@@ -70,11 +72,11 @@ export default function StatsPage() {
   )
 }
 
-function TeaserCard({ icon, label, value }: { icon: string; label: string; value: string }) {
+function TeaserCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-[1.1rem] border-[3px] border-[#151515] bg-white/60 p-5 shadow-[4px_4px_0_#151515]">
       <div className="flex items-center gap-3">
-        <span className="text-3xl">{icon}</span>
+        <span className="flex items-center text-3xl">{icon}</span>
         <div>
           <p className="text-3xl font-black leading-none tracking-[-0.06em] text-[#151515]">{value}</p>
           <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#67606a]">{label}</p>

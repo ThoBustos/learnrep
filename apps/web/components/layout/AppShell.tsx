@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, BookOpen, Library, BarChart2, Users, Bell, X, Check } from 'lucide-react'
+import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { cn } from '@/lib/utils'
 import { mockNotifications } from '@/lib/mock-data'
@@ -80,7 +81,7 @@ export default function AppShell({
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-black">Thomas B.</p>
-                  <p className="truncate font-mono text-[10px] font-bold text-[#67606a]">@thomas · 🔥 12</p>
+                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-[#67606a]">@thomas · <FlameIcon size={12} /> 12</p>
                 </div>
               </div>
             </div>
@@ -95,7 +96,7 @@ export default function AppShell({
               <div className="flex items-center gap-3">
                 {/* Streak */}
                 <div className="hidden items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] px-4 py-2 text-[#ffd426] sm:flex">
-                  <span className="text-lg">🔥</span>
+                  <FlameIcon size={20} />
                   <span className="font-black">12 day streak</span>
                 </div>
 
