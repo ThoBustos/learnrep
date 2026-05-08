@@ -1,7 +1,6 @@
 'use client'
 
 import { Suspense } from 'react'
-import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -27,12 +26,6 @@ function LoginContent() {
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
 
       <div className="relative z-10 flex flex-col items-center gap-8">
-        {/* Wordmark */}
-        <div className="flex items-center gap-2.5">
-          <Image src="/logos/logo.svg" alt="" width={44} height={44} className="size-11" />
-          <span className="text-2xl font-black tracking-[-0.04em]">LearnRep</span>
-        </div>
-
         {/* Card */}
         <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
           <div className="text-center">
