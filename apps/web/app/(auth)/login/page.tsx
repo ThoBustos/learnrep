@@ -35,13 +35,16 @@ function LoginContent() {
         {/* Card */}
         <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
           <div className="text-center">
-            <h1 className="text-2xl font-black tracking-[-0.04em]">Log in or create account</h1>
+            <h1 className="text-2xl font-black tracking-[-0.04em]">Log in</h1>
+            <p className="mt-2 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-[#67606a]">
+              Generate quizzes. Track progress. Compete.
+            </p>
           </div>
 
           <button
             type="button"
             onClick={signInWithGoogle}
-            className="flex min-h-[44px] items-center gap-3 rounded-[1rem] border-2 border-[#151515]/20 bg-white px-6 py-3 text-sm font-black transition-colors hover:border-[#151515]/40"
+            className="flex min-h-[44px] items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white px-6 py-3 text-sm font-black transition-transform hover:-translate-y-0.5"
           >
             <GoogleIcon />
             Continue with Google
