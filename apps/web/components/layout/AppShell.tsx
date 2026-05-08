@@ -29,7 +29,15 @@ export default function AppShell({
 }) {
   const pathname = usePathname()
   const [notifOpen, setNotifOpen] = useState(false)
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+  const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    if (typeof window === 'undefined') return new Set()
+    try {
+      const stored = localStorage.getItem('dismissed-notifications')
+      return new Set(stored ? (JSON.parse(stored) as string[]) : [])
+    } catch {
+      return new Set()
+    }
+  })
 
   const { data: user } = useQuery({
     queryKey: ['current-user'],
@@ -214,7 +222,11 @@ export default function AppShell({
                     <NotifCard
                       key={notif.id}
                       notif={notif}
-                      onDismiss={() => setDismissed((prev) => new Set([...prev, notif.id]))}
+                      onDismiss={() => setDismissed((prev) => {
+                      const next = new Set([...prev, notif.id])
+                      try { localStorage.setItem('dismissed-notifications', JSON.stringify([...next])) } catch {}
+                      return next
+                    })}
                     />
                   ))
                 )}
