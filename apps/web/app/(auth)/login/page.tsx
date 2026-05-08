@@ -37,7 +37,7 @@ function LoginContent() {
         {/* Card */}
         <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
           <div className="text-center">
-            <h1 className="text-2xl font-black tracking-[-0.04em]">Sign in to continue</h1>
+            <h1 className="text-2xl font-black tracking-[-0.04em]">Log in or create account</h1>
             <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-[#67606a]">
               Generate quizzes. Track progress. Compete.
             </p>

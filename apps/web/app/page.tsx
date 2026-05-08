@@ -69,7 +69,7 @@ export default async function HomePage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <InstallCommand command={INSTALL_CMD} />
             <Link href="/login" className="font-mono text-sm font-bold text-[#151515]/50 hover:text-[#151515]">
-              or sign in
+              or log in
             </Link>
           </div>
 
