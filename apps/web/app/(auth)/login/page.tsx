@@ -41,7 +41,7 @@ function LoginContent() {
           <button
             type="button"
             onClick={signInWithGoogle}
-            className="flex min-h-[44px] items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white px-6 py-3 text-sm font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
+            className="flex min-h-[44px] items-center gap-3 rounded-[1rem] border-2 border-[#151515]/20 bg-white px-6 py-3 text-sm font-black transition-colors hover:border-[#151515]/40"
           >
             <GoogleIcon />
             Continue with Google
