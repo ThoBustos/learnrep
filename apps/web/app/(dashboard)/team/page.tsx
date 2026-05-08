@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { difficultyStyles } from '@/lib/mock-data'
 import type { Difficulty } from '@/lib/mock-data'
+import type { LeaderboardEntry } from '@/app/api/team/leaderboard/route'
 
 type TeamMember = {
   userId: string
@@ -61,6 +62,15 @@ export default function TeamPage() {
     queryFn: ({ signal }) =>
       fetch('/api/team/feed', { credentials: 'include', signal }).then((r) =>
         r.ok ? r.json() : Promise.reject(new Error('Failed to fetch feed'))
+      ),
+    enabled: !!team,
+  })
+
+  const { data: leaderboard = [] } = useQuery<LeaderboardEntry[]>({
+    queryKey: ['team-leaderboard'],
+    queryFn: ({ signal }) =>
+      fetch('/api/team/leaderboard', { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error('Failed to fetch leaderboard'))
       ),
     enabled: !!team,
   })
@@ -130,7 +140,7 @@ export default function TeamPage() {
       {isLoading ? (
         <p className="font-mono text-xs font-bold text-[#67606a]">Loading...</p>
       ) : team ? (
-        <TeamView team={team} feed={feed} feedError={feedError} codeCopied={codeCopied} onCopyLink={copyInviteLink} />
+        <TeamView team={team} feed={feed} feedError={feedError} leaderboard={leaderboard} codeCopied={codeCopied} onCopyLink={copyInviteLink} />
       ) : (
         <NoTeamView
           createName={createName}
@@ -152,12 +162,14 @@ function TeamView({
   team,
   feed,
   feedError,
+  leaderboard,
   codeCopied,
   onCopyLink,
 }: {
   team: Team
   feed: TeamQuiz[]
   feedError: boolean
+  leaderboard: LeaderboardEntry[]
   codeCopied: boolean
   onCopyLink: () => void
 }) {
@@ -211,6 +223,18 @@ function TeamView({
         </div>
       </div>
 
+      {/* Leaderboard */}
+      {leaderboard.length > 0 && (
+        <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[6px_6px_0_#151515]">
+          <h2 className="text-lg font-black">Leaderboard</h2>
+          <div className="flex flex-col gap-2">
+            {leaderboard.map((entry) => (
+              <TeamLeaderboardRow key={entry.userId} entry={entry} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Team feed */}
       <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[6px_6px_0_#151515]">
         <h2 className="text-lg font-black">Team Feed</h2>
@@ -253,6 +277,37 @@ function TeamFeedRow({ quiz }: { quiz: TeamQuiz }) {
       >
         Go
       </Link>
+    </div>
+  )
+}
+
+const RANK_STYLES: Record<number, { bg: string; border: string; text: string }> = {
+  1: { bg: 'bg-[#ffd426]', border: 'border-[#151515]', text: 'text-[#151515]' },
+  2: { bg: 'bg-[#e8e8e8]', border: 'border-[#151515]', text: 'text-[#151515]' },
+  3: { bg: 'bg-[#d4a96a]', border: 'border-[#151515]', text: 'text-[#151515]' },
+}
+
+function TeamLeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
+  const name = entry.displayName ?? 'Anonymous'
+  const rank = RANK_STYLES[entry.rank] ?? { bg: 'bg-white', border: 'border-[#e5e3e6]', text: 'text-[#151515]' }
+  return (
+    <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515]">
+      <div className={cn('flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] font-mono text-xs font-black', rank.border, rank.bg, rank.text)}>
+        {entry.rank}
+      </div>
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-full border-[2px] border-[#151515] bg-[#151515] font-mono text-[9px] font-black text-[#ffd426]">
+        {name[0]?.toUpperCase() ?? '?'}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-black">{name}</p>
+        <p className="font-mono text-[10px] font-bold text-[#67606a]">
+          {entry.quizzesGenerated} generated · {entry.quizzesTaken} taken
+        </p>
+      </div>
+      <div className="shrink-0 text-right">
+        <p className="font-mono text-sm font-black">{entry.engagementScore}</p>
+        <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#67606a]">pts</p>
+      </div>
     </div>
   )
 }
