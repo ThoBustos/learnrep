@@ -6,3 +6,5 @@ dist
 .turbo
 excalidraw.log
 supabase/.temp/
+supabase/.env
+supabase/.env.local
