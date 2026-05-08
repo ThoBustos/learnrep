@@ -28,7 +28,10 @@ function LoginContent() {
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Wordmark */}
-        <Image src="/logos/logo-wordmark.svg" alt="LearnRep" width={180} height={42} className="h-10 w-auto" />
+        <div className="flex items-center gap-2.5">
+          <Image src="/logos/logo.svg" alt="" width={44} height={44} className="size-11" />
+          <span className="text-2xl font-black tracking-[-0.04em]">LearnRep</span>
+        </div>
 
         {/* Card */}
         <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
