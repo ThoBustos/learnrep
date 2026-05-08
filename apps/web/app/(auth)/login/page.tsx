@@ -1,6 +1,8 @@
 'use client'
 
 import { Suspense } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -24,6 +26,10 @@ function LoginContent() {
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+
+      <Link href="/" className="absolute top-6 left-6 z-10 transition-opacity hover:opacity-70">
+        <Image src="/logos/logo.svg" alt="LearnRep" width={44} height={44} className="size-11" />
+      </Link>
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Card */}
