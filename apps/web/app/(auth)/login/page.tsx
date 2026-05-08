@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense } from 'react'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
@@ -27,20 +28,12 @@ function LoginContent() {
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Wordmark */}
-        <div className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-black text-xl text-[#ffd426]">
-            L
-          </div>
-          <span className="text-2xl font-black tracking-[-0.04em]">LearnRep</span>
-        </div>
+        <Image src="/logos/logo-wordmark.svg" alt="LearnRep" width={180} height={42} className="h-10 w-auto" />
 
         {/* Card */}
         <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
           <div className="text-center">
             <h1 className="text-2xl font-black tracking-[-0.04em]">Log in or create account</h1>
-            <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-[#67606a]">
-              Generate quizzes. Track progress. Compete.
-            </p>
           </div>
 
           <button
