@@ -56,7 +56,7 @@ export default function TeamPage() {
       ),
   })
 
-  const { data: feed = [] } = useQuery<TeamQuiz[]>({
+  const { data: feed = [], isError: feedError } = useQuery<TeamQuiz[]>({
     queryKey: ['team-feed'],
     queryFn: ({ signal }) =>
       fetch('/api/team/feed', { credentials: 'include', signal }).then((r) =>
@@ -130,7 +130,7 @@ export default function TeamPage() {
       {isLoading ? (
         <p className="font-mono text-xs font-bold text-[#67606a]">Loading...</p>
       ) : team ? (
-        <TeamView team={team} feed={feed} codeCopied={codeCopied} onCopyLink={copyInviteLink} />
+        <TeamView team={team} feed={feed} feedError={feedError} codeCopied={codeCopied} onCopyLink={copyInviteLink} />
       ) : (
         <NoTeamView
           createName={createName}
@@ -151,11 +151,13 @@ export default function TeamPage() {
 function TeamView({
   team,
   feed,
+  feedError,
   codeCopied,
   onCopyLink,
 }: {
   team: Team
   feed: TeamQuiz[]
+  feedError: boolean
   codeCopied: boolean
   onCopyLink: () => void
 }) {
@@ -212,7 +214,11 @@ function TeamView({
       {/* Team feed */}
       <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[6px_6px_0_#151515]">
         <h2 className="text-lg font-black">Team Feed</h2>
-        {feed.length === 0 ? (
+        {feedError ? (
+          <div className="rounded-[1rem] border-[3px] border-[#9c231d] bg-[#ff6b62]/20 px-4 py-3">
+            <p className="font-mono text-xs font-bold text-[#9c231d]">Failed to load feed. Try refreshing.</p>
+          </div>
+        ) : feed.length === 0 ? (
           <div className="py-8 text-center">
             <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#67606a]">
               No quizzes yet. Generate one from the CLI.
