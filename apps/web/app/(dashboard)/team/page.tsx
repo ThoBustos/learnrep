@@ -26,18 +26,33 @@ type Team = {
   members: TeamMember[]
 }
 
-type TeamQuiz = {
-  id: string
-  title: string
-  topic: string
-  difficulty: string
-  questionCount: number
-  is_public: boolean
-  createdAt: string
-  authorName: string | null
-  isOwn: boolean
-  attemptCount: number
-}
+type FeedEvent =
+  | {
+      type: 'generated'
+      id: string
+      quizId: string
+      title: string
+      topic: string
+      difficulty: string
+      questionCount: number
+      is_public: boolean
+      timestamp: string
+      actorName: string | null
+      isOwn: boolean
+      attemptCount: number
+    }
+  | {
+      type: 'taken'
+      id: string
+      quizId: string
+      title: string
+      topic: string
+      difficulty: string
+      score: number
+      timestamp: string
+      actorName: string | null
+      isOwn: boolean
+    }
 
 type LeaderboardEntry = {
   userId: string
@@ -66,7 +81,7 @@ export default function TeamPage() {
       ),
   })
 
-  const { data: feed = [], isError: feedError } = useQuery<TeamQuiz[]>({
+  const { data: feed = [], isError: feedError } = useQuery<FeedEvent[]>({
     queryKey: ['team-feed'],
     queryFn: ({ signal }) =>
       fetch('/api/team/feed', { credentials: 'include', signal }).then((r) =>
@@ -176,7 +191,7 @@ function TeamView({
   onCopyLink,
 }: {
   team: Team
-  feed: TeamQuiz[]
+  feed: FeedEvent[]
   feedError: boolean
   leaderboard: LeaderboardEntry[]
   codeCopied: boolean
@@ -258,34 +273,60 @@ function TeamView({
             </p>
           </div>
         ) : (
-          feed.map((quiz) => <TeamFeedRow key={quiz.id} quiz={quiz} />)
+          feed.map((event) => <TeamFeedRow key={event.type === 'generated' ? event.id : `taken-${event.id}`} event={event} />)
         )}
       </div>
     </div>
   )
 }
 
-function TeamFeedRow({ quiz }: { quiz: TeamQuiz }) {
-  const tone = difficultyStyles[quiz.difficulty as Difficulty] ?? difficultyStyles.medium
+function TeamFeedRow({ event }: { event: FeedEvent }) {
+  const tone = difficultyStyles[event.difficulty as Difficulty] ?? difficultyStyles.medium
+  const actor = event.isOwn ? 'You' : (event.actorName ?? 'Teammate')
+
+  if (event.type === 'generated') {
+    return (
+      <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5">
+        <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, tone.bg)}>
+          <span className={cn('font-mono text-[9px] font-black uppercase', tone.text)}>
+            {event.topic.slice(0, 2)}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-black">{event.title}</p>
+          <p className="font-mono text-[10px] font-bold text-[#67606a]">
+            {actor} generated · {event.questionCount}q · {event.attemptCount} attempts
+          </p>
+        </div>
+        <Link
+          href={`/quiz/${event.quizId}`}
+          className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
+        >
+          Go
+        </Link>
+      </div>
+    )
+  }
+
+  const pct = Math.round(event.score)
+  const scoreColor = pct >= 80 ? 'bg-[#d9ff69] text-[#1e6f38]' : pct >= 50 ? 'bg-[#ffd426] text-[#151515]' : 'bg-[#ff6b62]/30 text-[#9c231d]'
+
   return (
-    <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5">
-      <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, tone.bg)}>
+    <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#e5e3e6] bg-white/60 p-3 shadow-[2px_2px_0_#e5e3e6] transition-transform hover:-translate-y-0.5">
+      <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, 'bg-white/80')}>
         <span className={cn('font-mono text-[9px] font-black uppercase', tone.text)}>
-          {quiz.topic.slice(0, 2)}
+          {event.topic.slice(0, 2)}
         </span>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-black">{quiz.title}</p>
+        <p className="truncate text-sm font-black">{event.title}</p>
         <p className="font-mono text-[10px] font-bold text-[#67606a]">
-          {quiz.isOwn ? 'You' : (quiz.authorName ?? 'Teammate')} · {quiz.questionCount}q · {quiz.attemptCount} attempts
+          {actor} took this
         </p>
       </div>
-      <Link
-        href={`/quiz/${quiz.id}`}
-        className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
-      >
-        Go
-      </Link>
+      <div className={cn('shrink-0 rounded-[0.7rem] border-[2px] border-[#151515] px-3 py-1.5 font-mono text-[10px] font-black', scoreColor)}>
+        {pct}%
+      </div>
     </div>
   )
 }
