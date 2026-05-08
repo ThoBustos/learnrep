@@ -71,19 +71,19 @@ export default function AppShell({
   return (
     <NotifContext.Provider value={{ openNotif: () => setNotifOpen(true), unreadCount }}>
       <div
-        className="relative min-h-screen overflow-hidden bg-[#ffd426] text-[#151515]"
+        className="relative min-h-screen overflow-hidden bg-[#F5F4F0] text-[#151515]"
         style={{ fontFamily: 'var(--font-space-grotesk)' }}
       >
         <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
 
         <div className="relative flex min-h-screen">
           {/* Sidebar */}
-          <aside className="hidden w-64 shrink-0 flex-col gap-2 border-r-[3px] border-[#151515] bg-[#ffd426] px-4 py-6 lg:flex">
+          <aside className="hidden w-64 shrink-0 flex-col gap-2 border-r-[3px] border-[#151515] bg-[#151515] px-4 py-6 lg:flex">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-black text-[#ffd426]">
+              <div className="flex size-10 items-center justify-center rounded-full border-[3px] border-[#ffd426] bg-[#ffd426] font-black text-[#151515]">
                 L
               </div>
-              <span className="text-lg font-black tracking-[-0.04em]">LearnRep</span>
+              <span className="text-lg font-black tracking-[-0.04em] text-white">LearnRep</span>
             </div>
 
             <nav className="flex flex-col gap-1">
@@ -96,8 +96,8 @@ export default function AppShell({
                     className={cn(
                       'flex items-center gap-3 rounded-[0.9rem] border-[3px] px-4 py-3 text-sm font-black transition-all',
                       active
-                        ? 'border-[#151515] bg-[#151515] text-[#ffd426] shadow-[3px_3px_0_#ff5858]'
-                        : 'border-transparent hover:border-[#151515] hover:bg-white/50'
+                        ? 'border-[#ffd426] bg-[#ffd426] text-[#151515] shadow-[3px_3px_0_#ff5858]'
+                        : 'border-transparent text-white/60 hover:border-white/20 hover:bg-white/10 hover:text-white'
                     )}
                   >
                     <Icon className="size-5" />
@@ -108,13 +108,13 @@ export default function AppShell({
             </nav>
 
             <div className="mt-auto">
-              <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-[#151515] bg-white/60 px-4 py-3">
-                <div className="flex size-8 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-mono text-xs font-black text-[#ffd426]">
+              <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-white/20 bg-white/10 px-4 py-3">
+                <div className="flex size-8 items-center justify-center rounded-full border-[3px] border-[#ffd426] bg-[#ffd426] font-mono text-xs font-black text-[#151515]">
                   {initials}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-black">{displayName}</p>
-                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-[#67606a]">
+                  <p className="truncate text-sm font-black text-white">{displayName}</p>
+                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-white/50">
                     <FlameIcon size={12} /> {streak} day streak
                   </p>
                 </div>
@@ -124,7 +124,7 @@ export default function AppShell({
 
           {/* Main column */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="flex items-center justify-between border-b-[3px] border-[#151515] bg-[#ffd426] px-5 py-4">
+            <header className="flex items-center justify-between border-b-[3px] border-[#151515] bg-[#F5F4F0] px-5 py-4">
               <div>
                 <h1 className="text-xl font-black leading-tight tracking-[-0.04em]">
                   Good {getTimeOfDay()}, {displayName.split(' ')[0]}
@@ -169,7 +169,7 @@ export default function AppShell({
         </div>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 flex border-t-[3px] border-[#151515] bg-[#ffd426] lg:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 flex border-t-[3px] border-[#151515] bg-[#151515] lg:hidden">
           {navItems.map(({ label, href, Icon }) => {
             const active = pathname === href
             return (
@@ -178,7 +178,7 @@ export default function AppShell({
                 href={href}
                 className={cn(
                   'flex flex-1 flex-col items-center gap-1 py-3 text-[10px] font-black uppercase tracking-[0.1em] transition-colors',
-                  active ? 'bg-[#151515] text-[#ffd426]' : 'text-[#151515]'
+                  active ? 'bg-[#ffd426] text-[#151515]' : 'text-white/60'
                 )}
               >
                 <Icon className="size-5" />
