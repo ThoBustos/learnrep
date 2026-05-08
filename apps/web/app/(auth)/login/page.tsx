@@ -1,32 +1,71 @@
 'use client'
 
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-export default function LoginPage() {
+function LoginContent() {
+  const searchParams = useSearchParams()
+  const next = searchParams.get('next') ?? '/dashboard'
+
   async function signInWithGoogle() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/callback`,
+        redirectTo: `${location.origin}/callback?next=${encodeURIComponent(next)}`,
       },
     })
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-6 rounded-2xl border border-border bg-card p-10 shadow-sm">
-        <h1 className="text-2xl font-bold text-foreground">Welcome to LearnRep</h1>
-        <p className="text-sm text-muted-foreground">Sign in to start building your quiz streak.</p>
-        <button
-          onClick={signInWithGoogle}
-          className="flex items-center gap-3 rounded-xl border border-border bg-surface px-6 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </button>
+    <main
+      className="relative flex min-h-screen items-center justify-center bg-[#ffd426]"
+      style={{ fontFamily: 'var(--font-space-grotesk)' }}
+    >
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+
+      <div className="relative z-10 flex flex-col items-center gap-8">
+        {/* Wordmark */}
+        <div className="flex items-center gap-3">
+          <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-black text-xl text-[#ffd426]">
+            L
+          </div>
+          <span className="text-2xl font-black tracking-[-0.04em]">LearnRep</span>
+        </div>
+
+        {/* Card */}
+        <div className="flex flex-col items-center gap-6 rounded-[1.5rem] border-[3px] border-[#151515] bg-white px-10 py-10 shadow-[8px_8px_0_#151515]">
+          <div className="text-center">
+            <h1 className="text-2xl font-black tracking-[-0.04em]">Sign in to continue</h1>
+            <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[0.15em] text-[#67606a]">
+              Generate quizzes. Track progress. Compete.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={signInWithGoogle}
+            className="flex min-h-[44px] items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white px-6 py-3 text-sm font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
+          >
+            <GoogleIcon />
+            Continue with Google
+          </button>
+
+          <p className="max-w-[240px] text-center font-mono text-[10px] font-bold leading-relaxed text-[#67606a]">
+            By signing in you agree to our terms. No spam, ever.
+          </p>
+        </div>
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   )
 }
 
