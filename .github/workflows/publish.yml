@@ -29,6 +29,4 @@ jobs:
 
       - name: Publish to npm
         # --no-git-checks required: CI checks out a detached HEAD for the tag
-        run: pnpm --filter ./apps/cli publish --no-git-checks --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm --filter ./apps/cli publish --no-git-checks
