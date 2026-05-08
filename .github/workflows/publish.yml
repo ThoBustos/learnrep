@@ -29,4 +29,4 @@ jobs:
 
       - name: Publish to npm
         # --no-git-checks required: CI checks out a detached HEAD for the tag
-        run: pnpm --filter ./apps/cli publish --no-git-checks --provenance
+        run: pnpm --filter ./apps/cli publish --no-git-checks
