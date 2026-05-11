@@ -8,6 +8,7 @@ import { Home, BookOpen, Library, BarChart2, Users, Bell, X, ChevronLeft, Chevro
 import { useQuery } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
+import { useMountEffect } from '@/hooks/useMountEffect'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { NotifContext } from './NotifContext'
@@ -30,9 +31,16 @@ export default function AppShell({
 }) {
   const pathname = usePathname()
   const [notifOpen, setNotifOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return localStorage.getItem('sidebar-collapsed') === 'true'
+  const [collapsed, setCollapsed] = useState(false)
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set())
+
+  useMountEffect(() => {
+    try {
+      setCollapsed(localStorage.getItem('sidebar-collapsed') === 'true')
+
+      const storedDismissed = localStorage.getItem('dismissed-notifications')
+      setDismissed(new Set(storedDismissed ? (JSON.parse(storedDismissed) as string[]) : []))
+    } catch {}
   })
 
   function toggleCollapsed() {
@@ -42,16 +50,6 @@ export default function AppShell({
       return next
     })
   }
-
-  const [dismissed, setDismissed] = useState<Set<string>>(() => {
-    if (typeof window === 'undefined') return new Set()
-    try {
-      const stored = localStorage.getItem('dismissed-notifications')
-      return new Set(stored ? (JSON.parse(stored) as string[]) : [])
-    } catch {
-      return new Set()
-    }
-  })
 
   const { data: user } = useQuery({
     queryKey: ['current-user'],
@@ -106,11 +104,11 @@ export default function AppShell({
                     aria-label="Expand sidebar"
                     className="group/logo relative flex size-10 shrink-0 items-center justify-center"
                   >
-                    <Image src="/logos/robot.svg" alt="LearnRep" width={40} height={40} className="size-10 rounded-[0.65rem] transition-opacity group-hover/logo:opacity-0" />
+                    <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 rounded-[0.65rem] transition-opacity group-hover/logo:opacity-0" />
                     <ChevronRight className="absolute size-5 text-white opacity-0 transition-opacity group-hover/logo:opacity-100" />
                   </button>
                 ) : (
-                  <Image src="/logos/robot.svg" alt="LearnRep" width={40} height={40} className="size-10 shrink-0 rounded-[0.65rem]" />
+                  <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 shrink-0 rounded-[0.65rem]" />
                 )}
                 {!collapsed && (
                   <span className="text-lg font-black tracking-[-0.04em] text-white">LearnRep</span>
@@ -136,6 +134,7 @@ export default function AppShell({
                     key={href}
                     href={href}
                     title={collapsed ? label : undefined}
+                    aria-label={collapsed ? label : undefined}
                     className={cn(
                       'flex items-center rounded-[0.9rem] border-[3px] py-3 text-sm font-black transition-all',
                       collapsed ? 'justify-center px-3' : 'gap-3 px-4',
@@ -204,6 +203,7 @@ export default function AppShell({
                 <button
                   type="button"
                   onClick={() => setNotifOpen(true)}
+                  aria-label="Open notifications"
                   className="relative flex size-10 items-center justify-center rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-white)] font-black shadow-[2px_2px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5"
                 >
                   <Bell className="size-5" />
@@ -258,6 +258,7 @@ export default function AppShell({
                 <button
                   type="button"
                   onClick={() => setNotifOpen(false)}
+                  aria-label="Close notifications"
                   className="flex size-9 items-center justify-center rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-white)] shadow-[2px_2px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5"
                 >
                   <X className="size-4" />
