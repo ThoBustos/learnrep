@@ -371,7 +371,7 @@ function NoTeamView({
           value={createName}
           onChange={(e) => onCreateNameChange(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onCreate()}
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 text-sm font-black placeholder:font-mono placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none focus:shadow-[3px_3px_0_#151515]"
+          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 text-sm font-black placeholder:font-mono placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none"
         />
         <button
           type="button"
@@ -400,7 +400,7 @@ function NoTeamView({
           value={joinCode}
           onChange={(e) => onJoinCodeChange(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && onJoin()}
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 font-mono text-sm font-bold placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none focus:shadow-[3px_3px_0_#151515]"
+          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 font-mono text-sm font-bold placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none"
         />
         <button
           type="button"
