@@ -106,11 +106,11 @@ export default function AppShell({
                     aria-label="Expand sidebar"
                     className="group/logo relative flex size-10 shrink-0 items-center justify-center"
                   >
-                    <Image src="/logos/robot.svg" alt="LearnRep" width={40} height={40} className="size-10 rounded-[0.65rem] transition-opacity group-hover/logo:opacity-0" />
+                    <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 rounded-[0.65rem] transition-opacity group-hover/logo:opacity-0" />
                     <ChevronRight className="absolute size-5 text-white opacity-0 transition-opacity group-hover/logo:opacity-100" />
                   </button>
                 ) : (
-                  <Image src="/logos/robot.svg" alt="LearnRep" width={40} height={40} className="size-10 shrink-0 rounded-[0.65rem]" />
+                  <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 shrink-0 rounded-[0.65rem]" />
                 )}
                 {!collapsed && (
                   <span className="text-lg font-black tracking-[-0.04em] text-white">LearnRep</span>
