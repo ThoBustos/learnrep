@@ -121,7 +121,6 @@ export default function TeamPage() {
   return (
     <div className="flex flex-col gap-6 p-5 lg:p-8">
       <div>
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#67606a]">Collaborate</p>
         <h1 className="text-4xl font-black tracking-[-0.05em]">Team</h1>
       </div>
 
@@ -264,7 +263,7 @@ function TeamFeedRow({ event }: { event: FeedEvent }) {
         </div>
         <Link
           href={`/quiz/${event.quizId}`}
-          className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
+          className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black transition-transform hover:-translate-y-0.5"
         >
           Go
         </Link>
@@ -293,7 +292,7 @@ function TeamFeedRow({ event }: { event: FeedEvent }) {
       </div>
       <Link
         href={`/quiz/${event.quizId}`}
-        className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
+        className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black transition-transform hover:-translate-y-0.5"
       >
         Go
       </Link>
@@ -357,7 +356,7 @@ function NoTeamView({
     <div className="grid gap-5 sm:grid-cols-2">
       {/* Create */}
       <div className="flex flex-col gap-4 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
-        <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515]">
+        <div className="flex size-12 items-center justify-center rounded-full bg-[#151515]">
           <Users className="size-6 text-[#ffd426]" />
         </div>
         <div>
@@ -378,7 +377,7 @@ function NoTeamView({
           type="button"
           onClick={onCreate}
           disabled={isCreating || !createName.trim()}
-          className="rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-3 font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          className="rounded-[1rem] bg-[#151515] py-3 font-black text-[#ffd426] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
         >
           {isCreating ? 'Creating...' : 'Create Team'}
         </button>
@@ -386,7 +385,7 @@ function NoTeamView({
 
       {/* Join */}
       <div className="flex flex-col gap-4 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
-        <div className="flex size-12 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#7bd8ef]">
+        <div className="flex size-12 items-center justify-center rounded-full bg-[#7bd8ef]">
           <span className="font-black text-[#0d5c75]">#</span>
         </div>
         <div>
@@ -407,7 +406,7 @@ function NoTeamView({
           type="button"
           onClick={onJoin}
           disabled={isJoining || !joinCode.trim()}
-          className="rounded-[1rem] border-[3px] border-[#0d5c75] bg-[#7bd8ef] py-3 font-black text-[#0d5c75] shadow-[4px_4px_0_#0d5c75] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          className="rounded-[1rem] bg-[#7bd8ef] py-3 font-black text-[#0d5c75] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
         >
           {isJoining ? 'Joining...' : 'Join Team'}
         </button>
