@@ -1,12 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Copy, Check, Users } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { cn } from '@/lib/utils'
-import { difficultyStyles } from '@/lib/mock-data'
-import type { Difficulty } from '@/lib/mock-data'
+import {
+  AlertPanel,
+  DashboardCanvas,
+  FormGrid,
+  LoadingState,
+  MemberPill,
+  MemberPillList,
+  PageTitle,
+  SetupCard,
+  TeamEventRow,
+  TeamLeaderboardRow,
+  TeamSummaryPanel,
+  TextInput,
+  WorkbookButton,
+  WorkbookEmptyState,
+  WorkbookList,
+  WorkbookPanel,
+  WorkbookPanelHeader,
+} from '@/components/ui/LearningSurface'
 import type { LeaderboardEntry } from '@/app/api/team/leaderboard/route'
 import type { FeedEvent } from '@/app/api/team/feed/route'
 
@@ -119,13 +134,11 @@ export default function TeamPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-5 lg:p-8">
-      <div>
-        <h1 className="text-4xl font-black tracking-[-0.05em]">Team</h1>
-      </div>
+    <DashboardCanvas>
+      <PageTitle title="Team" />
 
       {isLoading ? (
-        <p className="font-mono text-xs font-bold text-[#67606a]">Loading...</p>
+        <LoadingState />
       ) : team ? (
         <TeamView team={team} feed={feed} feedError={feedError} leaderboard={leaderboard} codeCopied={codeCopied} onCopyLink={copyInviteLink} />
       ) : (
@@ -141,7 +154,7 @@ export default function TeamPage() {
           onJoin={joinTeam}
         />
       )}
-    </div>
+    </DashboardCanvas>
   )
 }
 
@@ -161,173 +174,92 @@ function TeamView({
   onCopyLink: () => void
 }) {
   return (
-    <div className="flex flex-col gap-5">
-      {/* Team header */}
-      <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-[#67606a]">Your team</p>
-            <h2 className="text-2xl font-black tracking-[-0.04em]">{team.name}</h2>
-            <p className="mt-1 font-mono text-[10px] font-bold text-[#67606a]">
-              {team.members.length} member{team.members.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-
-          {team.myRole === 'owner' && (
-            <button
-              type="button"
-              onClick={onCopyLink}
-              className={cn(
-                'flex items-center gap-2 rounded-[1rem] border-[3px] border-[#151515] px-5 py-3 font-black shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5',
-                codeCopied ? 'bg-[#d9ff69] text-[#1e6f38]' : 'bg-white text-[#151515]'
-              )}
-            >
-              {codeCopied ? <Check className="size-4" /> : <Copy className="size-4" />}
-              {codeCopied ? 'Link copied!' : 'Copy invite link'}
-            </button>
-          )}
-        </div>
-
-        {/* Members */}
-        <div className="mt-4 flex flex-wrap gap-2">
+    <>
+      <TeamSummaryPanel
+        name={team.name}
+        memberCount={team.members.length}
+        action={team.myRole === 'owner' && (
+          <WorkbookButton
+            onClick={onCopyLink}
+            tone={codeCopied ? 'green' : 'paper'}
+            icon={codeCopied ? Check : Copy}
+          >
+            {codeCopied ? 'Link copied!' : 'Copy invite link'}
+          </WorkbookButton>
+        )}
+      >
+        <MemberPillList>
           {team.members.map((m) => {
             const name = m.displayName ?? 'Anonymous'
             return (
-              <div
-                key={m.userId}
-                className="flex items-center gap-2 rounded-full border-[3px] border-[#151515] bg-[#ffd426]/30 px-3 py-1.5"
-              >
-                <div className="flex size-6 items-center justify-center rounded-full border-[2px] border-[#151515] bg-[#151515] font-mono text-[9px] font-black text-[#ffd426]">
-                  {name[0]?.toUpperCase() ?? '?'}
-                </div>
-                <span className="font-mono text-[10px] font-black">{name}</span>
-                {m.role === 'owner' && (
-                  <span className="font-mono text-[9px] font-bold text-[#67606a]">owner</span>
-                )}
-              </div>
+              <MemberPill key={m.userId} name={name} role={m.role} />
             )
           })}
-        </div>
-      </div>
+        </MemberPillList>
+      </TeamSummaryPanel>
 
-      {/* Leaderboard */}
       {leaderboard.length > 0 && (
-        <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[6px_6px_0_#151515]">
-          <h2 className="text-lg font-black">Leaderboard</h2>
-          <div className="flex flex-col gap-2">
+        <WorkbookPanel>
+          <WorkbookPanelHeader kicker="team" title="Leaderboard" />
+          <WorkbookList>
             {leaderboard.map((entry) => (
-              <TeamLeaderboardRow key={entry.userId} entry={entry} />
+              <TeamLeaderboardRow
+                key={entry.userId}
+                rank={entry.rank}
+                name={entry.displayName ?? 'Anonymous'}
+                generated={entry.quizzesGenerated}
+                taken={entry.quizzesTaken}
+                score={entry.engagementScore}
+              />
             ))}
-          </div>
-        </div>
+          </WorkbookList>
+        </WorkbookPanel>
       )}
 
-      {/* Team feed */}
-      <div className="flex flex-col gap-3 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[6px_6px_0_#151515]">
-        <h2 className="text-lg font-black">Team Feed</h2>
+      <WorkbookPanel>
+        <WorkbookPanelHeader kicker="team" title="Team Feed" />
         {feedError ? (
-          <div className="rounded-[1rem] border-[3px] border-[#9c231d] bg-[#ff6b62]/20 px-4 py-3">
-            <p className="font-mono text-xs font-bold text-[#9c231d]">Failed to load feed. Try refreshing.</p>
-          </div>
+          <WorkbookList><AlertPanel>Failed to load feed. Try refreshing.</AlertPanel></WorkbookList>
         ) : feed.length === 0 ? (
-          <div className="py-8 text-center">
-            <p className="font-mono text-xs font-bold uppercase tracking-widest text-[#67606a]">
-              No quizzes yet. Generate one from the CLI.
-            </p>
-          </div>
+          <WorkbookEmptyState title="No quizzes yet." description="Generate one from the CLI." />
         ) : (
-          feed.map((event) => <TeamFeedRow key={`${event.type}-${event.id}`} event={event} />)
+          <WorkbookList>
+            {feed.map((event) => <TeamFeedRow key={`${event.type}-${event.id}`} event={event} />)}
+          </WorkbookList>
         )}
-      </div>
-    </div>
+      </WorkbookPanel>
+    </>
   )
 }
 
 function TeamFeedRow({ event }: { event: FeedEvent }) {
-  const tone = difficultyStyles[event.difficulty as Difficulty] ?? difficultyStyles.medium
   const actor = event.isOwn ? 'You' : (event.actorName ?? 'Teammate')
 
   if (event.type === 'generated') {
     return (
-      <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5">
-        <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, tone.bg)}>
-          <span className={cn('font-mono text-[9px] font-black uppercase', tone.text)}>
-            {event.topic.slice(0, 2)}
-          </span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-black">{event.title}</p>
-          <p className="font-mono text-[10px] font-bold text-[#67606a]">
-            {actor} generated · {event.questionCount}q · {event.attemptCount} attempts
-          </p>
-        </div>
-        <Link
-          href={`/quiz/${event.quizId}`}
-          className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black transition-transform hover:-translate-y-0.5"
-        >
-          Go
-        </Link>
-      </div>
+      <TeamEventRow
+        title={event.title}
+        topic={event.topic}
+        difficulty={event.difficulty}
+        actor={actor}
+        description={`generated · ${event.questionCount}q · ${event.attemptCount} attempts`}
+        href={`/quiz/${event.quizId}`}
+      />
     )
   }
 
   const pct = Math.round(event.score)
-  const scoreColor = pct >= 80 ? 'bg-[#d9ff69] text-[#1e6f38]' : pct >= 50 ? 'bg-[#ffd426] text-[#151515]' : 'bg-[#ff6b62]/30 text-[#9c231d]'
 
   return (
-    <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#e5e3e6] bg-white/60 p-3 shadow-[2px_2px_0_#e5e3e6] transition-transform hover:-translate-y-0.5">
-      <div className={cn('flex size-10 shrink-0 items-center justify-center rounded-[0.7rem] border-[3px]', tone.border, 'bg-white/80')}>
-        <span className={cn('font-mono text-[9px] font-black uppercase', tone.text)}>
-          {event.topic.slice(0, 2)}
-        </span>
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-black">{event.title}</p>
-        <p className="font-mono text-[10px] font-bold text-[#67606a]">
-          {actor} took this
-        </p>
-      </div>
-      <div className={cn('shrink-0 rounded-[0.7rem] border-[2px] border-[#151515] px-3 py-1.5 font-mono text-[10px] font-black', scoreColor)}>
-        {pct}%
-      </div>
-      <Link
-        href={`/quiz/${event.quizId}`}
-        className="shrink-0 rounded-[0.7rem] border-[3px] border-[#151515] bg-[#ffd426] px-3 py-1.5 font-mono text-[10px] font-black transition-transform hover:-translate-y-0.5"
-      >
-        Go
-      </Link>
-    </div>
-  )
-}
-
-const RANK_STYLES: Record<number, { bg: string; border: string; text: string }> = {
-  1: { bg: 'bg-[#ffd426]', border: 'border-[#151515]', text: 'text-[#151515]' },
-  2: { bg: 'bg-[#e8e8e8]', border: 'border-[#151515]', text: 'text-[#151515]' },
-  3: { bg: 'bg-[#d4a96a]', border: 'border-[#151515]', text: 'text-[#151515]' },
-}
-
-function TeamLeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
-  const name = entry.displayName ?? 'Anonymous'
-  const rank = RANK_STYLES[entry.rank] ?? { bg: 'bg-white', border: 'border-[#e5e3e6]', text: 'text-[#151515]' }
-  return (
-    <div className="flex items-center gap-3 rounded-[1rem] border-[3px] border-[#151515] bg-white p-3 shadow-[3px_3px_0_#151515]">
-      <div className={cn('flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] font-mono text-xs font-black', rank.border, rank.bg, rank.text)}>
-        {entry.rank}
-      </div>
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-full border-[2px] border-[#151515] bg-[#151515] font-mono text-[9px] font-black text-[#ffd426]">
-        {name[0]?.toUpperCase() ?? '?'}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-black">{name}</p>
-        <p className="font-mono text-[10px] font-bold text-[#67606a]">
-          {entry.quizzesGenerated} generated · {entry.quizzesTaken} taken
-        </p>
-      </div>
-      <div className="shrink-0 text-right">
-        <p className="font-mono text-sm font-black">{entry.engagementScore}</p>
-        <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-[#67606a]">pts</p>
-      </div>
-    </div>
+    <TeamEventRow
+      title={event.title}
+      topic={event.topic}
+      difficulty={event.difficulty}
+      actor={actor}
+      description="took this"
+      href={`/quiz/${event.quizId}`}
+      score={pct}
+    />
   )
 }
 
@@ -353,70 +285,49 @@ function NoTeamView({
   onJoin: () => void
 }) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2">
-      {/* Create */}
-      <div className="flex flex-col gap-4 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
-        <div className="flex size-12 items-center justify-center rounded-full bg-[#151515]">
-          <Users className="size-6 text-[#ffd426]" />
-        </div>
-        <div>
-          <h2 className="text-xl font-black">Create a team</h2>
-          <p className="mt-1 font-mono text-[11px] font-bold text-[#67606a]">
-            Start a team and invite teammates with a link.
-          </p>
-        </div>
-        <input
-          type="text"
+    <FormGrid>
+      <SetupCard
+        icon={Users}
+        title="Create a team"
+        description="Start a team and invite teammates with a link."
+      >
+        <TextInput
           placeholder="Team name"
           value={createName}
-          onChange={(e) => onCreateNameChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onCreate()}
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 text-sm font-black placeholder:font-mono placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none"
+          onChange={onCreateNameChange}
+          onEnter={onCreate}
         />
-        <button
-          type="button"
+        <WorkbookButton
           onClick={onCreate}
           disabled={isCreating || !createName.trim()}
-          className="rounded-[1rem] bg-[#151515] py-3 font-black text-[#ffd426] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          tone="ink"
         >
           {isCreating ? 'Creating...' : 'Create Team'}
-        </button>
-      </div>
+        </WorkbookButton>
+      </SetupCard>
 
-      {/* Join */}
-      <div className="flex flex-col gap-4 rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
-        <div className="flex size-12 items-center justify-center rounded-full bg-[#7bd8ef]">
-          <span className="font-black text-[#0d5c75]">#</span>
-        </div>
-        <div>
-          <h2 className="text-xl font-black">Join a team</h2>
-          <p className="mt-1 font-mono text-[11px] font-bold text-[#67606a]">
-            Paste an invite code or link from a teammate.
-          </p>
-        </div>
-        <input
-          type="text"
+      <SetupCard
+        iconLabel="#"
+        title="Join a team"
+        description="Paste an invite code or link from a teammate."
+      >
+        <TextInput
           placeholder="Invite code"
           value={joinCode}
-          onChange={(e) => onJoinCodeChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onJoin()}
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-4 py-3 font-mono text-sm font-bold placeholder:text-[11px] placeholder:font-bold placeholder:text-[#67606a] focus:outline-none"
+          onChange={onJoinCodeChange}
+          onEnter={onJoin}
+          mono
         />
-        <button
-          type="button"
+        <WorkbookButton
           onClick={onJoin}
           disabled={isJoining || !joinCode.trim()}
-          className="rounded-[1rem] bg-[#7bd8ef] py-3 font-black text-[#0d5c75] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+          tone="teal"
         >
           {isJoining ? 'Joining...' : 'Join Team'}
-        </button>
-      </div>
+        </WorkbookButton>
+      </SetupCard>
 
-      {error && (
-        <div className="sm:col-span-2 rounded-[1rem] border-[3px] border-[#9c231d] bg-[#ff6b62]/20 px-4 py-3">
-          <p className="font-mono text-sm font-bold text-[#9c231d]">{error}</p>
-        </div>
-      )}
-    </div>
+      {error && <AlertPanel>{error}</AlertPanel>}
+    </FormGrid>
   )
 }
