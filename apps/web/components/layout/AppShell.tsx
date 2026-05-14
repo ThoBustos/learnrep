@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, X } from 'lucide-react'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
@@ -29,6 +30,19 @@ export default function AppShell({
 }) {
   const pathname = usePathname()
   const [notifOpen, setNotifOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem('sidebar-collapsed') === 'true'
+  })
+
+  function toggleCollapsed() {
+    setCollapsed((prev) => {
+      const next = !prev
+      try { localStorage.setItem('sidebar-collapsed', String(next)) } catch {}
+      return next
+    })
+  }
+
   const [dismissed, setDismissed] = useState<Set<string>>(() => {
     if (typeof window === 'undefined') return new Set()
     try {
@@ -71,60 +85,98 @@ export default function AppShell({
   return (
     <NotifContext.Provider value={{ openNotif: () => setNotifOpen(true), unreadCount }}>
       <div
-        className="relative min-h-screen overflow-hidden bg-[#F5F4F0] text-[#151515]"
+        className="relative min-h-screen overflow-hidden bg-[var(--lr-cream)] text-[var(--lr-ink)]"
         style={{ fontFamily: 'var(--font-space-grotesk)' }}
       >
-        <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-30" />
 
         <div className="relative flex min-h-screen">
           {/* Sidebar */}
-          <aside className="hidden w-64 shrink-0 flex-col gap-2 border-r-[3px] border-[#151515] bg-[#151515] px-4 py-6 lg:flex">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full border-[3px] border-[#ffd426] bg-[#ffd426] font-black text-[#151515]">
-                L
+          <aside className={cn(
+            'hidden shrink-0 flex-col gap-2 border-r-[3px] border-[var(--lr-ink)] bg-[var(--lr-ink)] py-6 transition-[width] duration-200 lg:flex overflow-hidden',
+            collapsed ? 'w-[72px] items-center px-2' : 'w-64 px-4'
+          )}>
+            {/* Logo row */}
+            <div className={cn('mb-6 flex items-center', collapsed ? 'justify-center' : 'justify-between gap-3')}>
+              <div className="flex shrink-0 items-center gap-3">
+                {collapsed ? (
+                  <button
+                    type="button"
+                    onClick={toggleCollapsed}
+                    aria-label="Expand sidebar"
+                    className="group/logo relative flex size-10 shrink-0 items-center justify-center"
+                  >
+                    <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 rounded-[0.65rem] transition-opacity group-hover/logo:opacity-0" />
+                    <ChevronRight className="absolute size-5 text-white opacity-0 transition-opacity group-hover/logo:opacity-100" />
+                  </button>
+                ) : (
+                  <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 shrink-0 rounded-[0.65rem]" />
+                )}
+                {!collapsed && (
+                  <span className="text-lg font-black tracking-[-0.04em] text-white">LearnRep</span>
+                )}
               </div>
-              <span className="text-lg font-black tracking-[-0.04em] text-white">LearnRep</span>
+              {!collapsed && (
+                <button
+                  type="button"
+                  onClick={toggleCollapsed}
+                  className="flex size-7 shrink-0 items-center justify-center rounded-[0.5rem] border-[2px] border-white/20 text-white/40 transition-colors hover:border-white/40 hover:text-white/70"
+                  aria-label="Collapse sidebar"
+                >
+                  <ChevronLeft className="size-3.5" />
+                </button>
+              )}
             </div>
 
-            <nav className="flex flex-col gap-1">
+            <nav className="flex w-full flex-col gap-1">
               {navItems.map(({ label, href, Icon }) => {
                 const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
                 return (
                   <Link
                     key={href}
                     href={href}
+                    title={collapsed ? label : undefined}
                     className={cn(
-                      'flex items-center gap-3 rounded-[0.9rem] border-[3px] px-4 py-3 text-sm font-black transition-all',
+                      'flex items-center rounded-[0.9rem] border-[3px] py-3 text-sm font-black transition-all',
+                      collapsed ? 'justify-center px-3' : 'gap-3 px-4',
                       active
-                        ? 'border-[#ffd426] bg-[#ffd426] text-[#151515] shadow-[3px_3px_0_#ff5858]'
+                        ? 'border-[var(--lr-yellow)] bg-[var(--lr-yellow)] text-[var(--lr-ink)]'
                         : 'border-transparent text-white/60 hover:border-white/20 hover:bg-white/10 hover:text-white'
                     )}
                   >
-                    <Icon className="size-5" />
-                    {label}
+                    <Icon className="size-5 shrink-0" />
+                    {!collapsed && label}
                   </Link>
                 )
               })}
             </nav>
 
-            <div className="mt-auto">
-              <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-white/20 bg-white/10 px-4 py-3">
-                <div className="flex size-8 items-center justify-center rounded-full border-[3px] border-[#ffd426] bg-[#ffd426] font-mono text-xs font-black text-[#151515]">
-                  {initials}
+            <div className="mt-auto w-full">
+              {collapsed ? (
+                <div className="flex justify-center rounded-[0.9rem] border-[3px] border-white/20 bg-white/10 p-3">
+                  <div className="flex size-8 items-center justify-center rounded-full border-[3px] border-[var(--lr-yellow)] bg-[var(--lr-yellow)] font-mono text-xs font-black text-[var(--lr-ink)]">
+                    {initials}
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-black text-white">{displayName}</p>
-                  <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-white/50">
-                    <FlameIcon size={12} /> {streak} day streak
-                  </p>
+              ) : (
+                <div className="flex items-center gap-3 rounded-[0.9rem] border-[3px] border-white/20 bg-white/10 px-4 py-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--lr-yellow)] bg-[var(--lr-yellow)] font-mono text-xs font-black text-[var(--lr-ink)]">
+                    {initials}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black text-white">{displayName}</p>
+                    <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-white/50">
+                      <FlameIcon size={12} /> {streak} day streak
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </aside>
 
           {/* Main column */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="flex items-center justify-between border-b-[3px] border-[#151515] bg-[#F5F4F0] px-5 py-4">
+            <header className="flex items-center justify-between border-b-[3px] border-[var(--lr-ink)] bg-[var(--lr-cream)] px-5 py-4">
               <div>
                 <h1 className="text-xl font-black leading-tight tracking-[-0.04em]">
                   Good {getTimeOfDay()}, {displayName.split(' ')[0]}
@@ -132,7 +184,7 @@ export default function AppShell({
               </div>
               <div className="flex items-center gap-3">
                 {streak > 0 && (
-                  <div className="hidden items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] px-4 py-2 text-[#ffd426] sm:flex">
+                  <div className="hidden items-center gap-2 rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-ink)] px-4 py-2 text-[var(--lr-yellow)] sm:flex">
                     <FlameIcon size={20} />
                     <span className="font-black">{streak} day streak</span>
                   </div>
@@ -140,7 +192,7 @@ export default function AppShell({
 
                 <Link
                   href="/docs"
-                  className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-3 py-2 font-mono text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5 sm:flex"
+                  className="hidden items-center gap-1.5 rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-white)] px-3 py-2 font-mono text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5 sm:flex"
                 >
                   Docs
                 </Link>
@@ -152,11 +204,11 @@ export default function AppShell({
                 <button
                   type="button"
                   onClick={() => setNotifOpen(true)}
-                  className="relative flex size-10 items-center justify-center rounded-full border-[3px] border-[#151515] bg-white font-black shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5"
+                  className="relative flex size-10 items-center justify-center rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-white)] font-black shadow-[2px_2px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5"
                 >
                   <Bell className="size-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border-[2px] border-[#151515] bg-[#ff6b62] font-mono text-[9px] font-black text-white">
+                    <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full border-[2px] border-[var(--lr-ink)] bg-[var(--lr-red)] font-mono text-[9px] font-black text-white">
                       {unreadCount}
                     </span>
                   )}
@@ -169,7 +221,7 @@ export default function AppShell({
         </div>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 flex border-t-[3px] border-[#151515] bg-[#151515] lg:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 flex border-t-[3px] border-[var(--lr-ink)] bg-[var(--lr-ink)] lg:hidden">
           {navItems.map(({ label, href, Icon }) => {
             const active = pathname === href
             return (
@@ -178,7 +230,7 @@ export default function AppShell({
                 href={href}
                 className={cn(
                   'flex flex-1 flex-col items-center gap-1 py-3 text-[10px] font-black uppercase tracking-[0.1em] transition-colors',
-                  active ? 'bg-[#ffd426] text-[#151515]' : 'text-white/60'
+                  active ? 'bg-[var(--lr-yellow)] text-[var(--lr-ink)]' : 'text-white/60'
                 )}
               >
                 <Icon className="size-5" />
@@ -198,15 +250,15 @@ export default function AppShell({
               aria-label="Close notifications"
             />
             <div
-              className="relative z-10 flex w-full max-w-sm flex-col border-l-[3px] border-[#151515] bg-[#fff7ec] shadow-[-6px_0_0_#151515]"
+              className="relative z-10 flex w-full max-w-sm flex-col border-l-[3px] border-[var(--lr-ink)] bg-[var(--lr-cream)] shadow-[-6px_0_0_var(--lr-ink)]"
               style={{ fontFamily: 'var(--font-space-grotesk)' }}
             >
-              <div className="flex items-center justify-between border-b-[3px] border-[#151515] px-5 py-4">
+              <div className="flex items-center justify-between border-b-[3px] border-[var(--lr-ink)] px-5 py-4">
                 <h2 className="text-lg font-black">Notifications</h2>
                 <button
                   type="button"
                   onClick={() => setNotifOpen(false)}
-                  className="flex size-9 items-center justify-center rounded-full border-[3px] border-[#151515] bg-white shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
+                  className="flex size-9 items-center justify-center rounded-[0.9rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-white)] shadow-[2px_2px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5"
                 >
                   <X className="size-4" />
                 </button>
