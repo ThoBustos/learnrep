@@ -72,8 +72,8 @@ export default function ResultPage() {
   // Loading state when fetching attempt
   if (attemptId && isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
-        <div className="font-mono text-sm font-bold text-[#67606a]">Loading results...</div>
+      <div className="flex min-h-screen items-center justify-center bg-[var(--lr-notebook)]">
+        <div className="font-mono text-sm font-bold text-[var(--lr-muted)]">Loading results...</div>
       </div>
     )
   }
@@ -82,30 +82,30 @@ export default function ResultPage() {
 
   return (
     <div
-      className="relative min-h-screen bg-[#ffd426] text-[#151515]"
+      className="relative min-h-screen bg-[var(--lr-notebook)] text-[var(--lr-ink)]"
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+      <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-70" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col gap-5 p-5 lg:p-8">
         {/* Score hero */}
         <div className={cn(
-          'flex flex-col items-center gap-3 rounded-[1.5rem] border-[3px] border-[#151515] py-10 shadow-[6px_6px_0_#151515]',
-          isHigh ? 'bg-[#d9ff69]' : 'bg-white/80'
+          'flex flex-col items-center gap-3 border-[3px] border-[var(--lr-line)] py-10 shadow-[var(--lr-shadow-lg)]',
+          isHigh ? 'bg-[var(--lr-green)]' : 'bg-white/85'
         )}>
           {isHigh && (
-            <div className="rounded-full border-[3px] border-[#1e6f38] bg-[#151515] px-5 py-1.5">
-              <p className="font-mono text-xs font-black text-[#d9ff69]">Nice work!</p>
+            <div className="rounded-full border-[3px] border-[var(--lr-green-dark)] bg-[var(--lr-ink)] px-5 py-1.5">
+              <p className="font-mono text-xs font-black text-[var(--lr-green)]">Nice work!</p>
             </div>
           )}
           <p className={cn(
-            'text-8xl font-black leading-none tracking-[-0.06em]',
-            isHigh ? 'text-[#1e6f38]' : 'text-[#151515]'
+            'text-8xl font-black leading-none tracking-normal',
+            isHigh ? 'text-[var(--lr-green-dark)]' : 'text-[var(--lr-ink)]'
           )}>
             {avgScore}%
           </p>
           {hasReview && (
-            <p className={cn('text-lg font-black', isHigh ? 'text-[#1e6f38]' : 'text-[#67606a]')}>
+            <p className={cn('text-lg font-black', isHigh ? 'text-[var(--lr-green-dark)]' : 'text-[var(--lr-muted)]')}>
               {correctCount} of {totalCount} correct
             </p>
           )}
@@ -115,8 +115,8 @@ export default function ResultPage() {
             type="button"
             onClick={shareResult}
             className={cn(
-              'mt-2 flex items-center gap-2 rounded-[0.9rem] border-[3px] border-[#151515] px-5 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5',
-              copied ? 'bg-[#151515] text-[#ffd426]' : 'bg-white text-[#151515]'
+              'mt-2 flex items-center gap-2 border-[3px] border-[var(--lr-line)] px-5 py-2.5 font-mono text-[10px] font-black uppercase tracking-widest shadow-[var(--lr-shadow-sm)] transition-transform hover:-translate-y-0.5',
+              copied ? 'bg-[var(--lr-ink)] text-[var(--lr-yolk)]' : 'bg-white text-[var(--lr-ink)]'
             )}
           >
             {copied ? <Check className="size-3.5" /> : <Share2 className="size-3.5" />}
@@ -126,23 +126,25 @@ export default function ResultPage() {
 
         {/* Per-question review — only when we have real answer data */}
         {hasReview && (
-          <div className="flex flex-col gap-3 rounded-[1.3rem] border-[3px] border-[#151515] bg-white/70 p-5 shadow-[5px_5px_0_#151515]">
+          <div className="flex flex-col gap-3 border-[3px] border-[var(--lr-line)] bg-white/75 p-5 shadow-[5px_5px_0_var(--lr-line)]">
             <h2 className="text-lg font-black">Question Review</h2>
             <div className="flex flex-col gap-3">
               {answers.map((a, i) => (
                 <div
                   key={a.questionId}
                   className={cn(
-                    'rounded-[1rem] border-[3px] border-[#151515] p-4 shadow-[2px_2px_0_#151515]',
-                    a.correct ? 'bg-[#d9ff69]/40' : 'bg-[#ff6b62]/20'
+                    'border-[3px] p-4 shadow-[var(--lr-shadow-sm)]',
+                    a.correct
+                      ? 'border-[var(--lr-green-dark)] bg-[color:color-mix(in_srgb,var(--lr-green)_40%,white)]'
+                      : 'border-[var(--lr-red-dark)] bg-[color:color-mix(in_srgb,var(--lr-red)_20%,white)]'
                   )}
                 >
                   <div className="flex items-start gap-3">
                     <div className={cn(
                       'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-[2px] font-mono text-[10px] font-black',
                       a.correct
-                        ? 'border-[#1e6f38] bg-[#d9ff69] text-[#1e6f38]'
-                        : 'border-[#9c231d] bg-[#ff6b62] text-[#9c231d]'
+                        ? 'border-[var(--lr-green-dark)] bg-[var(--lr-green)] text-[var(--lr-green-dark)]'
+                        : 'border-[var(--lr-red-dark)] bg-[var(--lr-red)] text-[var(--lr-ink)]'
                     )}>
                       {a.correct ? '✓' : '✗'}
                     </div>
@@ -150,16 +152,16 @@ export default function ResultPage() {
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-black">Q{i + 1}: {a.prompt}</p>
                         {a.type !== 'multiple-choice' && (
-                          <span className="font-mono text-[10px] font-black text-[#67606a]">{a.score}%</span>
+                          <span className="font-mono text-[10px] font-black text-[var(--lr-muted)]">{a.score}%</span>
                         )}
                       </div>
-                      <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a]">
+                      <p className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[var(--lr-muted)]">
                         {a.type === 'multiple-choice' ? 'Single choice' :
                          a.type === 'multi-select' ? 'Multi-select' :
                          a.type === 'open-ended' ? 'Open ended' : 'Code'}
                       </p>
                       {a.feedback && !a.correct && (
-                        <p className="mt-1 text-xs text-[#67606a]">{a.feedback}</p>
+                        <p className="mt-1 text-xs text-[var(--lr-muted)]">{a.feedback}</p>
                       )}
                     </div>
                   </div>
@@ -173,13 +175,13 @@ export default function ResultPage() {
         <div className="flex gap-3">
           <Link
             href={`/quiz/${id}/take`}
-            className="flex-1 rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-center text-base font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5"
+            className="flex-1 border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] py-4 text-center text-base font-black text-[var(--lr-yolk)] shadow-[4px_4px_0_var(--lr-tomato)] transition-transform hover:-translate-y-0.5"
           >
             Retry
           </Link>
           <Link
             href={`/quiz/${id}`}
-            className="flex-1 rounded-[1rem] border-[3px] border-[#151515] bg-white py-4 text-center text-base font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
+            className="flex-1 border-[3px] border-[var(--lr-line)] bg-white py-4 text-center text-base font-black shadow-[var(--lr-shadow-md)] transition-transform hover:-translate-y-0.5"
           >
             Back to quiz
           </Link>
