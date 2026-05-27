@@ -51,7 +51,17 @@ export async function GET(
       .single()
 
     if (!error && data) {
-      return NextResponse.json(data)
+      if (data.user_id !== user.id) {
+        return NextResponse.json({ ...data, pendingAccessRequestCount: 0 })
+      }
+
+      const { count } = await db
+        .from('quiz_access_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('quiz_id', id)
+        .eq('status', 'pending')
+
+      return NextResponse.json({ ...data, pendingAccessRequestCount: count ?? 0 })
     }
   }
 
@@ -68,7 +78,7 @@ export async function GET(
     return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
   }
 
-  return NextResponse.json(data)
+  return NextResponse.json({ ...data, pendingAccessRequestCount: 0 })
 }
 
 // PATCH — owner only, update is_public

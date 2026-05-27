@@ -30,6 +30,7 @@ type Quiz = {
   questions: unknown[]
   is_public: boolean
   share_code: string | null
+  pendingAccessRequestCount?: number
 }
 
 type LeaderboardEntry = {
@@ -44,6 +45,13 @@ type LeaderboardEntry = {
   rank: number
 }
 
+type AccessRequestState = {
+  requestId: string | null
+  status: 'pending' | 'approved' | 'rejected' | null
+  createdAt: string | null
+  resolvedAt: string | null
+}
+
 export default function QuizDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { openNotif, unreadCount } = useContext(NotifContext)
@@ -52,6 +60,7 @@ export default function QuizDetailPage() {
   const [copied, setCopied] = useState(false)
   const [isPublicOverride, setIsPublicOverride] = useState<boolean | null>(null)
   const [isSavedOverride, setIsSavedOverride] = useState<boolean | null>(null)
+  const [accessRequestOverride, setAccessRequestOverride] = useState<AccessRequestState['status']>(null)
 
   const { data: currentUser } = useQuery({
     queryKey: ['current-user'],
@@ -86,6 +95,15 @@ export default function QuizDetailPage() {
     enabled: !!currentUser && !!quiz && !isOwner,
   })
   const effectiveIsSaved = isSavedOverride ?? librarySave?.saved ?? false
+  const { data: accessRequest } = useQuery<AccessRequestState>({
+    queryKey: ['quiz-access-request', id],
+    queryFn: ({ signal }) =>
+      fetch(`/api/quiz/${id}/access-requests`, { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : { requestId: null, status: null, createdAt: null, resolvedAt: null }
+      ),
+    enabled: !!currentUser && !quizLoading && !quiz,
+  })
+  const effectiveAccessRequestStatus = accessRequestOverride ?? accessRequest?.status ?? null
 
   async function toggleVisibility() {
     if (!quiz) return
@@ -102,6 +120,7 @@ export default function QuizDetailPage() {
         setIsPublicOverride(!newValue) // revert
       } else {
         queryClient.invalidateQueries({ queryKey: ['quiz', id] })
+        queryClient.invalidateQueries({ queryKey: ['notifications'] })
         if (newValue) {
           queryClient.invalidateQueries({ queryKey: ['leaderboard', id] })
         }
@@ -141,17 +160,67 @@ export default function QuizDetailPage() {
     }
   }
 
+  async function requestAccess() {
+    setAccessRequestOverride('pending')
+    try {
+      const res = await fetch(`/api/quiz/${id}/access-requests`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+
+      if (!res.ok) {
+        setAccessRequestOverride(null)
+        return
+      }
+
+      const data = await res.json() as AccessRequestState
+      setAccessRequestOverride(data.status)
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    } catch {
+      setAccessRequestOverride(null)
+    }
+  }
+
   if (quizLoading) {
     return <CenteredState label="Loading..." />
   }
 
   if (!quiz) {
-    return <CenteredState label="Quiz not found." />
+    return (
+      <DashboardCanvas>
+        <WorkbookPanel>
+          <WorkbookEmptyState
+            title="Private quiz"
+            description={
+              effectiveAccessRequestStatus === 'pending'
+                ? 'Your access request is pending owner approval.'
+                : effectiveAccessRequestStatus === 'rejected'
+                ? 'The owner declined this access request. You can send a new request.'
+                : 'Request access from the quiz owner.'
+            }
+            action={
+              <WorkbookButton
+                onClick={requestAccess}
+                disabled={effectiveAccessRequestStatus === 'pending'}
+                tone={effectiveAccessRequestStatus === 'pending' ? 'green' : 'yolk'}
+              >
+                {effectiveAccessRequestStatus === 'pending'
+                  ? 'Requested'
+                  : effectiveAccessRequestStatus === 'rejected'
+                  ? 'Request again'
+                  : 'Request access'}
+              </WorkbookButton>
+            }
+          />
+        </WorkbookPanel>
+      </DashboardCanvas>
+    )
   }
 
   const questionCount = Array.isArray(quiz.questions) ? quiz.questions.length : 0
   const estMinutes = Math.round(questionCount * 1.5)
   const attemptCount = leaderboard.length
+  const pendingAccessRequestCount = quiz.pendingAccessRequestCount ?? 0
 
   return (
     <DashboardCanvas>
@@ -167,6 +236,7 @@ export default function QuizDetailPage() {
           { value: questionCount, label: 'questions' },
           { value: `~${estMinutes} min`, label: 'to complete' },
           { value: attemptCount, label: 'attempts' },
+          ...(isOwner ? [{ value: pendingAccessRequestCount, label: 'pending' }] : []),
         ]}
       />
 
