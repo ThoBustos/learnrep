@@ -181,6 +181,7 @@ export default function QuizDetailPage() {
     }
   }
 
+
   if (quizLoading) {
     return <CenteredState label="Loading..." />
   }
