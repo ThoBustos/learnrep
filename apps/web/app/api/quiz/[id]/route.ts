@@ -100,12 +100,13 @@ export async function PATCH(
     .from('quizzes')
     .update({ is_public })
     .eq('id', id)
+    .eq('user_id', user.id)
     .select('id, is_public')
     .single()
 
   if (error || !data) {
     console.error('Quiz update error:', error)
-    return NextResponse.json({ error: 'Failed to update quiz' }, { status: 500 })
+    return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
   }
 
   return NextResponse.json(data)

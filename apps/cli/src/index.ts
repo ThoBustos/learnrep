@@ -103,9 +103,43 @@ program
 
 program
   .command('share <quiz-id>')
-  .description('Print the share link for a quiz and open it in the browser')
-  .action((quizId: string) => {
-    const url = `${API_BASE}/quiz/${quizId}/take`
+  .description('Make a quiz public, print the share link, and open it in the browser')
+  .action(async (quizId: string) => {
+    const token = await requireAuth()
+    const normalizedQuizId = quizId.trim()
+    if (!normalizedQuizId) {
+      console.error('quiz-id is required')
+      process.exit(1)
+    }
+
+    let res: Response
+    try {
+      res = await fetch(`${API_BASE}/api/quiz/${encodeURIComponent(normalizedQuizId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ is_public: true }),
+      })
+    } catch {
+      console.error(`Could not reach ${API_BASE}. Is LEARNREP_API_URL set correctly?`)
+      process.exit(1)
+    }
+
+    if (res.status === 401) {
+      console.error('Session expired. Run: lr login')
+      process.exit(1)
+    }
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => res.statusText)
+      console.error(`Share failed: ${text}`)
+      process.exit(1)
+    }
+
+    const data = await res.json() as { id: string; is_public: boolean }
+    const url = `${API_BASE}/quiz/${data.id}/take`
     console.log(url)
     openBrowser(url)
   })
