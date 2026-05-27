@@ -5,8 +5,9 @@ import * as fs from 'node:fs'
 import * as path from 'node:path'
 import * as os from 'node:os'
 
-const CONFIG_DIR = path.join(os.homedir(), '.config', 'learnrep')
+const CONFIG_DIR = path.join(os.homedir(), '.learnrep')
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json')
+const LEGACY_CONFIG_FILE = path.join(os.homedir(), '.config', 'learnrep', 'config.json')
 const LOGIN_TIMEOUT_MS = 5 * 60 * 1000
 
 export interface AuthConfig {
@@ -21,6 +22,10 @@ export interface AuthConfig {
 export function readConfig(): AuthConfig | null {
   try {
     return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')) as AuthConfig
+  } catch {}
+
+  try {
+    return JSON.parse(fs.readFileSync(LEGACY_CONFIG_FILE, 'utf8')) as AuthConfig
   } catch {
     return null
   }
@@ -34,9 +39,11 @@ export function writeConfig(config: AuthConfig): void {
 export function clearConfig(): void {
   try {
     fs.unlinkSync(CONFIG_FILE)
-  } catch {
-    // already gone
-  }
+  } catch {}
+
+  try {
+    fs.unlinkSync(LEGACY_CONFIG_FILE)
+  } catch {}
 }
 
 export function openBrowser(url: string): void {

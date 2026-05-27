@@ -30,8 +30,8 @@ export function readContentInput(contentPath?: string): string | undefined {
   return fs.readFileSync(resolved, 'utf-8')
 }
 
-export function validateGenerateInput(topic: string | undefined, content: string | undefined): void {
-  if (!topic && !content) {
-    throw new Error('Provide a topic or use --content <file>')
+export function validateGenerateInput(topic: string | undefined, content: string | undefined, focus?: string): void {
+  if (!topic?.trim() && !content?.trim() && !focus?.trim()) {
+    throw new Error('Provide a topic, --focus <string>, or --content <file>')
   }
 }

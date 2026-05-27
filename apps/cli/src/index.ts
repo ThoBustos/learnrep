@@ -46,7 +46,7 @@ program
 
     try {
       content = readContentInput(opts.content)
-      validateGenerateInput(topic, content)
+      validateGenerateInput(topic, content, opts.focus)
     } catch (error) {
       console.error(error instanceof Error ? error.message : 'Generate failed')
       process.exit(1)
@@ -58,7 +58,8 @@ program
 
     const token = await requireAuth()
 
-    process.stdout.write(`Generating ${count} ${difficulty} question(s) on "${topic ?? 'content'}"...\n`)
+    const generationLabel = topic?.trim() || opts.focus?.trim() || 'content'
+    process.stdout.write(`Generating ${count} ${difficulty} question(s) on "${generationLabel}"...\n`)
 
     let res: Response
     try {
@@ -70,7 +71,11 @@ program
         },
         body: JSON.stringify({
           topic: (topic ?? '').trim() || undefined,
+          focus: opts.focus?.trim() || undefined,
+          content,
           difficulty,
+          count,
+          types,
           source: 'cli',
         }),
       })
@@ -146,9 +151,9 @@ program
 
 program
   .command('login')
-  .description('Authenticate via Google in the browser — stores token at ~/.config/learnrep/config.json')
+  .description('Authenticate via Google in the browser — stores token at ~/.learnrep/config.json')
   .action(async () => {
-    const apiBase = process.env.LEARNREP_API_URL ?? 'http://localhost:3000'
+    const apiBase = API_BASE
     try {
       process.stdout.write(`Connecting to ${apiBase}...\n`)
       const config = await login(apiBase)

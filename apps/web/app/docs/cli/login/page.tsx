@@ -8,7 +8,7 @@ export default function LoginPage() {
 
       <H2>Login</H2>
       <Pre>{`lr login`}</Pre>
-      <P>Opens a browser OAuth flow. On completion, stores your token at <code className="font-mono text-xs font-bold">~/.learnrep/config.json</code>.</P>
+      <P>Opens a browser OAuth flow. On completion, stores your token at <code className="font-mono text-xs font-bold">~/.learnrep/config.json</code>. For local development, set <code className="font-mono text-xs font-bold">LEARNREP_API_URL=http://localhost:3456</code>.</P>
 
       <H2>Logout</H2>
       <Pre>{`lr logout`}</Pre>
