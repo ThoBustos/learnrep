@@ -24,7 +24,7 @@ export function LandingNav({ stars }: Props) {
           href="/login"
           className="rounded-[0.6rem] border-[3px] border-[var(--lr-ink)] bg-[var(--lr-yellow)] px-4 py-2 font-mono text-[11px] font-black uppercase tracking-widest text-[var(--lr-ink)] shadow-[3px_3px_0_var(--lr-ink)] transition-transform hover:-translate-y-0.5"
         >
-          Sign in
+          Log In
         </Link>
       </nav>
     </header>
