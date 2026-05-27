@@ -11,6 +11,10 @@ export default function McpPage() {
         Model Context Protocol. If your harness supports MCP (Claude Code, Cursor, Windsurf), you
         can call <Code>generate_quiz</Code> as a tool call instead of running a shell command.
       </P>
+      <P>
+        Run <Code>lr login</Code> first. The MCP server reuses the token stored at
+        <Code>~/.learnrep/config.json</Code>.
+      </P>
 
       <H2>Add to your MCP config</H2>
       <Pre>{`{
@@ -22,6 +26,10 @@ export default function McpPage() {
   }
 }`}</Pre>
       <P>For Claude Code, add this to <Code>~/.claude/settings.json</Code> under <Code>mcpServers</Code>.</P>
+      <P>
+        For local development, set <Code>LEARNREP_API_URL=http://localhost:3456</Code> in the MCP
+        server environment.
+      </P>
 
       <H2>Available tools</H2>
       <Ul>

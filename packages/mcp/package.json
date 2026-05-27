@@ -1,0 +1,29 @@
+{
+  "name": "@learnrep/mcp",
+  "version": "0.1.0",
+  "description": "MCP server for LearnRep quiz generation and sharing",
+  "type": "module",
+  "bin": {
+    "learnrep-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "pnpm build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "@supabase/supabase-js": "^2.104.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.4.0"
+  }
+}

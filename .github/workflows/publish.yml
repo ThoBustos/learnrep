@@ -1,4 +1,4 @@
-name: Publish CLI
+name: Publish Packages
 
 on:
   push:
@@ -27,6 +27,13 @@ jobs:
       - name: Build CLI
         run: pnpm --filter ./apps/cli build
 
-      - name: Publish to npm
+      - name: Build MCP
+        run: pnpm --filter @learnrep/mcp build
+
+      - name: Publish CLI to npm
         # --no-git-checks required: CI checks out a detached HEAD for the tag
         run: pnpm --filter ./apps/cli publish --no-git-checks
+
+      - name: Publish MCP to npm
+        # --access public required for the first public publish of a scoped package
+        run: pnpm --filter @learnrep/mcp publish --no-git-checks --access public
