@@ -59,6 +59,29 @@
 }
 
 :root {
+  /* brand tokens — available globally, no per-page inline style needed */
+  --lr-ink:        #151515;
+  --lr-cream:      #fafaf8;
+  --lr-white:      #ffffff;
+  --lr-notebook:   #f4e9cf;
+  --lr-paper:      #fffaf0;
+  --lr-yellow:     #ffd426;
+  --lr-yolk:       #f8d96a;
+  --lr-tomato:     #e6533f;
+  --lr-teal:       #17a6a3;
+  --lr-cobalt:     #2858ff;
+  --lr-mint:       #36d59b;
+  --lr-green:      #d9ff69;
+  --lr-red:        #ff6b62;
+  --lr-blue:       #7bd8ef;
+  --lr-purple:     #b995ff;
+  --lr-muted:      #786e60;
+  --lr-line:       #20201d;
+  --lr-green-dark: #1e6f38;
+  --lr-blue-dark:  #0d5c75;
+  --lr-red-dark:   #9c231d;
+  --lr-purple-dark:#5735a7;
+
   /* base palette */
   --background: #F5F4F0;
   --foreground: #1C1C2E;
@@ -157,6 +180,11 @@
   .bg-dot-grid {
     background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 15%, transparent) 1px, transparent 1px);
     background-size: 18px 18px;
+  }
+
+  .bg-ruled-paper {
+    background-image: linear-gradient(to bottom, transparent 31px, color-mix(in srgb, var(--lr-line) 12%, transparent) 32px);
+    background-size: 100% 32px;
   }
 
   .text-display {
