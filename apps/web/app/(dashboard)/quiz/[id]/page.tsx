@@ -3,7 +3,7 @@
 import { useContext, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Bell, Copy, Lock, Unlock, Check, ChevronLeft } from 'lucide-react'
+import { Bell, Bookmark, BookmarkCheck, Copy, Lock, Unlock, Check, ChevronLeft } from 'lucide-react'
 import {
   ActionBar,
   AttemptRow,
@@ -51,6 +51,7 @@ export default function QuizDetailPage() {
 
   const [copied, setCopied] = useState(false)
   const [isPublicOverride, setIsPublicOverride] = useState<boolean | null>(null)
+  const [isSavedOverride, setIsSavedOverride] = useState<boolean | null>(null)
 
   const { data: currentUser } = useQuery({
     queryKey: ['current-user'],
@@ -76,6 +77,15 @@ export default function QuizDetailPage() {
 
   const isOwner = !!(currentUser && quiz?.user_id && currentUser.id === quiz.user_id)
   const effectiveIsPublic = isPublicOverride ?? quiz?.is_public ?? false
+  const { data: librarySave } = useQuery<{ saved: boolean }>({
+    queryKey: ['library-save', id],
+    queryFn: ({ signal }) =>
+      fetch(`/api/library?quizId=${encodeURIComponent(id)}`, { credentials: 'include', signal }).then((r) =>
+        r.ok ? r.json() : { saved: false }
+      ),
+    enabled: !!currentUser && !!quiz && !isOwner,
+  })
+  const effectiveIsSaved = isSavedOverride ?? librarySave?.saved ?? false
 
   async function toggleVisibility() {
     if (!quiz) return
@@ -107,6 +117,28 @@ export default function QuizDetailPage() {
     }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function toggleLibrarySave() {
+    const newValue = !effectiveIsSaved
+    setIsSavedOverride(newValue)
+    try {
+      const res = await fetch(newValue ? '/api/library' : `/api/library?quizId=${encodeURIComponent(id)}`, {
+        method: newValue ? 'POST' : 'DELETE',
+        headers: newValue ? { 'Content-Type': 'application/json' } : undefined,
+        credentials: 'include',
+        body: newValue ? JSON.stringify({ quizId: id }) : undefined,
+      })
+
+      if (!res.ok) {
+        setIsSavedOverride(!newValue)
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['library'] })
+        queryClient.invalidateQueries({ queryKey: ['library-save', id] })
+      }
+    } catch {
+      setIsSavedOverride(!newValue)
+    }
   }
 
   if (quizLoading) {
@@ -172,6 +204,16 @@ export default function QuizDetailPage() {
               {unreadCount === 1 ? '1 notification' : unreadCount > 1 ? `${unreadCount} notifications` : 'Notifications'}
             </WorkbookButton>
           </>
+        )}
+
+        {currentUser && !isOwner && (
+          <WorkbookButton
+            onClick={toggleLibrarySave}
+            tone={effectiveIsSaved ? 'green' : 'paper'}
+            icon={effectiveIsSaved ? BookmarkCheck : Bookmark}
+          >
+            {effectiveIsSaved ? 'Saved' : 'Save'}
+          </WorkbookButton>
         )}
       </ActionBar>
 
