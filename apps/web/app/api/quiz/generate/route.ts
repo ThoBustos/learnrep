@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import { generateQuiz } from '@learnrep/core'
+import { generateQuiz, normalizeQuestionTypes, QUESTION_TYPES } from '@learnrep/core'
 import { isValidDifficulty } from '@learnrep/core'
-import type { Difficulty } from '@learnrep/core'
+import type { Difficulty, QuestionType } from '@learnrep/core'
 import { callStructured } from '@/lib/llm'
 
 type QuizSource = 'cli' | 'mcp' | 'web'
@@ -61,26 +61,51 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { topic, difficulty = 'medium', source = 'web' } = body as {
+  const { topic, focus, content, difficulty = 'medium', count, types, source = 'web' } = body as {
     topic?: string
+    focus?: string
+    content?: string
     difficulty?: string
+    count?: number
+    types?: unknown
     source?: string
   }
 
-  if (!topic || typeof topic !== 'string' || !topic.trim()) {
-    return NextResponse.json({ error: 'topic is required' }, { status: 400 })
+  const normalizedTopic = typeof topic === 'string' ? topic.trim() : ''
+  const normalizedFocus = typeof focus === 'string' ? focus.trim() : ''
+  const normalizedContent = typeof content === 'string' ? content.trim() : ''
+
+  if (!normalizedTopic && !normalizedFocus && !normalizedContent) {
+    return NextResponse.json({ error: 'topic, focus, or content is required' }, { status: 400 })
   }
   if (!isValidDifficulty(difficulty)) {
     return NextResponse.json({ error: 'difficulty must be easy | medium | hard | expert' }, { status: 400 })
   }
+  if (
+    types !== undefined &&
+    (!Array.isArray(types) ||
+      types.some((type) => typeof type !== 'string' || !QUESTION_TYPES.includes(type as QuestionType)))
+  ) {
+    return NextResponse.json({
+      error: `types must contain only: ${QUESTION_TYPES.join(', ')}`,
+    }, { status: 400 })
+  }
+  const questionCount = typeof count === 'number' && Number.isInteger(count)
+    ? Math.min(20, Math.max(1, count))
+    : undefined
+  const questionTypes = normalizeQuestionTypes(types)
   const validSources: QuizSource[] = ['cli', 'mcp', 'web']
   const quizSource: QuizSource = validSources.includes(source as QuizSource) ? (source as QuizSource) : 'web'
 
   let quiz
   try {
     quiz = await generateQuiz({
-      topic: topic.trim(),
+      topic: normalizedTopic || undefined,
+      focus: normalizedFocus || undefined,
+      content: normalizedContent || undefined,
       difficulty: difficulty as Difficulty,
+      questionCount,
+      questionTypes,
       userId: user.id,
       source: quizSource,
       callStructured,

@@ -123,14 +123,17 @@ export function normalizeQuestion(q: unknown): Question | null {
   return question
 }
 
-export const GENERATE_QUIZ_SYSTEM_PROMPT = `You are an expert quiz generator. Given a topic and difficulty level, generate a quiz with multiple-choice questions.
+export const GENERATE_QUIZ_SYSTEM_PROMPT = `You are an expert quiz generator. Given a topic, optional source content, and difficulty level, generate a quiz.
 
 Rules:
-- Each question must have exactly 4 options
-- correctIndex must be the zero-based index of the correct option
-- Include a brief explanation for each answer
+- For multiple-choice questions, include exactly 4 options and correctIndex as the zero-based correct option
+- For multi-select questions, include 4-6 options and correctIndices as zero-based correct options
+- For open-ended questions, include expectedAnswer and keyPoints
+- For code-writing questions, include language, optional starterCode, expectedSolution, and keyPoints
+- Include a brief explanation for closed-answer questions
 - Questions should escalate in complexity within the difficulty band
 - Avoid trick questions; test genuine understanding
+- Only use the requested question types
 
 Respond with valid JSON only — no markdown fences.`
 
@@ -142,8 +145,7 @@ For code-writing questions, evaluate whether the code would produce the correct 
 
 Respond with JSON: { "correct": boolean, "feedback": string }`
 
-// generateQuiz always requests multiple-choice questions; literal enforces the LLM can't drift to other types.
-export const QuizLLMQuestionSchema = z.object({
+export const MultipleChoiceLLMQuestionSchema = z.object({
   id: z.string(),
   type: z.literal('multiple-choice'),
   prompt: z.string(),
@@ -151,6 +153,40 @@ export const QuizLLMQuestionSchema = z.object({
   correctIndex: z.number().int().min(0).max(3),
   explanation: z.string(),
 })
+
+export const MultiSelectLLMQuestionSchema = z.object({
+  id: z.string(),
+  type: z.literal('multi-select'),
+  prompt: z.string(),
+  options: z.array(z.string()).min(4).max(6),
+  correctIndices: z.array(z.number().int().min(0)).min(1),
+  explanation: z.string(),
+})
+
+export const OpenEndedLLMQuestionSchema = z.object({
+  id: z.string(),
+  type: z.literal('open-ended'),
+  prompt: z.string(),
+  expectedAnswer: z.string(),
+  keyPoints: z.array(z.string()),
+})
+
+export const CodeWritingLLMQuestionSchema = z.object({
+  id: z.string(),
+  type: z.literal('code-writing'),
+  prompt: z.string(),
+  language: z.string(),
+  starterCode: z.string().optional(),
+  expectedSolution: z.string(),
+  keyPoints: z.array(z.string()).default([]),
+})
+
+export const QuizLLMQuestionSchema = z.discriminatedUnion('type', [
+  MultipleChoiceLLMQuestionSchema,
+  MultiSelectLLMQuestionSchema,
+  OpenEndedLLMQuestionSchema,
+  CodeWritingLLMQuestionSchema,
+])
 
 export const QuizLLMOutputSchema = z.object({
   title: z.string(),

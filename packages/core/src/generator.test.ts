@@ -38,3 +38,47 @@ test('generateQuiz rejects when question count does not match difficulty', async
     /expected 5/,
   )
 })
+
+test('generateQuiz accepts count, types, focus, and content', async () => {
+  let prompt = ''
+  const quiz = await generateQuiz({
+    topic: 'TypeScript',
+    focus: 'conditional types',
+    content: 'type Flatten<T> = T extends Array<infer U> ? U : T',
+    difficulty: 'hard',
+    questionCount: 2,
+    questionTypes: ['open-ended', 'code-writing'],
+    userId: 'user-1',
+    source: 'cli',
+    callStructured: <T>(_s: z.ZodType<T>, _sys: string, p: string) => {
+      prompt = p
+      return Promise.resolve({
+        title: 'Conditional types',
+        questions: [
+          {
+            id: 'q1',
+            type: 'open-ended',
+            prompt: 'What does infer do in a conditional type?',
+            expectedAnswer: 'It captures a type variable from the matched branch.',
+            keyPoints: ['captures type variable', 'matched branch'],
+          },
+          {
+            id: 'q2',
+            type: 'code-writing',
+            prompt: 'Write a Flatten type.',
+            language: 'typescript',
+            starterCode: 'type Flatten<T> = unknown',
+            expectedSolution: 'type Flatten<T> = T extends Array<infer U> ? U : T',
+            keyPoints: ['conditional type', 'infer'],
+          },
+        ],
+      } as unknown as T)
+    },
+  })
+
+  assert.equal(quiz.questions.length, 2)
+  assert.equal(quiz.questions[0]?.type, 'open-ended')
+  assert.match(prompt, /conditional types/)
+  assert.match(prompt, /Source content/)
+  assert.match(prompt, /open-ended, code-writing/)
+})
