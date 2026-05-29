@@ -59,7 +59,7 @@
 }
 
 :root {
-  /* brand tokens — available globally, no per-page inline style needed */
+  /* LearnRep brand tokens — canonical source for product, landing, docs, and brand pages. */
   --lr-ink:        #151515;
   --lr-cream:      #fafaf8;
   --lr-white:      #ffffff;
@@ -81,49 +81,52 @@
   --lr-blue-dark:  #0d5c75;
   --lr-red-dark:   #9c231d;
   --lr-purple-dark:#5735a7;
+  --lr-shadow-sm:  2px 2px 0 var(--lr-line);
+  --lr-shadow-md:  4px 4px 0 var(--lr-line);
+  --lr-shadow-lg:  6px 6px 0 var(--lr-line);
 
   /* base palette */
-  --background: #F5F4F0;
-  --foreground: #1C1C2E;
-  --surface: #FFFFFF;
-  --card: #FFFFFF;
-  --card-foreground: #1C1C2E;
-  --popover: #FFFFFF;
-  --popover-foreground: #1C1C2E;
-  --primary: #1C1C2E;
-  --primary-foreground: #F5F4F0;
-  --secondary: #ECEAE4;
-  --secondary-foreground: #1C1C2E;
-  --muted: #ECEAE4;
-  --muted-foreground: #6B6A7A;
-  --accent: #ECEAE4;
-  --accent-foreground: #1C1C2E;
-  --destructive: #C0544A;
-  --border: #E0DED8;
-  --input: #E0DED8;
-  --ring: #1C1C2E;
+  --background: var(--lr-notebook);
+  --foreground: var(--lr-ink);
+  --surface: var(--lr-white);
+  --card: var(--lr-paper);
+  --card-foreground: var(--lr-ink);
+  --popover: var(--lr-white);
+  --popover-foreground: var(--lr-ink);
+  --primary: var(--lr-ink);
+  --primary-foreground: var(--lr-paper);
+  --secondary: var(--lr-paper);
+  --secondary-foreground: var(--lr-ink);
+  --muted: var(--lr-paper);
+  --muted-foreground: var(--lr-muted);
+  --accent: var(--lr-yolk);
+  --accent-foreground: var(--lr-ink);
+  --destructive: var(--lr-tomato);
+  --border: var(--lr-line);
+  --input: var(--lr-line);
+  --ring: var(--lr-ink);
 
   /* difficulty */
-  --difficulty-easy:   #4A9E6E;
-  --difficulty-medium: #4A7FC0;
-  --difficulty-hard:   #C0544A;
-  --difficulty-expert: #7C5AC0;
+  --difficulty-easy:   var(--lr-green-dark);
+  --difficulty-medium: var(--lr-blue-dark);
+  --difficulty-hard:   var(--lr-red-dark);
+  --difficulty-expert: var(--lr-purple-dark);
 
   /* accents */
-  --streak: #C0A84A;
-  --stats:  #4A9EB5;
+  --streak: var(--lr-yolk);
+  --stats:  var(--lr-teal);
 
   --radius: 0.75rem;
 
   /* sidebar */
-  --sidebar: #ECEAE4;
-  --sidebar-foreground: #1C1C2E;
-  --sidebar-primary: #1C1C2E;
-  --sidebar-primary-foreground: #F5F4F0;
-  --sidebar-accent: #E0DED8;
-  --sidebar-accent-foreground: #1C1C2E;
-  --sidebar-border: #E0DED8;
-  --sidebar-ring: #1C1C2E;
+  --sidebar: var(--lr-teal);
+  --sidebar-foreground: var(--lr-white);
+  --sidebar-primary: var(--lr-ink);
+  --sidebar-primary-foreground: var(--lr-yolk);
+  --sidebar-accent: var(--lr-paper);
+  --sidebar-accent-foreground: var(--lr-ink);
+  --sidebar-border: var(--lr-line);
+  --sidebar-ring: var(--lr-ink);
 }
 
 .dark {
