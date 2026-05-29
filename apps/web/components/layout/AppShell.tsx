@@ -4,8 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, Check, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
 import { useMountEffect } from '@/hooks/useMountEffect'
@@ -296,6 +296,68 @@ export default function AppShell({
 }
 
 function NotifCard({ notif, onDismiss }: { notif: AppNotification; onDismiss: () => void }) {
+  const queryClient = useQueryClient()
+  const [resolving, setResolving] = useState<'approved' | 'rejected' | null>(null)
+
+  async function resolveAccessRequest(status: 'approved' | 'rejected') {
+    if (notif.type !== 'access_request') return
+
+    setResolving(status)
+    try {
+      const res = await fetch(`/api/quiz/${notif.quizId}/access-requests/${notif.requestId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status }),
+      })
+
+      if (res.ok) {
+        onDismiss()
+        queryClient.invalidateQueries({ queryKey: ['notifications'] })
+        queryClient.invalidateQueries({ queryKey: ['quiz', notif.quizId] })
+      }
+    } finally {
+      setResolving(null)
+    }
+  }
+
+  if (notif.type === 'access_request') {
+    return (
+      <div className="border-[3px] border-[var(--lr-line)] bg-white p-4 shadow-[3px_3px_0_var(--lr-line)]">
+        <p className="text-sm font-black leading-snug">
+          <span className="text-[var(--lr-purple-dark)]">{notif.requesterName}</span> requested access to{' '}
+          <Link
+            href={`/quiz/${notif.quizId}`}
+            className="underline decoration-2"
+          >
+            {notif.quizTitle}
+          </Link>
+        </p>
+        <p className="mt-1 font-mono text-[10px] font-bold text-[var(--lr-muted)]">{formatTime(notif.createdAt)}</p>
+        <div className="mt-3 flex gap-2">
+          <button
+            type="button"
+            onClick={() => resolveAccessRequest('approved')}
+            disabled={!!resolving}
+            className="inline-flex items-center gap-1.5 border-[2px] border-[var(--lr-green-dark)] bg-[var(--lr-green)] px-2.5 py-1.5 font-mono text-[10px] font-black uppercase tracking-widest text-[var(--lr-green-dark)] disabled:opacity-50"
+          >
+            <Check className="size-3" />
+            {resolving === 'approved' ? 'Approving' : 'Approve'}
+          </button>
+          <button
+            type="button"
+            onClick={() => resolveAccessRequest('rejected')}
+            disabled={!!resolving}
+            className="inline-flex items-center gap-1.5 border-[2px] border-[var(--lr-red-dark)] bg-[var(--lr-red)]/20 px-2.5 py-1.5 font-mono text-[10px] font-black uppercase tracking-widest text-[var(--lr-red-dark)] disabled:opacity-50"
+          >
+            <X className="size-3" />
+            {resolving === 'rejected' ? 'Rejecting' : 'Reject'}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="border-[3px] border-[var(--lr-line)] bg-white p-4 shadow-[3px_3px_0_var(--lr-line)]">
       <p className="text-sm font-black leading-snug">
