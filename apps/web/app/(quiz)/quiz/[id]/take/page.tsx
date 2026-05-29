@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
+import { ProgressMeter } from '@/components/ui/LearningSurface'
 import { cn } from '@/lib/utils'
 import { evaluateAnswer } from '@learnrep/core'
 import type { EvaluationResult, Question, Quiz } from '@learnrep/core'
@@ -48,10 +49,10 @@ export default function TakePage() {
 
   if (isError) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
-        <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white p-8 shadow-[6px_6px_0_#151515]">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--lr-notebook)]">
+        <div className="border-[3px] border-[var(--lr-line)] bg-white p-8 shadow-[var(--lr-shadow-lg)]">
           <p className="font-black text-lg">Quiz not found.</p>
-          <Link href="/dashboard" className="mt-4 block font-mono text-sm font-bold text-[#67606a] underline">
+          <Link href="/dashboard" className="mt-4 block font-mono text-sm font-bold text-[var(--lr-muted)] underline">
             Back to dashboard
           </Link>
         </div>
@@ -61,8 +62,8 @@ export default function TakePage() {
 
   if (!quiz) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#ffd426]">
-        <div className="font-mono text-sm font-bold text-[#67606a]">Loading quiz...</div>
+      <div className="flex min-h-screen items-center justify-center bg-[var(--lr-notebook)]">
+        <div className="font-mono text-sm font-bold text-[var(--lr-muted)]">Loading quiz...</div>
       </div>
     )
   }
@@ -181,32 +182,27 @@ export default function TakePage() {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col bg-[#ffd426] text-[#151515]"
+      className="relative flex min-h-screen flex-col bg-[var(--lr-notebook)] text-[var(--lr-ink)]"
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+      <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-70" />
 
       {/* Top bar */}
-      <div className="relative z-10 flex items-center gap-4 border-b-[3px] border-[#151515] bg-[#ffd426] px-5 py-4">
+      <div className="relative z-10 flex items-center gap-4 border-b-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-5 py-4">
         <Link
           href={`/quiz/${id}`}
-          className="rounded-[0.7rem] border-[3px] border-[#151515] bg-white px-3 py-1.5 font-mono text-[10px] font-black uppercase shadow-[2px_2px_0_#151515] transition-transform hover:-translate-y-0.5"
+          className="border-[3px] border-[var(--lr-line)] bg-white px-3 py-1.5 font-mono text-[10px] font-black uppercase shadow-[var(--lr-shadow-sm)] transition-transform hover:-translate-y-0.5"
         >
           Quit
         </Link>
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <p className="truncate font-mono text-[10px] font-bold text-[#67606a]">{quiz.title}</p>
+            <p className="truncate font-mono text-[10px] font-bold text-[var(--lr-muted)]">{quiz.title}</p>
             <p className="shrink-0 font-mono text-[10px] font-black uppercase tracking-widest">
               Q{questionIndex + 1} of {total}
             </p>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full border-[2px] border-[#151515] bg-white">
-            <div
-              className="h-full rounded-full bg-[#151515] transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+          <ProgressMeter value={progress} tone="teal" className="mt-2" />
         </div>
       </div>
 
@@ -214,42 +210,44 @@ export default function TakePage() {
       <div className="relative z-10 mx-auto flex w-full max-w-2xl flex-1 flex-col gap-5 p-5 lg:p-8">
         {/* Question type badge */}
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#67606a]">
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--lr-muted)]">
             Question {questionIndex + 1}
           </span>
           <QuestionTypeBadge type={question.type} />
         </div>
 
         {/* Question card */}
-        <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white/80 p-6 shadow-[6px_6px_0_#151515]">
+        <div className="border-[3px] border-[var(--lr-line)] bg-white/85 p-6 shadow-[var(--lr-shadow-lg)]">
           <p className="text-xl font-black leading-snug">{question.prompt}</p>
         </div>
 
         {/* Feedback banner */}
         {phase === 'feedback' && evaluation && (
           <div className={cn(
-            'rounded-[1rem] border-[3px] border-[#151515] p-4 shadow-[4px_4px_0_#151515]',
-            evaluation.correct ? 'bg-[#d9ff69]' : 'bg-[#ff6b62]'
+            'border-[3px] p-4 shadow-[var(--lr-shadow-md)]',
+            evaluation.correct
+              ? 'border-[var(--lr-green-dark)] bg-[var(--lr-green)] text-[var(--lr-green-dark)]'
+              : 'border-[var(--lr-red-dark)] bg-[var(--lr-red)] text-[var(--lr-ink)]'
           )}>
             <div className="flex items-center justify-between">
-              <p className={cn('text-sm font-black', evaluation.correct ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
+              <p className="text-sm font-black">
                 {evaluation.correct ? 'Correct!' : 'Not quite.'}
               </p>
               {question.type !== 'multiple-choice' && (
-                <span className={cn('font-mono text-xs font-black', evaluation.correct ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
+                <span className="font-mono text-xs font-black">
                   {evaluation.score}%
                 </span>
               )}
             </div>
-            <p className={cn('mt-1 text-sm leading-relaxed', evaluation.correct ? 'text-[#1e6f38]' : 'text-[#9c231d]')}>
+            <p className="mt-1 text-sm leading-relaxed">
               {evaluation.feedback}
             </p>
           </div>
         )}
 
         {phase === 'evaluating' && (
-          <div className="rounded-[1rem] border-[3px] border-[#151515] bg-white/80 p-4 shadow-[4px_4px_0_#151515]">
-            <p className="font-mono text-xs font-black uppercase tracking-widest text-[#67606a]">Evaluating your answer...</p>
+          <div className="border-[3px] border-[var(--lr-line)] bg-white/85 p-4 shadow-[var(--lr-shadow-md)]">
+            <p className="font-mono text-xs font-black uppercase tracking-widest text-[var(--lr-muted)]">Evaluating your answer...</p>
           </div>
         )}
 
@@ -309,16 +307,16 @@ export default function TakePage() {
               onClick={handleSubmit}
               disabled={!canSubmit}
               className={cn(
-                'w-full rounded-[1rem] border-[3px] border-[#151515] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-all',
+                'w-full border-[3px] border-[var(--lr-line)] py-4 text-lg font-black shadow-[var(--lr-shadow-md)] transition-all',
                 canSubmit
-                  ? 'bg-[#151515] text-[#ffd426] hover:-translate-y-0.5'
-                  : 'cursor-not-allowed bg-[#151515]/30 text-[#151515]/40'
+                  ? 'bg-[var(--lr-ink)] text-[var(--lr-yolk)] hover:-translate-y-0.5'
+                  : 'cursor-not-allowed bg-white/50 text-[var(--lr-muted)]'
               )}
             >
               Submit Answer
             </button>
           ) : phase === 'evaluating' ? (
-            <div className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515]/30 py-4 text-center text-lg font-black text-[#151515]/40">
+            <div className="w-full border-[3px] border-[var(--lr-line)] bg-white/50 py-4 text-center text-lg font-black text-[var(--lr-muted)]">
               Evaluating...
             </div>
           ) : isLast ? (
@@ -326,7 +324,7 @@ export default function TakePage() {
               type="button"
               onClick={saveAndNavigate}
               disabled={isSaving}
-              className="block w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#151515] py-4 text-center text-lg font-black text-[#ffd426] shadow-[4px_4px_0_#ff5858] transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+              className="block w-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] py-4 text-center text-lg font-black text-[var(--lr-yolk)] shadow-[4px_4px_0_var(--lr-tomato)] transition-transform hover:-translate-y-0.5 disabled:opacity-60"
             >
               {isSaving ? 'Saving...' : 'See Results'}
             </button>
@@ -334,7 +332,7 @@ export default function TakePage() {
             <button
               type="button"
               onClick={handleNext}
-              className="w-full rounded-[1rem] border-[3px] border-[#151515] bg-[#ffd426] py-4 text-lg font-black shadow-[4px_4px_0_#151515] transition-transform hover:-translate-y-0.5"
+              className="w-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-yolk)] py-4 text-lg font-black shadow-[var(--lr-shadow-md)] transition-transform hover:-translate-y-0.5"
             >
               Next Question
             </button>
@@ -347,10 +345,10 @@ export default function TakePage() {
 
 function QuestionTypeBadge({ type }: { type: Question['type'] }) {
   const styles: Record<Question['type'], string> = {
-    'multiple-choice': 'bg-white border-[#151515] text-[#151515]',
-    'multi-select': 'bg-[#7bd8ef] border-[#0d5c75] text-[#0d5c75]',
-    'open-ended': 'bg-[#b995ff] border-[#5735a7] text-[#5735a7]',
-    'code-writing': 'bg-[#151515] border-[#151515] text-[#ffd426]',
+    'multiple-choice': 'bg-white border-[var(--lr-line)] text-[var(--lr-ink)]',
+    'multi-select': 'bg-[var(--lr-blue)] border-[var(--lr-blue-dark)] text-[var(--lr-blue-dark)]',
+    'open-ended': 'bg-[var(--lr-purple)] border-[var(--lr-purple-dark)] text-[var(--lr-ink)]',
+    'code-writing': 'bg-[var(--lr-ink)] border-[var(--lr-line)] text-[var(--lr-yolk)]',
   }
   const labels: Record<Question['type'], string> = {
     'multiple-choice': 'Single choice',
@@ -359,7 +357,7 @@ function QuestionTypeBadge({ type }: { type: Question['type'] }) {
     'code-writing': 'Code',
   }
   return (
-    <span className={cn('rounded-full border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest', styles[type])}>
+    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest', styles[type])}>
       {labels[type]}
     </span>
   )
@@ -382,22 +380,22 @@ function MultipleChoiceInput({
         const isSelected = selectedOption === i
         const isCorrectOption = i === question.correctIndex
 
-        let cardStyle = 'bg-white border-[#151515]'
-        let letterStyle = 'bg-[#f5f4f0] text-[#151515]'
-        let textStyle = 'text-[#151515]'
+        let cardStyle = 'bg-white border-[var(--lr-line)]'
+        let letterStyle = 'bg-[var(--lr-paper)] text-[var(--lr-ink)]'
+        let textStyle = 'text-[var(--lr-ink)]'
 
         if (phase === 'question' && isSelected) {
-          cardStyle = 'bg-[#ffd426] border-[#151515] shadow-[4px_4px_0_#151515]'
-          letterStyle = 'bg-[#151515] text-[#ffd426]'
-          textStyle = 'text-[#151515]'
+          cardStyle = 'bg-[var(--lr-yolk)] border-[var(--lr-line)] shadow-[4px_4px_0_var(--lr-line)]'
+          letterStyle = 'bg-[var(--lr-ink)] text-[var(--lr-yolk)]'
+          textStyle = 'text-[var(--lr-ink)]'
         } else if (phase === 'feedback' && isCorrectOption) {
-          cardStyle = 'bg-[#d9ff69] border-[#1e6f38]'
-          letterStyle = 'bg-[#1e6f38] text-[#d9ff69]'
-          textStyle = 'text-[#1e6f38]'
+          cardStyle = 'bg-[var(--lr-green)] border-[var(--lr-green-dark)]'
+          letterStyle = 'bg-[var(--lr-green-dark)] text-[var(--lr-green)]'
+          textStyle = 'text-[var(--lr-green-dark)]'
         } else if (phase === 'feedback' && isSelected && !isCorrectOption) {
-          cardStyle = 'bg-[#ff6b62] border-[#9c231d]'
-          letterStyle = 'bg-[#9c231d] text-[#ff6b62]'
-          textStyle = 'text-[#9c231d]'
+          cardStyle = 'bg-[var(--lr-red)] border-[var(--lr-red-dark)]'
+          letterStyle = 'bg-[var(--lr-red-dark)] text-white'
+          textStyle = 'text-[var(--lr-ink)]'
         }
 
         return (
@@ -407,14 +405,14 @@ function MultipleChoiceInput({
             disabled={phase !== 'question'}
             onClick={() => onSelect(i)}
             className={cn(
-              'flex items-center gap-4 rounded-[1rem] border-[3px] p-4 text-left shadow-[3px_3px_0_#151515] transition-all',
+              'flex items-center gap-4 border-[3px] p-4 text-left shadow-[3px_3px_0_var(--lr-line)] transition-all',
               cardStyle,
-              phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#151515]',
+              phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--lr-line)]',
               phase !== 'question' && 'cursor-default'
             )}
           >
             <span className={cn(
-              'flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[#151515] font-mono text-xs font-black',
+              'flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--lr-line)] font-mono text-xs font-black',
               letterStyle
             )}>
               {LETTERS[i]}
@@ -443,28 +441,32 @@ function MultiSelectInput({
   const correctSet = new Set(correctIndices)
   return (
     <div className="flex flex-col gap-3">
-      <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#67606a]">
+      <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[var(--lr-muted)]">
         Select all that apply
       </p>
       {(question.options ?? []).map((option, i) => {
         const isSelected = selectedOptions.has(i)
         const isCorrectOption = correctSet.has(i)
 
-        let cardStyle = 'bg-white border-[#151515]'
-        let boxStyle = 'bg-[#f5f4f0] border-[#151515]'
-        let textStyle = 'text-[#151515]'
+        let cardStyle = 'bg-white border-[var(--lr-line)]'
+        let boxStyle = 'bg-[var(--lr-paper)] border-[var(--lr-line)]'
+        let textStyle = 'text-[var(--lr-ink)]'
+        let checkStyle = 'text-[var(--lr-ink)]'
 
         if (phase === 'question' && isSelected) {
-          cardStyle = 'bg-[#ffd426] border-[#151515] shadow-[4px_4px_0_#151515]'
-          boxStyle = 'bg-[#151515] border-[#151515]'
+          cardStyle = 'bg-[var(--lr-yolk)] border-[var(--lr-line)] shadow-[4px_4px_0_var(--lr-line)]'
+          boxStyle = 'bg-[var(--lr-ink)] border-[var(--lr-line)]'
+          checkStyle = 'text-[var(--lr-yolk)]'
         } else if (phase === 'feedback' && isCorrectOption) {
-          cardStyle = 'bg-[#d9ff69] border-[#1e6f38]'
-          boxStyle = 'bg-[#1e6f38] border-[#1e6f38]'
-          textStyle = 'text-[#1e6f38]'
+          cardStyle = 'bg-[var(--lr-green)] border-[var(--lr-green-dark)]'
+          boxStyle = 'bg-[var(--lr-green-dark)] border-[var(--lr-green-dark)]'
+          textStyle = 'text-[var(--lr-green-dark)]'
+          checkStyle = 'text-[var(--lr-green)]'
         } else if (phase === 'feedback' && isSelected && !isCorrectOption) {
-          cardStyle = 'bg-[#ff6b62] border-[#9c231d]'
-          boxStyle = 'bg-[#9c231d] border-[#9c231d]'
-          textStyle = 'text-[#9c231d]'
+          cardStyle = 'bg-[var(--lr-red)] border-[var(--lr-red-dark)]'
+          boxStyle = 'bg-[var(--lr-red-dark)] border-[var(--lr-red-dark)]'
+          textStyle = 'text-[var(--lr-ink)]'
+          checkStyle = 'text-white'
         }
 
         return (
@@ -474,18 +476,18 @@ function MultiSelectInput({
             disabled={phase !== 'question'}
             onClick={() => onToggle(i)}
             className={cn(
-              'flex items-center gap-4 rounded-[1rem] border-[3px] p-4 text-left shadow-[3px_3px_0_#151515] transition-all',
+              'flex items-center gap-4 border-[3px] p-4 text-left shadow-[3px_3px_0_var(--lr-line)] transition-all',
               cardStyle,
-              phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_#151515]',
+              phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--lr-line)]',
               phase !== 'question' && 'cursor-default'
             )}
           >
             <span className={cn(
-              'flex size-6 shrink-0 items-center justify-center rounded-[0.3rem] border-[3px] font-mono text-xs font-black',
+              'flex size-6 shrink-0 items-center justify-center border-[3px] font-mono text-xs font-black',
               boxStyle
             )}>
               {isSelected && (
-                <svg className={phase === 'question' ? 'text-[#ffd426]' : textStyle} width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <svg className={checkStyle} width="10" height="10" viewBox="0 0 10 10" fill="none">
                   <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               )}
@@ -515,9 +517,9 @@ function OpenEndedInput({
       placeholder="Type your answer here..."
       rows={6}
       className={cn(
-        'w-full rounded-[1rem] border-[3px] border-[#151515] bg-white/90 p-4 text-sm font-bold shadow-[3px_3px_0_#151515] outline-none resize-none',
-        'placeholder:font-mono placeholder:text-[10px] placeholder:font-bold placeholder:uppercase placeholder:tracking-widest placeholder:text-[#67606a]',
-        'focus:shadow-[4px_4px_0_#151515]',
+        'w-full resize-none border-[3px] border-[var(--lr-line)] bg-white/90 p-4 text-sm font-bold shadow-[3px_3px_0_var(--lr-line)] outline-none',
+        'placeholder:font-mono placeholder:text-[10px] placeholder:font-bold placeholder:uppercase placeholder:tracking-widest placeholder:text-[var(--lr-muted)]',
+        'focus:shadow-[4px_4px_0_var(--lr-line)]',
         disabled && 'cursor-default opacity-70'
       )}
     />
@@ -536,9 +538,9 @@ function CodeWritingInput({
   disabled: boolean
 }) {
   return (
-    <div className="overflow-hidden rounded-[1rem] border-[3px] border-[#151515] shadow-[3px_3px_0_#151515]">
-      <div className="flex items-center justify-between border-b-[2px] border-[#151515] bg-[#151515] px-4 py-2">
-        <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[#ffd426]">
+    <div className="overflow-hidden border-[3px] border-[var(--lr-line)] shadow-[3px_3px_0_var(--lr-line)]">
+      <div className="flex items-center justify-between border-b-[2px] border-[var(--lr-line)] bg-[var(--lr-ink)] px-4 py-2">
+        <span className="font-mono text-[10px] font-black uppercase tracking-widest text-[var(--lr-yolk)]">
           {question.language ?? 'code'}
         </span>
       </div>
