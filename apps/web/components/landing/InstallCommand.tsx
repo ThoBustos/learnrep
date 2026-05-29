@@ -15,17 +15,17 @@ export function InstallCommand({ command }: Props) {
   }
 
   return (
-    <div className="flex w-full min-w-0 overflow-hidden rounded-[0.9rem] bg-[#151515] shadow-[0_8px_24px_rgba(21,21,21,0.18)] sm:w-auto">
+    <div className="flex w-full min-w-0 overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] shadow-[4px_4px_0_var(--lr-line)] sm:w-auto">
       <div className="flex-1 min-w-0 px-4 py-3">
-        <code className="font-mono text-sm font-bold text-[#ffd426]">{command}</code>
+        <code className="font-mono text-sm font-bold text-[var(--lr-yolk)]">{command}</code>
       </div>
       <button
         type="button"
         onClick={handleCopy}
         aria-label="Copy install command"
-        className="flex shrink-0 min-h-[44px] min-w-[44px] items-center justify-center border-l border-white/10 bg-white/5 text-[#ffd426] transition-colors hover:bg-white/10"
+        className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center border-l-[3px] border-[var(--lr-line)] text-[var(--lr-yolk)]"
       >
-        {copied ? <Check className="size-3.5 text-[#d9ff69]" /> : <Copy className="size-3.5" />}
+        {copied ? <Check className="size-3.5 text-[var(--lr-green)]" /> : <Copy className="size-3.5" />}
       </button>
     </div>
   )

@@ -29,13 +29,13 @@ export default function DocsIntroPage() {
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
           href="/docs/agent-quickstart"
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-[#151515] px-5 py-2.5 text-sm font-black text-[#ffd426] shadow-[3px_3px_0_#ff5858] transition-transform hover:-translate-y-0.5"
+          className="border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] px-5 py-2.5 text-sm font-black text-[var(--lr-yolk)] shadow-[3px_3px_0_var(--lr-tomato)] transition-transform hover:-translate-y-0.5"
         >
           Agent quickstart
         </Link>
         <Link
           href="/docs/when-to-generate"
-          className="rounded-[0.9rem] border-[3px] border-[#151515] bg-white px-5 py-2.5 text-sm font-black shadow-[3px_3px_0_#151515] transition-transform hover:-translate-y-0.5"
+          className="border-[3px] border-[var(--lr-line)] bg-white px-5 py-2.5 text-sm font-black shadow-[var(--lr-shadow-sm)] transition-transform hover:-translate-y-0.5"
         >
           When to generate
         </Link>

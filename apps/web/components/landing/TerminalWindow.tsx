@@ -108,13 +108,13 @@ export function TerminalWindow({ sequence }: Props) {
     <div
       ref={shellRef}
       aria-label="Animated terminal demo"
-      className="overflow-hidden rounded-[1.3rem] bg-[var(--lr-ink)] shadow-[8px_8px_0_var(--lr-yellow)]"
+      className="overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] shadow-[8px_8px_0_var(--lr-yolk)]"
     >
       {/* Title bar */}
       <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#1c1c1c] px-4 py-2.5">
         <div className="flex gap-1.5">
           <div className="size-3 rounded-full bg-[var(--lr-red)]" />
-          <div className="size-3 rounded-full bg-[var(--lr-yellow)]" />
+          <div className="size-3 rounded-full bg-[var(--lr-yolk)]" />
           <div className="size-3 rounded-full bg-[var(--lr-green)]" />
         </div>
         <span className="ml-2 font-mono text-[11px] font-bold text-white/25">zsh · ~/projects/openyoko</span>
@@ -126,7 +126,7 @@ export function TerminalWindow({ sequence }: Props) {
         className="h-[280px] overflow-hidden bg-[var(--lr-ink)] px-4 py-3 sm:h-[340px]"
       >
         {terminalLines.map((line, i) => <Line key={i} line={line} />)}
-        <span aria-hidden="true" className="inline-block h-[13px] w-[6px] animate-pulse bg-[var(--lr-yellow)] align-middle motion-reduce:animate-none" />
+        <span aria-hidden="true" className="inline-block h-[13px] w-[6px] animate-pulse bg-[var(--lr-yolk)] align-middle motion-reduce:animate-none" />
         <div className="h-5" />
       </div>
     </div>
@@ -142,7 +142,7 @@ function Line({ line }: { line: TerminalLine }) {
       return (
         <div className="mb-0.5 flex items-baseline gap-2">
           <span className="shrink-0 font-mono text-[11px] text-white/30">~/openyoko %</span>
-          <span className="font-mono text-[11px] font-bold text-[#ffd426]">{line.text}</span>
+          <span className="font-mono text-[11px] font-bold text-[var(--lr-yolk)]">{line.text}</span>
         </div>
       )
 
@@ -182,7 +182,7 @@ function Line({ line }: { line: TerminalLine }) {
     case 'prompt':
       return (
         <div className="mb-0.5 flex items-baseline gap-1.5">
-          <span className="shrink-0 font-mono text-[11px] font-bold text-[#ffd426]">❯</span>
+          <span className="shrink-0 font-mono text-[11px] font-bold text-[var(--lr-yolk)]">❯</span>
           <span className="font-mono text-[11px] text-white/90">{line.text}</span>
         </div>
       )
@@ -197,14 +197,14 @@ function Line({ line }: { line: TerminalLine }) {
     case 'success':
       return (
         <div className="mb-0.5">
-          <span className="font-mono text-[11px] font-bold text-[#d9ff69]">{line.text}</span>
+          <span className="font-mono text-[11px] font-bold text-[var(--lr-green)]">{line.text}</span>
         </div>
       )
 
     case 'url':
       return (
         <div className="mb-0.5">
-          <span className="font-mono text-[11px] text-[#7bd8ef]">{line.text}</span>
+          <span className="font-mono text-[11px] text-[var(--lr-blue)]">{line.text}</span>
         </div>
       )
   }

@@ -34,27 +34,27 @@ const nav = [
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative min-h-screen bg-[#ffd426] text-[#151515]"
+      className="relative min-h-screen bg-[var(--lr-notebook)] text-[var(--lr-ink)]"
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
-      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#151515_1.2px,transparent_1.2px)] [background-size:18px_18px]" />
+      <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-70" />
 
       <div className="relative flex min-h-screen">
         {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 flex-col gap-6 border-r-[3px] border-[#151515] bg-[#ffd426] px-5 py-6 lg:flex">
+        <aside className="hidden w-64 shrink-0 flex-col gap-6 border-r-[3px] border-[var(--lr-line)] bg-[var(--lr-teal)] px-5 py-6 text-[var(--lr-ink)] lg:flex">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-full border-[3px] border-[#151515] bg-[#151515] font-black text-[#ffd426]">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] font-black text-[var(--lr-yolk)]">
               L
             </div>
-            <span className="text-base font-black tracking-[-0.04em]">LearnRep</span>
+            <span className="text-base font-black tracking-normal">LearnRep</span>
           </Link>
 
           {/* Nav */}
           <nav className="flex flex-col gap-5">
             {nav.map(({ group, items }) => (
               <div key={group}>
-                <p className="mb-1.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[#67606a]">
+                <p className="mb-1.5 font-mono text-[9px] font-black uppercase tracking-[0.18em] text-[var(--lr-ink)]">
                   {group}
                 </p>
                 <div className="flex flex-col gap-0.5">
@@ -62,7 +62,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                     <Link
                       key={href}
                       href={href}
-                      className="rounded-[0.6rem] px-2.5 py-1.5 text-sm font-bold hover:bg-[#151515]/10"
+                      className="px-2.5 py-1.5 text-sm font-bold text-[var(--lr-ink)] hover:bg-white/20"
                     >
                       {label}
                     </Link>
@@ -77,7 +77,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             href="https://github.com/ThoBustos/learnrep"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-auto flex items-center gap-1.5 font-mono text-[10px] font-bold text-[#67606a] hover:text-[#151515]"
+            className="mt-auto flex items-center gap-1.5 font-mono text-[10px] font-bold text-[var(--lr-ink)] hover:bg-white/20"
           >
             GitHub
             <ExternalLink className="size-3" />
@@ -87,18 +87,18 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
           {/* Top bar */}
-          <div className="flex items-center justify-between border-b-[3px] border-[#151515] px-6 py-4">
+          <div className="flex items-center justify-between border-b-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-6 py-4">
             <Link
               href="/dashboard"
-              className="font-mono text-[10px] font-black uppercase tracking-widest text-[#67606a] hover:text-[#151515]"
+              className="font-mono text-[10px] font-black uppercase tracking-widest text-[var(--lr-muted)] hover:text-[var(--lr-ink)]"
             >
               App
             </Link>
-            <p className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[#67606a]">Docs</p>
+            <p className="font-mono text-[10px] font-black uppercase tracking-[0.2em] text-[var(--lr-muted)]">Docs</p>
           </div>
 
           <div className="mx-auto max-w-2xl px-6 py-10">
-            <div className="rounded-[1.5rem] border-[3px] border-[#151515] bg-white p-8 shadow-[6px_6px_0_#151515]">
+            <div className="border-[3px] border-[var(--lr-line)] bg-white p-8 shadow-[var(--lr-shadow-lg)]">
               {children}
             </div>
           </div>
