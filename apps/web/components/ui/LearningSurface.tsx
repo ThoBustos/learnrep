@@ -194,7 +194,7 @@ export function MetricTicket({
   className?: string
 }) {
   return (
-    <div className={cn('relative min-h-32 overflow-hidden border-[3px] border-[var(--lr-line)] p-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
+    <div className={cn('relative min-h-20 overflow-hidden border-[3px] border-[var(--lr-line)] p-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
       <span className="absolute -left-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
       <span className="absolute -right-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
       <p className="text-4xl font-black leading-none tracking-[-0.04em]">{value}</p>
