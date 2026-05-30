@@ -67,19 +67,16 @@ export default function DashboardPage() {
       value: stats ? stats.quizzesTaken.toString() : '--',
       label: 'Quizzes taken',
       tone: 'paper' as const,
-      meta: stats ? `${stats.streak} day streak` : 'Waiting for stats',
     },
     {
       value: stats ? stats.topicsExplored.toString() : '--',
       label: 'Topics explored',
       tone: 'teal' as const,
-      meta: 'Across generated quizzes',
     },
     {
       value: stats?.avgScore != null ? `${stats.avgScore}%` : '--',
       label: 'Avg score',
       tone: 'yolk' as const,
-      meta: stats?.avgImprovement != null ? `${stats.avgImprovement}% avg lift` : 'Scoreboard warming up',
     },
   ]
 
@@ -97,7 +94,7 @@ export default function DashboardPage() {
       />
 
       <WorkbookPanel>
-        <WorkbookPanelHeader kicker="feed" title="Your Feed" />
+        <WorkbookPanelHeader title="Your Feed" />
 
         {quizzes.length === 0 ? (
           <WorkbookEmptyState
