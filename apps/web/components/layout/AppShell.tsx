@@ -102,36 +102,37 @@ export default function AppShell({
             collapsed ? 'w-20 items-center px-3' : 'w-64 px-4'
           )}>
             {/* Logo row */}
-            <div className={cn('mb-7 flex h-12 items-center', collapsed ? 'justify-center' : 'justify-between gap-3 px-1')}>
-              <div className="flex min-w-0 shrink-0 items-center gap-3">
-                {collapsed ? (
-                  <button
-                    type="button"
-                    onClick={toggleCollapsed}
-                    aria-label="Expand sidebar"
-                    className="group/logo relative flex size-11 shrink-0 items-center justify-center"
-                  >
-                    <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 transition-opacity group-hover/logo:opacity-0" />
-                    <ChevronRight className="absolute size-5 text-[var(--lr-ink)] opacity-0 transition-opacity group-hover/logo:opacity-100" />
-                  </button>
-                ) : (
-                  <Image src="/logos/robot.svg" alt="" width={44} height={44} className="size-11 shrink-0" />
-                )}
-                {!collapsed && (
-                  <span className="truncate text-xl font-black tracking-[-0.04em] text-[var(--lr-ink)]">LearnRep</span>
-                )}
-              </div>
-              {!collapsed && (
+            {collapsed ? (
+              <div className="mb-7 flex h-12 items-center justify-center">
                 <button
                   type="button"
                   onClick={toggleCollapsed}
-                  className="flex size-8 shrink-0 items-center justify-center text-[var(--lr-ink)]/50 transition-colors hover:text-[var(--lr-ink)]"
+                  aria-label="Expand sidebar"
+                  className="group/logo relative flex size-11 shrink-0 items-center justify-center"
+                >
+                  <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 transition-opacity group-hover/logo:opacity-0" />
+                  <ChevronRight className="absolute size-5 text-[var(--lr-ink)] opacity-0 transition-opacity group-hover/logo:opacity-100" />
+                </button>
+              </div>
+            ) : (
+              <div className="relative mb-6 flex flex-col items-center pt-1">
+                <Image src="/logos/robot.svg" alt="" width={56} height={56} className="size-14 shrink-0" />
+                <span
+                  className="mt-1.5 text-[1.35rem] leading-none tracking-wide text-[var(--lr-ink)]"
+                  style={{ fontFamily: 'var(--font-bowlby)' }}
+                >
+                  Learn<span className="text-[var(--lr-blue-dark)]">Rep</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={toggleCollapsed}
+                  className="absolute right-0 top-0 flex size-7 items-center justify-center text-[var(--lr-ink)]/40 transition-colors hover:text-[var(--lr-ink)]"
                   aria-label="Collapse sidebar"
                 >
                   <ChevronLeft className="size-3.5" />
                 </button>
-              )}
-            </div>
+              </div>
+            )}
 
             <nav className="flex w-full flex-col gap-1">
               {navItems.map(({ label, href, Icon }) => {
