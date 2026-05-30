@@ -15,9 +15,9 @@ export function InstallCommand({ command }: Props) {
   }
 
   return (
-    <div className="flex w-full min-w-0 overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] shadow-[4px_4px_0_var(--lr-line)] sm:w-auto">
-      <div className="flex-1 min-w-0 px-4 py-3">
-        <code className="font-mono text-sm font-bold text-[var(--lr-yolk)]">{command}</code>
+    <div className="flex w-full min-w-0 overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] sm:w-auto">
+      <div className="min-w-0 flex-1 px-4 py-3">
+        <code className="break-all font-mono text-sm font-bold text-[var(--lr-yolk)]">{command}</code>
       </div>
       <button
         type="button"

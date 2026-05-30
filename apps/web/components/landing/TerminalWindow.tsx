@@ -108,7 +108,7 @@ export function TerminalWindow({ sequence }: Props) {
     <div
       ref={shellRef}
       aria-label="Animated terminal demo"
-      className="overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] shadow-[8px_8px_0_var(--lr-yolk)]"
+      className="overflow-hidden border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] shadow-[8px_8px_0_var(--lr-blue)]"
     >
       {/* Title bar */}
       <div className="flex items-center gap-2 border-b border-white/[0.06] bg-[#1c1c1c] px-4 py-2.5">

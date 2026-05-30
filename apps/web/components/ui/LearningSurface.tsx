@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentPropsWithoutRef, ComponentType, ReactNode } from 'react'
 import Link from 'next/link'
 import { Check, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -7,6 +7,7 @@ type MetricTone = 'ink' | 'paper' | 'yolk' | 'teal' | 'tomato'
 type ButtonTone = 'paper' | 'yolk' | 'ink' | 'teal' | 'green' | 'red'
 type StampTone = 'paper' | 'yolk' | 'teal' | 'green' | 'red' | 'ink'
 type IconSize = 'xs' | 'sm' | 'md' | 'lg'
+type QuizChoiceState = 'default' | 'selected' | 'correct' | 'incorrect'
 type LearningIconComponent = ComponentType<{ className?: string; size?: number }>
 
 const iconPixelSizes: Record<IconSize, number> = {
@@ -47,6 +48,29 @@ const stampTones: Record<StampTone, string> = {
   green: 'border-[var(--lr-green-dark)] bg-[var(--lr-green)] text-[var(--lr-green-dark)]',
   red:   'border-[var(--lr-red-dark)] bg-[var(--lr-red)] text-[var(--lr-red-dark)]',
   ink:   'border-[var(--lr-line)] bg-[var(--lr-ink)] text-[var(--lr-yolk)]',
+}
+
+const quizChoiceTones: Record<QuizChoiceState, { card: string; letter: string; text: string }> = {
+  default: {
+    card: 'border-[var(--lr-line)] bg-white',
+    letter: 'bg-[var(--lr-paper)] text-[var(--lr-ink)]',
+    text: 'text-[var(--lr-ink)]',
+  },
+  selected: {
+    card: 'border-[var(--lr-line)] bg-[var(--lr-yolk)] shadow-[4px_4px_0_var(--lr-line)]',
+    letter: 'bg-[var(--lr-ink)] text-[var(--lr-yolk)]',
+    text: 'text-[var(--lr-ink)]',
+  },
+  correct: {
+    card: 'border-[var(--lr-green-dark)] bg-[var(--lr-green)]',
+    letter: 'bg-[var(--lr-green-dark)] text-[var(--lr-green)]',
+    text: 'text-[var(--lr-green-dark)]',
+  },
+  incorrect: {
+    card: 'border-[var(--lr-red-dark)] bg-[var(--lr-red)]',
+    letter: 'bg-[var(--lr-red-dark)] text-white',
+    text: 'text-[var(--lr-ink)]',
+  },
 }
 
 function SurfaceIcon({
@@ -814,11 +838,12 @@ export function ProgressMeter({
   value,
   tone = 'teal',
   className,
+  ...props
 }: {
   value: number
   tone?: 'teal' | 'tomato' | 'cobalt' | 'mint'
   className?: string
-}) {
+} & ComponentPropsWithoutRef<'div'>) {
   const clamped = Math.max(0, Math.min(100, value))
   const fills = {
     teal: 'bg-[var(--lr-blue)]',
@@ -828,8 +853,52 @@ export function ProgressMeter({
   }
 
   return (
-    <div className={cn('h-3 border-[2px] border-[var(--lr-line)] bg-white', className)}>
+    <div className={cn('h-3 border-[2px] border-[var(--lr-line)] bg-white', className)} {...props}>
       <div className={cn('h-full', fills[tone])} style={{ width: `${clamped}%` }} />
     </div>
+  )
+}
+
+export function QuizChoiceButton({
+  letter,
+  children,
+  state = 'default',
+  disabled,
+  onClick,
+  role,
+  ariaChecked,
+  ariaDescribedBy,
+}: {
+  letter: string
+  children: ReactNode
+  state?: QuizChoiceState
+  disabled?: boolean
+  onClick?: () => void
+  role?: 'radio'
+  ariaChecked?: boolean
+  ariaDescribedBy?: string
+}) {
+  const tone = quizChoiceTones[state]
+
+  return (
+    <button
+      type="button"
+      role={role}
+      aria-checked={ariaChecked}
+      aria-describedby={ariaDescribedBy}
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-4 border-[3px] p-4 text-left shadow-[3px_3px_0_var(--lr-line)] transition-all',
+        tone.card,
+        !disabled && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--lr-line)]',
+        disabled && 'cursor-default',
+      )}
+    >
+      <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--lr-line)] font-mono text-xs font-black', tone.letter)}>
+        {letter}
+      </span>
+      <span className={cn('text-sm font-black', tone.text)}>{children}</span>
+    </button>
   )
 }

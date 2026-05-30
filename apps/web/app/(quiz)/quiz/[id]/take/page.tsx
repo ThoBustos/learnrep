@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { ProgressMeter } from '@/components/ui/LearningSurface'
+import { ProgressMeter, QuizChoiceButton } from '@/components/ui/LearningSurface'
 import { cn } from '@/lib/utils'
 import { evaluateAnswer } from '@learnrep/core'
 import type { EvaluationResult, Question, Quiz } from '@learnrep/core'
@@ -380,45 +380,26 @@ function MultipleChoiceInput({
         const isSelected = selectedOption === i
         const isCorrectOption = i === question.correctIndex
 
-        let cardStyle = 'bg-white border-[var(--lr-line)]'
-        let letterStyle = 'bg-[var(--lr-paper)] text-[var(--lr-ink)]'
-        let textStyle = 'text-[var(--lr-ink)]'
+        let choiceState: 'default' | 'selected' | 'correct' | 'incorrect' = 'default'
 
         if (phase === 'question' && isSelected) {
-          cardStyle = 'bg-[var(--lr-yolk)] border-[var(--lr-line)] shadow-[4px_4px_0_var(--lr-line)]'
-          letterStyle = 'bg-[var(--lr-ink)] text-[var(--lr-yolk)]'
-          textStyle = 'text-[var(--lr-ink)]'
+          choiceState = 'selected'
         } else if (phase === 'feedback' && isCorrectOption) {
-          cardStyle = 'bg-[var(--lr-green)] border-[var(--lr-green-dark)]'
-          letterStyle = 'bg-[var(--lr-green-dark)] text-[var(--lr-green)]'
-          textStyle = 'text-[var(--lr-green-dark)]'
+          choiceState = 'correct'
         } else if (phase === 'feedback' && isSelected && !isCorrectOption) {
-          cardStyle = 'bg-[var(--lr-red)] border-[var(--lr-red-dark)]'
-          letterStyle = 'bg-[var(--lr-red-dark)] text-white'
-          textStyle = 'text-[var(--lr-ink)]'
+          choiceState = 'incorrect'
         }
 
         return (
-          <button
+          <QuizChoiceButton
             key={i}
-            type="button"
             disabled={phase !== 'question'}
             onClick={() => onSelect(i)}
-            className={cn(
-              'flex items-center gap-4 border-[3px] p-4 text-left shadow-[3px_3px_0_var(--lr-line)] transition-all',
-              cardStyle,
-              phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--lr-line)]',
-              phase !== 'question' && 'cursor-default'
-            )}
+            letter={LETTERS[i]}
+            state={choiceState}
           >
-            <span className={cn(
-              'flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--lr-line)] font-mono text-xs font-black',
-              letterStyle
-            )}>
-              {LETTERS[i]}
-            </span>
-            <span className={cn('text-sm font-black', textStyle)}>{option}</span>
-          </button>
+            {option}
+          </QuizChoiceButton>
         )
       })}
     </div>
