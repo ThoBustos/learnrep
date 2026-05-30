@@ -3,23 +3,14 @@ import Link from 'next/link'
 import { LandingNav } from '@/components/landing/LandingNav'
 import { HeroBadge } from '@/components/landing/HeroBadge'
 import { TerminalWindow } from '@/components/landing/TerminalWindow'
-import { QuizPreviewCard } from '@/components/landing/QuizPreviewCard'
-import { AgentBadgeStrip } from '@/components/landing/AgentBadgeStrip'
 import { InstallCommand } from '@/components/landing/InstallCommand'
 import { OnboardingQuiz } from '@/components/landing/OnboardingQuiz'
 import { HowItWorks } from '@/components/landing/HowItWorks'
-import { AGENTS } from '@/lib/landing/agents'
 import { SEQUENCE } from '@/lib/landing/terminalSequence'
 import { QUESTIONS } from '@/lib/landing/quizQuestions'
 import { landingColorVars } from '@/lib/tokens'
 
 const INSTALL_CMD = 'npm install -g learnrep'
-
-const HERO_TICKETS = [
-  { label: 'Quiz ready', value: 'Live URL', className: 'border-[var(--lr-blue-dark)] bg-[var(--lr-blue)] text-[var(--lr-blue-dark)]' },
-  { label: 'Practice set', value: '5 questions', className: 'border-[var(--lr-line)] bg-[var(--lr-yolk)] text-[var(--lr-ink)]' },
-  { label: 'Team score', value: '+20%', className: 'border-[var(--lr-line)] bg-[var(--lr-tomato)] text-[var(--lr-ink)]' },
-]
 
 type GitHubRepoResponse = {
   stargazers_count?: unknown
@@ -47,61 +38,46 @@ export default async function HomePage() {
   } as CSSProperties
 
   return (
-    <div className="min-h-screen bg-[var(--lr-notebook)] text-[var(--lr-ink)]" style={pageStyle}>
-
+    <div className="min-h-screen bg-[var(--lr-paper)] text-[var(--lr-ink)]" style={pageStyle}>
       <LandingNav stars={stars} />
 
-      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-14 sm:px-10 md:grid-cols-2 md:items-center lg:gap-16 lg:py-20">
-        <div className="flex flex-col gap-6">
-          <HeroBadge label="CLI tool for AI agents" />
+      <main className="relative overflow-hidden bg-[var(--lr-notebook)]">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-ruled-paper opacity-70" />
+        <div className="relative z-10">
+          <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-14 sm:px-10 md:grid-cols-[0.86fr_1.14fr] md:items-center lg:gap-16 lg:py-20">
+            <div className="flex flex-col gap-6">
+              <HeroBadge label="CLI tool for AI agents" />
 
-          <h1 className="text-5xl font-black leading-none tracking-normal sm:text-6xl">
-            Generate a quiz.
-            <br />
-            Share it with
-            <br />
-            <span className="relative inline-block">
-              your team.
-              <span className="absolute -bottom-1 left-0 h-[5px] w-full bg-[var(--lr-yolk)]" />
-            </span>
-          </h1>
+              <h1 className="max-w-xl text-4xl font-black leading-none tracking-normal sm:text-5xl lg:text-6xl">
+                Turn any
+                <br />
+                <span className="relative inline-block">
+                  session into
+                  <span className="absolute -bottom-1 left-0 h-[5px] w-full bg-[var(--lr-yolk)]" />
+                </span>
+                <br />
+                a real quiz.
+              </h1>
 
-          <p className="text-base leading-relaxed text-[var(--lr-muted)]">
-            One command from your agent or terminal. A live link your whole team can take.
-            See who scores highest.
-          </p>
+              <p className="max-w-lg text-base font-medium leading-relaxed text-[var(--lr-muted)]">
+                Run one command from your terminal or agent. LearnRep turns the work into a shareable quiz your team can take in the app.
+              </p>
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            {HERO_TICKETS.map((ticket) => (
-              <div
-                key={ticket.label}
-                className={`${ticket.className} border-[3px] px-3 py-2 shadow-[2px_2px_0_var(--lr-line)]`}
-              >
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] opacity-75">{ticket.label}</p>
-                <p className="mt-1 text-sm font-black">{ticket.value}</p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <InstallCommand command={INSTALL_CMD} />
               </div>
-            ))}
-          </div>
+            </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <InstallCommand command={INSTALL_CMD} />
-          </div>
+            <div className="min-w-0">
+              <TerminalWindow sequence={SEQUENCE} />
+            </div>
+          </section>
 
-          <AgentBadgeStrip agents={AGENTS} />
+          <HowItWorks />
+
+          <OnboardingQuiz questions={QUESTIONS} />
         </div>
-
-        <div className="flex flex-col gap-4">
-          <TerminalWindow sequence={SEQUENCE} />
-          <QuizPreviewCard
-            title="React Hooks: State, Effects, and Closures"
-            meta="5 questions · medium · 0 attempts"
-          />
-        </div>
-      </section>
-
-      <OnboardingQuiz questions={QUESTIONS} />
-
-      <HowItWorks />
+      </main>
 
       <footer className="flex flex-col gap-3 border-t-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <p className="font-mono text-[11px] font-bold text-[var(--lr-muted)]">LearnRep · Open source · MIT</p>

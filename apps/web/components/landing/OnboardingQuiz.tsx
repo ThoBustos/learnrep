@@ -2,6 +2,7 @@
 
 import { useReducer, type KeyboardEvent } from 'react'
 import { ArrowRight } from 'lucide-react'
+import { ProgressMeter, QuizChoiceButton } from '@/components/ui/LearningSurface'
 import { cn } from '@/lib/utils'
 import { ScoreScreen } from './ScoreScreen'
 import type { QuestionDef } from '@/lib/landing/quizQuestions'
@@ -98,19 +99,19 @@ export function OnboardingQuiz({ questions }: Props) {
 
   return (
     <section
-      className="relative overflow-hidden border-t-[4px] border-[var(--lr-line)] bg-[var(--lr-blue)] px-6 py-12 text-[var(--lr-blue-dark)] sm:px-10 sm:py-16"
+      className="relative overflow-hidden border-t-[4px] border-[var(--lr-line)] bg-[var(--lr-notebook)] px-6 py-12 text-[var(--lr-ink)] sm:px-10 sm:py-16"
       tabIndex={0}
       role="region"
       aria-label="Sample LearnRep quiz"
       onKeyDown={handleKeyDown}
     >
-      <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-25" />
+      <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-70" />
 
       <div className="relative z-10 mx-auto max-w-2xl">
         {!done ? (
           <>
             <div className="mb-8 text-center">
-              <p className="font-mono text-[11px] font-black uppercase tracking-[0.25em]">
+              <p className="font-mono text-[11px] font-black uppercase tracking-[0.25em] text-[var(--lr-muted)]">
                 No account needed
               </p>
               <h2 className="mt-2 text-4xl font-black tracking-normal sm:text-5xl">
@@ -118,7 +119,7 @@ export function OnboardingQuiz({ questions }: Props) {
                 <br />
                 team will take.
               </h2>
-              <p className="mt-3 font-mono text-sm font-bold">
+              <p className="mt-3 font-mono text-sm font-bold text-[var(--lr-muted)]">
                 Three questions. This is what lr generate produces.
               </p>
             </div>
@@ -134,22 +135,19 @@ export function OnboardingQuiz({ questions }: Props) {
                   </p>
                 )}
               </div>
-              <div
-                className="mt-2 h-2 w-full overflow-hidden border-[2px] border-[var(--lr-line)] bg-white"
+              <ProgressMeter
+                value={progress}
+                tone="teal"
+                className="mt-2"
                 role="progressbar"
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={Math.round(progress)}
                 aria-label="Quiz progress"
-              >
-                <div
-                  className="h-full bg-[var(--lr-blue-dark)] transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+              />
             </div>
 
-            <div className="border-[3px] border-[var(--lr-line)] bg-white/90 p-6 shadow-[var(--lr-shadow-lg)]">
+            <div className="border-[3px] border-[var(--lr-line)] bg-white/85 p-6 shadow-[var(--lr-shadow-lg)]">
               <p id={questionId} className="text-xl font-black leading-snug sm:text-2xl">{question.prompt}</p>
             </div>
 
@@ -173,39 +171,27 @@ export function OnboardingQuiz({ questions }: Props) {
               {question.options.map((option, i) => {
                 const isSelected = selectedOption === i
                 const isCorrect = i === question.correctIndex
-                let cardStyle = 'bg-white/85 border-[var(--lr-line)]'
-                let letterStyle = 'bg-[var(--lr-paper)] text-[var(--lr-ink)]'
+                let choiceState: 'default' | 'selected' | 'correct' | 'incorrect' = 'default'
                 if (phase === 'question' && isSelected) {
-                  cardStyle = 'bg-[var(--lr-yolk)] border-[var(--lr-line)] shadow-[4px_4px_0_var(--lr-line)]'
-                  letterStyle = 'bg-[var(--lr-ink)] text-[var(--lr-yolk)]'
+                  choiceState = 'selected'
                 } else if (phase === 'feedback' && isCorrect) {
-                  cardStyle = 'bg-[var(--lr-green)] border-[var(--lr-green-dark)]'
-                  letterStyle = 'bg-[var(--lr-green-dark)] text-[var(--lr-green)]'
+                  choiceState = 'correct'
                 } else if (phase === 'feedback' && isSelected && !isCorrect) {
-                  cardStyle = 'bg-[var(--lr-red)] border-[var(--lr-red-dark)]'
-                  letterStyle = 'bg-[var(--lr-red-dark)] text-[var(--lr-red)]'
+                  choiceState = 'incorrect'
                 }
                 return (
-                  <button
+                  <QuizChoiceButton
                     key={i}
-                    type="button"
+                    letter={LETTERS[i]}
+                    state={choiceState}
                     role="radio"
-                    aria-checked={isSelected}
-                    aria-describedby={phase === 'feedback' ? feedbackId : undefined}
+                    ariaChecked={isSelected}
+                    ariaDescribedBy={phase === 'feedback' ? feedbackId : undefined}
                     disabled={phase !== 'question'}
                     onClick={() => dispatch({ type: 'SELECT', index: i })}
-                    className={cn(
-                      'flex items-center gap-4 border-[3px] p-4 text-left shadow-[3px_3px_0_var(--lr-line)] transition-all',
-                      cardStyle,
-                      phase === 'question' && 'hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--lr-line)]',
-                      phase !== 'question' && 'cursor-default',
-                    )}
                   >
-                    <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-full border-[3px] border-[var(--lr-line)] font-mono text-xs font-black', letterStyle)}>
-                      {LETTERS[i]}
-                    </span>
-                    <span className="text-sm font-black">{option}</span>
-                  </button>
+                    {option}
+                  </QuizChoiceButton>
                 )
               })}
             </div>

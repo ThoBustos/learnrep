@@ -25,15 +25,24 @@ function LoginContent() {
 
   return (
     <main
-      className="relative flex min-h-screen items-center justify-center bg-[var(--lr-notebook)]"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--lr-notebook)]"
       style={{ fontFamily: 'var(--font-space-grotesk)' }}
     >
       <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-70" />
 
-      <div className="relative z-10 flex w-full max-w-sm flex-col items-center gap-8 px-6">
-        <Link href="/" className="flex items-center gap-3">
-          <Image src="/logos/robot.svg" alt="" width={44} height={44} className="size-11" />
-          <span className="text-2xl font-black tracking-[-0.04em]">LearnRep</span>
+      <div className="relative z-10 flex w-full max-w-sm flex-col gap-5 px-6">
+        <Link
+          href="/"
+          className="flex flex-col items-center border-[3px] border-[var(--lr-line)] bg-[var(--lr-blue)] px-6 py-6 shadow-[6px_6px_0_var(--lr-line)]"
+          aria-label="LearnRep home"
+        >
+          <Image src="/logos/robot.svg" alt="" width={76} height={76} className="shrink-0" />
+          <span
+            className="mt-2 text-[2rem] leading-none tracking-normal text-[var(--lr-ink)]"
+            style={{ fontFamily: 'var(--font-bowlby)' }}
+          >
+            Learn<span className="text-[var(--lr-blue-dark)]">Rep</span>
+          </span>
         </Link>
 
         <div className="w-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] p-8 shadow-[6px_6px_0_var(--lr-line)]">
