@@ -11,6 +11,7 @@ import {
   WorkbookButton,
   WorkbookEmptyState,
   WorkbookList,
+  WorkbookPanel,
 } from '@/components/ui/LearningSurface'
 
 type LibraryQuiz = {
@@ -58,11 +59,13 @@ export default function LibraryPage() {
           action={<WorkbookActionLink href="/dashboard">Browse Feed</WorkbookActionLink>}
         />
       ) : (
-        <WorkbookList>
-          {quizzes.map((quiz) => (
-            <LibraryRow key={quiz.id} quiz={quiz} onRemove={removeFromLibrary} />
-          ))}
-        </WorkbookList>
+        <WorkbookPanel>
+          <WorkbookList>
+            {quizzes.map((quiz) => (
+              <LibraryRow key={quiz.id} quiz={quiz} onRemove={removeFromLibrary} />
+            ))}
+          </WorkbookList>
+        </WorkbookPanel>
       )}
     </DashboardCanvas>
   )

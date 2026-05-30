@@ -20,7 +20,7 @@ const metricTones: Record<MetricTone, string> = {
   ink:    'bg-[var(--lr-ink)] text-[var(--lr-paper)]',
   paper:  'bg-[var(--lr-paper)] text-[var(--lr-ink)]',
   yolk:   'bg-[var(--lr-yolk)] text-[var(--lr-ink)]',
-  teal:   'bg-[var(--lr-teal)] text-white',
+  teal:   'bg-[var(--lr-blue)] text-[var(--lr-blue-dark)]',
   tomato: 'bg-[var(--lr-tomato)] text-white',
 }
 
@@ -140,14 +140,23 @@ export function WorkbookPanel({
 export function WorkbookPanelHeader({
   kicker,
   title,
+  meta,
 }: {
-  kicker: string
+  kicker?: string
   title: string
+  meta?: string
 }) {
   return (
-    <div className="border-b-[3px] border-[var(--lr-line)] px-4 py-3">
-      <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-tomato)]">{kicker}</p>
-      <h2 className="text-xl font-black tracking-[-0.03em]">{title}</h2>
+    <div className="grid gap-2 border-b-[3px] border-[var(--lr-line)] px-4 py-3 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div className="min-w-0">
+        {kicker && <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-muted)]">{kicker}</p>}
+        <h2 className="text-xl font-black tracking-[-0.03em]">{title}</h2>
+      </div>
+      {meta && (
+        <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-muted)]">
+          {meta}
+        </p>
+      )}
     </div>
   )
 }
@@ -157,7 +166,7 @@ export function WorkbookList({
 }: {
   children: ReactNode
 }) {
-  return <div className="grid gap-3 p-3">{children}</div>
+  return <div className="divide-y-[3px] divide-[var(--lr-line)]">{children}</div>
 }
 
 export function WorkbookEmptyState({
@@ -194,7 +203,7 @@ export function MetricTicket({
   className?: string
 }) {
   return (
-    <div className={cn('relative min-h-32 overflow-hidden border-[3px] border-[var(--lr-line)] p-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
+    <div className={cn('relative min-h-24 overflow-hidden border-[3px] border-[var(--lr-line)] px-5 py-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
       <span className="absolute -left-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
       <span className="absolute -right-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
       <p className="text-4xl font-black leading-none tracking-[-0.04em]">{value}</p>
@@ -314,7 +323,7 @@ export function IconButton({
       type="button"
       onClick={onClick}
       title={title}
-      className="flex size-9 items-center justify-center border-[3px] border-[var(--lr-line)] bg-white transition-transform hover:-translate-y-0.5"
+      className="flex size-10 items-center justify-center border-[3px] border-[var(--lr-line)] bg-white shadow-[3px_3px_0_var(--lr-line)] transition-transform hover:-translate-y-0.5"
     >
       <SurfaceIcon icon={icon} size={iconSize} />
     </button>
@@ -329,7 +338,7 @@ export function StatusStamp({
   tone?: StampTone
 }) {
   return (
-    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest', stampTones[tone])}>
+    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.12em]', stampTones[tone])}>
       {children}
     </span>
   )
@@ -345,7 +354,7 @@ export function TopicAvatar({
   const tone = difficulty ? difficultyTones[difficulty] ?? difficultyTones.medium : stampTones.yolk
 
   return (
-    <div className={cn('flex size-12 shrink-0 items-center justify-center border-[3px]', tone)}>
+    <div className={cn('flex size-14 shrink-0 items-center justify-center border-[3px]', tone)}>
       <span className="font-mono text-xs font-black uppercase">{topic.slice(0, 2)}</span>
     </div>
   )
@@ -373,17 +382,16 @@ export function QuizCollectionRow({
   actions?: ReactNode
 }) {
   return (
-    <div className="border-[3px] border-[var(--lr-line)] bg-white/80 p-4 shadow-[4px_4px_0_var(--lr-line)]">
-      <div className="flex flex-wrap items-start gap-3">
-        <TopicAvatar topic={topic} difficulty={difficulty} />
-
+    <div className="bg-[var(--lr-paper)] px-4 py-4">
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-black">{title}</h3>
+            <h3 className="min-w-0 max-w-full truncate text-base font-black">{title}</h3>
             {status && <StatusStamp tone={status.tone}>{status.label}</StatusStamp>}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-3 font-mono text-[10px] font-bold text-[var(--lr-muted)]">
+          <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold text-[var(--lr-muted)]">
             <DifficultyStamp difficulty={difficulty} />
+            <span>{topic}</span>
             <span>{questionCount} questions</span>
             {attemptCount != null && <span>{attemptCount} attempts</span>}
             {bestScore != null ? <StatusStamp tone="green">Best: {bestScore}%</StatusStamp> : null}
@@ -391,7 +399,7 @@ export function QuizCollectionRow({
           </div>
         </div>
 
-        {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+        {actions && <div className="grid shrink-0 gap-2 sm:flex sm:items-center">{actions}</div>}
       </div>
     </div>
   )
@@ -415,31 +423,24 @@ export function QuizFeedRow({
   bestScore: number | null
 }) {
   return (
-    <div className="grid gap-3 border-[3px] border-[var(--lr-line)] bg-white p-3 transition-transform hover:-translate-y-0.5 sm:grid-cols-[1fr_auto] sm:items-center">
-      <div className="min-w-0">
+    <Link
+      href={href}
+      className="grid gap-3 px-4 py-4 transition-colors hover:bg-white sm:grid-cols-[1fr_92px] sm:items-center"
+    >
+      <div className="min-w-0 flex-1">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <p className="min-w-0 truncate text-base font-black">{title}</p>
           <DifficultyStamp difficulty={difficulty} />
         </div>
-        <p className="mt-1 font-mono text-[11px] font-bold text-[var(--lr-muted)]">
+        <p className="mt-2 min-w-0 truncate font-mono text-[11px] font-bold text-[var(--lr-muted)]">
           {topic} · {questionCount}q · {attemptCount} attempts
         </p>
       </div>
 
-      <div className="grid gap-2 sm:w-44">
-        <div className="flex items-center justify-between gap-3 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[var(--lr-muted)]">
-          <span>Best score</span>
-          <span>{bestScore != null ? `${bestScore}%` : '--'}</span>
-        </div>
-        {bestScore != null && (
-          <ProgressMeter value={bestScore} tone={bestScore >= 80 ? 'mint' : bestScore >= 60 ? 'teal' : 'tomato'} />
-        )}
+      <div className="shrink-0 sm:text-right">
+        <p className="text-2xl font-black leading-none tracking-[-0.04em]">{bestScore != null ? `${bestScore}%` : '-'}</p>
       </div>
-
-      <div className="flex justify-end sm:col-span-2">
-        <WorkbookActionLink href={href}>Open slip</WorkbookActionLink>
-      </div>
-    </div>
+    </Link>
   )
 }
 
@@ -453,7 +454,7 @@ export function DifficultyStamp({
   const tone = difficultyTones[difficulty] ?? difficultyTones.medium
 
   return (
-    <span className={cn('inline-flex rotate-[-1deg] border-[2px] px-2.5 py-1 font-mono text-[10px] font-black uppercase tracking-[0.12em]', tone, className)}>
+    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.12em]', tone, className)}>
       {difficulty}
     </span>
   )
@@ -820,7 +821,7 @@ export function ProgressMeter({
 }) {
   const clamped = Math.max(0, Math.min(100, value))
   const fills = {
-    teal: 'bg-[var(--lr-teal)]',
+    teal: 'bg-[var(--lr-blue)]',
     tomato: 'bg-[var(--lr-tomato)]',
     cobalt: 'bg-[var(--lr-cobalt)]',
     mint: 'bg-[var(--lr-mint)]',
