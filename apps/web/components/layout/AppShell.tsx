@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { Home, BookOpen, Library, BarChart2, Users, Bell, Check, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Home, BookOpen, Library, BarChart2, Users, Bell, Check, X, ChevronLeft, ChevronRight, LogOut } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FlameIcon } from '@/components/icons/FlameIcon'
 import { GitHubStarButton } from '@/components/ui/GitHubStarButton'
@@ -75,6 +75,13 @@ export default function AppShell({
 
   const visibleNotifs = notifications.filter((n) => !dismissed.has(n.id))
   const unreadCount = visibleNotifs.length
+
+  const router = useRouter()
+
+  async function signOut() {
+    await createClient().auth.signOut()
+    router.push('/login')
+  }
 
   const displayName = user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? 'You'
   const streak = stats?.streak ?? 0
@@ -150,6 +157,35 @@ export default function AppShell({
               })}
             </nav>
 
+            <div className="mt-auto w-full">
+              {collapsed ? (
+                <button
+                  type="button"
+                  onClick={signOut}
+                  title="Sign out"
+                  className="flex size-9 items-center justify-center border-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] text-[var(--lr-muted)] shadow-[2px_2px_0_var(--lr-line)] transition-colors hover:text-[var(--lr-ink)]"
+                >
+                  <LogOut className="size-4" />
+                </button>
+              ) : (
+                <div className="flex items-center gap-3 border-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-4 py-3 shadow-[4px_4px_0_var(--lr-line)]">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black text-[var(--lr-ink)]">{displayName}</p>
+                    <p className="inline-flex items-center gap-1 truncate font-mono text-[10px] font-bold text-[var(--lr-muted)]">
+                      <FlameIcon size={12} /> {streak} day streak
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={signOut}
+                    title="Sign out"
+                    className="flex size-7 shrink-0 items-center justify-center text-[var(--lr-muted)] transition-colors hover:text-[var(--lr-ink)]"
+                  >
+                    <LogOut className="size-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
           </aside>
 
           {/* Main column */}
