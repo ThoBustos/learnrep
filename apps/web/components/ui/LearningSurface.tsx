@@ -140,14 +140,23 @@ export function WorkbookPanel({
 export function WorkbookPanelHeader({
   kicker,
   title,
+  meta,
 }: {
   kicker?: string
   title: string
+  meta?: string
 }) {
   return (
-    <div className="border-b-[3px] border-[var(--lr-line)] px-4 py-3">
-      {kicker && <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-tomato)]">{kicker}</p>}
-      <h2 className="text-xl font-black tracking-[-0.03em]">{title}</h2>
+    <div className="grid gap-2 border-b-[3px] border-[var(--lr-line)] px-4 py-3 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div className="min-w-0">
+        {kicker && <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-muted)]">{kicker}</p>}
+        <h2 className="text-xl font-black tracking-[-0.03em]">{title}</h2>
+      </div>
+      {meta && (
+        <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-muted)]">
+          {meta}
+        </p>
+      )}
     </div>
   )
 }
@@ -194,9 +203,8 @@ export function MetricTicket({
   className?: string
 }) {
   return (
-    <div className={cn('relative min-h-20 overflow-hidden border-[3px] border-[var(--lr-line)] p-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
-      <span className="absolute -left-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
-      <span className="absolute -right-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
+    <div className={cn('relative min-h-24 overflow-hidden border-[3px] border-[var(--lr-line)] px-5 py-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
+      <span className="absolute left-0 top-0 h-full w-2 bg-[var(--lr-line)]" />
       <p className="text-4xl font-black leading-none tracking-[-0.04em]">{value}</p>
       <p className="mt-2 font-mono text-[10px] font-black uppercase tracking-[0.14em] opacity-75">{label}</p>
       {meta && <p className="mt-4 font-mono text-[10px] font-bold opacity-60">{meta}</p>}
@@ -218,11 +226,11 @@ export function PromptCard({
   className?: string
 }) {
   return (
-    <div className={cn('relative border-[3px] border-[var(--lr-line)] bg-[var(--lr-yolk)] p-5 shadow-[6px_6px_0_var(--lr-line)]', className)}>
-      <div className="absolute -top-3 left-5 border-[3px] border-[var(--lr-line)] bg-[var(--lr-tomato)] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-white">
-        {kicker}
-      </div>
-      <div className="mt-3 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+    <div className={cn('border-[3px] border-[var(--lr-line)] bg-[var(--lr-yolk)] p-4 shadow-[6px_6px_0_var(--lr-line)]', className)}>
+      <div className="grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+        <div className="w-fit border-[3px] border-[var(--lr-line)] bg-[var(--lr-tomato)] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-white">
+          {kicker}
+        </div>
         <p className="min-w-0 break-words font-mono text-sm font-black leading-6 text-[var(--lr-ink)]">
           &ldquo;{prompt}&rdquo;
         </p>
@@ -314,7 +322,7 @@ export function IconButton({
       type="button"
       onClick={onClick}
       title={title}
-      className="flex size-9 items-center justify-center border-[3px] border-[var(--lr-line)] bg-white transition-transform hover:-translate-y-0.5"
+      className="flex size-10 items-center justify-center border-[3px] border-[var(--lr-line)] bg-white shadow-[3px_3px_0_var(--lr-line)] transition-transform hover:-translate-y-0.5"
     >
       <SurfaceIcon icon={icon} size={iconSize} />
     </button>
@@ -329,7 +337,7 @@ export function StatusStamp({
   tone?: StampTone
 }) {
   return (
-    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-widest', stampTones[tone])}>
+    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.12em]', stampTones[tone])}>
       {children}
     </span>
   )
@@ -345,7 +353,7 @@ export function TopicAvatar({
   const tone = difficulty ? difficultyTones[difficulty] ?? difficultyTones.medium : stampTones.yolk
 
   return (
-    <div className={cn('flex size-12 shrink-0 items-center justify-center border-[3px]', tone)}>
+    <div className={cn('flex size-14 shrink-0 items-center justify-center border-[3px]', tone)}>
       <span className="font-mono text-xs font-black uppercase">{topic.slice(0, 2)}</span>
     </div>
   )
@@ -373,16 +381,16 @@ export function QuizCollectionRow({
   actions?: ReactNode
 }) {
   return (
-    <div className="border-[3px] border-[var(--lr-line)] bg-white/80 p-4 shadow-[4px_4px_0_var(--lr-line)]">
-      <div className="flex flex-wrap items-start gap-3">
+    <div className="bg-[var(--lr-paper)] px-4 py-4">
+      <div className="grid gap-3 lg:grid-cols-[56px_1fr_auto] lg:items-center">
         <TopicAvatar topic={topic} difficulty={difficulty} />
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-base font-black">{title}</h3>
+            <h3 className="min-w-0 max-w-full truncate text-base font-black">{title}</h3>
             {status && <StatusStamp tone={status.tone}>{status.label}</StatusStamp>}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-3 font-mono text-[10px] font-bold text-[var(--lr-muted)]">
+          <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold text-[var(--lr-muted)]">
             <DifficultyStamp difficulty={difficulty} />
             <span>{questionCount} questions</span>
             {attemptCount != null && <span>{attemptCount} attempts</span>}
@@ -391,7 +399,7 @@ export function QuizCollectionRow({
           </div>
         </div>
 
-        {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+        {actions && <div className="grid shrink-0 gap-2 sm:flex sm:items-center">{actions}</div>}
       </div>
     </div>
   )
@@ -417,22 +425,21 @@ export function QuizFeedRow({
   return (
     <Link
       href={href}
-      className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-[var(--lr-notebook)]"
+      className="grid gap-3 px-4 py-4 transition-colors hover:bg-white sm:grid-cols-[1fr_92px] sm:items-center"
     >
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <DifficultyRail difficulty={difficulty} />
           <p className="min-w-0 truncate text-base font-black">{title}</p>
           <DifficultyStamp difficulty={difficulty} />
         </div>
-        <p className="mt-1 font-mono text-[11px] font-bold text-[var(--lr-muted)]">
+        <p className="mt-2 min-w-0 truncate font-mono text-[11px] font-bold text-[var(--lr-muted)]">
           {topic} · {questionCount}q · {attemptCount} attempts
         </p>
       </div>
 
-      <div className="shrink-0 text-right">
-        <p className="text-xl font-black leading-none tracking-[-0.04em]">
-          {bestScore != null ? `${bestScore}%` : '—'}
-        </p>
+      <div className="shrink-0 sm:text-right">
+        <p className="text-2xl font-black leading-none tracking-[-0.04em]">{bestScore != null ? `${bestScore}%` : '-'}</p>
         <p className="mt-1 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[var(--lr-muted)]">Best</p>
       </div>
     </Link>
@@ -449,10 +456,16 @@ export function DifficultyStamp({
   const tone = difficultyTones[difficulty] ?? difficultyTones.medium
 
   return (
-    <span className={cn('inline-flex rotate-[-1deg] border-[2px] px-2.5 py-1 font-mono text-[10px] font-black uppercase tracking-[0.12em]', tone, className)}>
+    <span className={cn('inline-flex border-[2px] px-2 py-0.5 font-mono text-[9px] font-black uppercase tracking-[0.12em]', tone, className)}>
       {difficulty}
     </span>
   )
+}
+
+function DifficultyRail({ difficulty }: { difficulty: string }) {
+  const tone = difficultyTones[difficulty] ?? difficultyTones.medium
+
+  return <span className={cn('h-7 w-2 shrink-0 border-[2px]', tone)} />
 }
 
 export function IconMetricCard({

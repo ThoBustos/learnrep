@@ -94,7 +94,7 @@ export default function DashboardPage() {
       />
 
       <WorkbookPanel>
-        <WorkbookPanelHeader title="Your Feed" />
+        <WorkbookPanelHeader kicker="workbook" title="Your Feed" meta="Best score" />
 
         {quizzes.length === 0 ? (
           <WorkbookEmptyState

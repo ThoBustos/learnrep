@@ -13,6 +13,7 @@ import {
   WorkbookButton,
   WorkbookEmptyState,
   WorkbookList,
+  WorkbookPanel,
 } from '@/components/ui/LearningSurface'
 
 type ApiQuiz = {
@@ -87,21 +88,23 @@ export default function QuizzesPage() {
           description="Generate your first quiz with the CLI"
         />
       ) : (
-        <WorkbookList>
-          {quizzes.map((quiz) => {
-            const isPublic = optimisticPublic[quiz.id] ?? quiz.is_public
-            return (
-              <QuizRow
-                key={quiz.id}
-                quiz={quiz}
-                isPublic={isPublic}
-                copied={copied === quiz.id}
-                onCopy={() => copyLink(quiz.id)}
-                onToggle={() => toggleVisibility(quiz)}
-              />
-            )
-          })}
-        </WorkbookList>
+        <WorkbookPanel>
+          <WorkbookList>
+            {quizzes.map((quiz) => {
+              const isPublic = optimisticPublic[quiz.id] ?? quiz.is_public
+              return (
+                <QuizRow
+                  key={quiz.id}
+                  quiz={quiz}
+                  isPublic={isPublic}
+                  copied={copied === quiz.id}
+                  onCopy={() => copyLink(quiz.id)}
+                  onToggle={() => toggleVisibility(quiz)}
+                />
+              )
+            })}
+          </WorkbookList>
+        </WorkbookPanel>
       )}
     </DashboardCanvas>
   )
