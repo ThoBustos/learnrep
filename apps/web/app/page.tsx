@@ -47,61 +47,65 @@ export default async function HomePage() {
   } as CSSProperties
 
   return (
-    <div className="min-h-screen bg-[var(--lr-notebook)] text-[var(--lr-ink)]" style={pageStyle}>
-
+    <div className="min-h-screen bg-[var(--lr-paper)] text-[var(--lr-ink)]" style={pageStyle}>
       <LandingNav stars={stars} />
 
-      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-14 sm:px-10 md:grid-cols-2 md:items-center lg:gap-16 lg:py-20">
-        <div className="flex flex-col gap-6">
-          <HeroBadge label="CLI tool for AI agents" />
+      <main className="relative overflow-hidden bg-[var(--lr-notebook)]">
+        <div className="pointer-events-none absolute inset-0 z-0 bg-ruled-paper opacity-70" />
+        <div className="relative z-10">
+          <section className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-14 sm:px-10 md:grid-cols-2 md:items-center lg:gap-16 lg:py-20">
+            <div className="flex flex-col gap-6">
+              <HeroBadge label="CLI tool for AI agents" />
 
-          <h1 className="text-5xl font-black leading-none tracking-normal sm:text-6xl">
-            Generate a quiz.
-            <br />
-            Share it with
-            <br />
-            <span className="relative inline-block">
-              your team.
-              <span className="absolute -bottom-1 left-0 h-[5px] w-full bg-[var(--lr-yolk)]" />
-            </span>
-          </h1>
+              <h1 className="text-4xl font-black leading-none tracking-normal sm:text-5xl lg:text-6xl">
+                Generate a quiz.
+                <br />
+                Share it with
+                <br />
+                <span className="relative inline-block">
+                  your team.
+                  <span className="absolute -bottom-1 left-0 h-[5px] w-full bg-[var(--lr-yolk)]" />
+                </span>
+              </h1>
 
-          <p className="text-base leading-relaxed text-[var(--lr-muted)]">
-            One command from your agent or terminal. A live link your whole team can take.
-            See who scores highest.
-          </p>
+              <p className="text-base leading-relaxed text-[var(--lr-muted)]">
+                One command from your agent or terminal. A live link your whole team can take.
+                See who scores highest.
+              </p>
 
-          <div className="grid gap-2 sm:grid-cols-3">
-            {HERO_TICKETS.map((ticket) => (
-              <div
-                key={ticket.label}
-                className={`${ticket.className} border-[3px] px-3 py-2 shadow-[2px_2px_0_var(--lr-line)]`}
-              >
-                <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] opacity-75">{ticket.label}</p>
-                <p className="mt-1 text-sm font-black">{ticket.value}</p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {HERO_TICKETS.map((ticket) => (
+                  <div
+                    key={ticket.label}
+                    className={`${ticket.className} border-[3px] px-3 py-2 shadow-[2px_2px_0_var(--lr-line)]`}
+                  >
+                    <p className="font-mono text-[9px] font-black uppercase tracking-[0.14em] opacity-75">{ticket.label}</p>
+                    <p className="mt-1 text-sm font-black">{ticket.value}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <InstallCommand command={INSTALL_CMD} />
-          </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <InstallCommand command={INSTALL_CMD} />
+              </div>
 
-          <AgentBadgeStrip agents={AGENTS} />
+              <AgentBadgeStrip agents={AGENTS} />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <TerminalWindow sequence={SEQUENCE} />
+              <QuizPreviewCard
+                title="React Hooks: State, Effects, and Closures"
+                meta="5 questions · medium · 0 attempts"
+              />
+            </div>
+          </section>
+
+          <OnboardingQuiz questions={QUESTIONS} />
+
+          <HowItWorks />
         </div>
-
-        <div className="flex flex-col gap-4">
-          <TerminalWindow sequence={SEQUENCE} />
-          <QuizPreviewCard
-            title="React Hooks: State, Effects, and Closures"
-            meta="5 questions · medium · 0 attempts"
-          />
-        </div>
-      </section>
-
-      <OnboardingQuiz questions={QUESTIONS} />
-
-      <HowItWorks />
+      </main>
 
       <footer className="flex flex-col gap-3 border-t-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-10">
         <p className="font-mono text-[11px] font-bold text-[var(--lr-muted)]">LearnRep · Open source · MIT</p>

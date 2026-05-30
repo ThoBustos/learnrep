@@ -7,7 +7,7 @@ type Props = { stars?: number | null }
 
 export function LandingNav({ stars }: Props) {
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between border-b-[3px] border-[var(--lr-line)] bg-[var(--lr-blue)] px-6 py-4 text-[var(--lr-blue-dark)] sm:px-10">
+    <header className="sticky top-0 z-20 flex items-center justify-between border-b-[3px] border-[var(--lr-line)] bg-[var(--lr-paper)] px-6 py-4 text-[var(--lr-ink)] sm:px-10">
       <Link href="/" className="flex items-center gap-3">
         <Image src="/logos/robot.svg" alt="" width={44} height={44} className="size-11" />
         <span className="text-xl font-black tracking-normal text-[var(--lr-ink)]">LearnRep</span>

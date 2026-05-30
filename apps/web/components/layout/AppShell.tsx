@@ -197,13 +197,6 @@ export default function AppShell({
                 </h1>
               </div>
               <div className="flex items-center gap-3">
-                {streak > 0 && (
-                  <div className="hidden items-center gap-2 border-[3px] border-[var(--lr-line)] bg-[var(--lr-ink)] px-4 py-2 text-[var(--lr-yolk)] sm:flex">
-                    <FlameIcon size={20} />
-                    <span className="font-black">{streak} day streak</span>
-                  </div>
-                )}
-
                 <Link
                   href="/docs"
                   className="hidden items-center gap-1.5 border-[3px] border-[var(--lr-line)] bg-[var(--lr-white)] px-3 py-2 font-mono text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0_var(--lr-line)] transition-transform hover:-translate-y-0.5 sm:flex"
