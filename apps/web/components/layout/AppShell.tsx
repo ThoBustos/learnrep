@@ -98,7 +98,7 @@ export default function AppShell({
         <div className="relative flex min-h-screen">
           {/* Sidebar */}
           <aside className={cn(
-            'hidden shrink-0 flex-col gap-2 overflow-hidden border-r-[3px] border-[var(--lr-line)] bg-[var(--lr-teal)] py-5 transition-[width] duration-200 lg:flex',
+            'hidden shrink-0 flex-col gap-2 overflow-hidden border-r-[3px] border-[var(--lr-line)] bg-[var(--lr-blue)] py-5 transition-[width] duration-200 lg:flex',
             collapsed ? 'w-20 items-center px-3' : 'w-64 px-4'
           )}>
             {/* Logo row */}
@@ -112,20 +112,20 @@ export default function AppShell({
                     className="group/logo relative flex size-11 shrink-0 items-center justify-center"
                   >
                     <Image src="/logos/robot.svg" alt="" width={40} height={40} className="size-10 transition-opacity group-hover/logo:opacity-0" />
-                    <ChevronRight className="absolute size-5 text-white opacity-0 transition-opacity group-hover/logo:opacity-100" />
+                    <ChevronRight className="absolute size-5 text-[var(--lr-ink)] opacity-0 transition-opacity group-hover/logo:opacity-100" />
                   </button>
                 ) : (
                   <Image src="/logos/robot.svg" alt="" width={44} height={44} className="size-11 shrink-0" />
                 )}
                 {!collapsed && (
-                  <span className="truncate text-xl font-black tracking-[-0.04em] text-white">LearnRep</span>
+                  <span className="truncate text-xl font-black tracking-[-0.04em] text-[var(--lr-ink)]">LearnRep</span>
                 )}
               </div>
               {!collapsed && (
                 <button
                   type="button"
                   onClick={toggleCollapsed}
-                  className="flex size-8 shrink-0 items-center justify-center border-[2px] border-white/35 bg-white/10 text-white transition-colors hover:border-white/60 hover:bg-white/20"
+                  className="flex size-8 shrink-0 items-center justify-center border-[2px] border-[var(--lr-ink)]/20 bg-[var(--lr-ink)]/10 text-[var(--lr-ink)] transition-colors hover:border-[var(--lr-ink)]/40 hover:bg-[var(--lr-ink)]/20"
                   aria-label="Collapse sidebar"
                 >
                   <ChevronLeft className="size-3.5" />
@@ -247,7 +247,7 @@ export default function AppShell({
         </div>
 
         {/* Mobile bottom nav */}
-        <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t-[3px] border-[var(--lr-line)] bg-[var(--lr-teal)] lg:hidden">
+        <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t-[3px] border-[var(--lr-line)] bg-[var(--lr-blue)] lg:hidden">
           {navItems.map(({ label, href, Icon }) => {
             const active = pathname === href
             return (
@@ -256,7 +256,7 @@ export default function AppShell({
                 href={href}
                 className={cn(
                   'flex flex-1 flex-col items-center gap-1 py-3 text-[10px] font-black uppercase tracking-[0.1em] transition-colors',
-                  active ? 'bg-[var(--lr-yolk)] text-[var(--lr-ink)]' : 'text-white'
+                  active ? 'bg-[var(--lr-yolk)] text-[var(--lr-ink)]' : 'text-[var(--lr-ink)]'
                 )}
               >
                 <Icon className="size-5" />

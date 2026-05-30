@@ -20,7 +20,7 @@ const metricTones: Record<MetricTone, string> = {
   ink:    'bg-[var(--lr-ink)] text-[var(--lr-paper)]',
   paper:  'bg-[var(--lr-paper)] text-[var(--lr-ink)]',
   yolk:   'bg-[var(--lr-yolk)] text-[var(--lr-ink)]',
-  teal:   'bg-[var(--lr-teal)] text-white',
+  teal:   'bg-[var(--lr-blue)] text-[var(--lr-blue-dark)]',
   tomato: 'bg-[var(--lr-tomato)] text-white',
 }
 
@@ -820,7 +820,7 @@ export function ProgressMeter({
 }) {
   const clamped = Math.max(0, Math.min(100, value))
   const fills = {
-    teal: 'bg-[var(--lr-teal)]',
+    teal: 'bg-[var(--lr-blue)]',
     tomato: 'bg-[var(--lr-tomato)]',
     cobalt: 'bg-[var(--lr-cobalt)]',
     mint: 'bg-[var(--lr-mint)]',
