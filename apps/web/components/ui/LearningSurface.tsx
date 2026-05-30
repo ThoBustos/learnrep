@@ -141,12 +141,12 @@ export function WorkbookPanelHeader({
   kicker,
   title,
 }: {
-  kicker: string
+  kicker?: string
   title: string
 }) {
   return (
     <div className="border-b-[3px] border-[var(--lr-line)] px-4 py-3">
-      <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-tomato)]">{kicker}</p>
+      {kicker && <p className="font-mono text-[10px] font-black uppercase tracking-[0.14em] text-[var(--lr-tomato)]">{kicker}</p>}
       <h2 className="text-xl font-black tracking-[-0.03em]">{title}</h2>
     </div>
   )
@@ -157,7 +157,7 @@ export function WorkbookList({
 }: {
   children: ReactNode
 }) {
-  return <div className="grid gap-3 p-3">{children}</div>
+  return <div className="divide-y-[3px] divide-[var(--lr-line)]">{children}</div>
 }
 
 export function WorkbookEmptyState({
@@ -415,8 +415,11 @@ export function QuizFeedRow({
   bestScore: number | null
 }) {
   return (
-    <div className="grid gap-3 border-[3px] border-[var(--lr-line)] bg-white p-3 transition-transform hover:-translate-y-0.5 sm:grid-cols-[1fr_auto] sm:items-center">
-      <div className="min-w-0">
+    <Link
+      href={href}
+      className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-[var(--lr-notebook)]"
+    >
+      <div className="min-w-0 flex-1">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <p className="min-w-0 truncate text-base font-black">{title}</p>
           <DifficultyStamp difficulty={difficulty} />
@@ -426,20 +429,13 @@ export function QuizFeedRow({
         </p>
       </div>
 
-      <div className="grid gap-2 sm:w-44">
-        <div className="flex items-center justify-between gap-3 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[var(--lr-muted)]">
-          <span>Best score</span>
-          <span>{bestScore != null ? `${bestScore}%` : '--'}</span>
-        </div>
-        {bestScore != null && (
-          <ProgressMeter value={bestScore} tone={bestScore >= 80 ? 'mint' : bestScore >= 60 ? 'teal' : 'tomato'} />
-        )}
+      <div className="shrink-0 text-right">
+        <p className="text-xl font-black leading-none tracking-[-0.04em]">
+          {bestScore != null ? `${bestScore}%` : '—'}
+        </p>
+        <p className="mt-1 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[var(--lr-muted)]">Best</p>
       </div>
-
-      <div className="flex justify-end sm:col-span-2">
-        <WorkbookActionLink href={href}>Open slip</WorkbookActionLink>
-      </div>
-    </div>
+    </Link>
   )
 }
 
