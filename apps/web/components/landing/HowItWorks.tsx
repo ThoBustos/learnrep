@@ -25,18 +25,13 @@ export function HowItWorks() {
       <div className="pointer-events-none absolute inset-0 bg-ruled-paper opacity-25" />
 
       <div className="relative z-10 mx-auto max-w-6xl">
-        <div className="mb-7 grid gap-3 md:grid-cols-[0.7fr_1fr] md:items-end">
+        <div className="mb-7">
           <div>
             <p className="font-mono text-[11px] font-black uppercase tracking-normal opacity-75">How it works</p>
             <h2 className="mt-2 text-3xl font-black leading-none tracking-normal sm:text-4xl">
               Three steps.
-              <br />
-              Real quizzes.
             </h2>
           </div>
-          <p className="max-w-xl text-sm font-black leading-6 md:justify-self-end">
-            Keep the landing page simple: install, generate, share. The sample quiz below shows the exact experience your team gets.
-          </p>
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
