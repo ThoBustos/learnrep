@@ -125,7 +125,7 @@ export default function AppShell({
                 <button
                   type="button"
                   onClick={toggleCollapsed}
-                  className="flex size-8 shrink-0 items-center justify-center border-[2px] border-[var(--lr-ink)]/20 bg-[var(--lr-ink)]/10 text-[var(--lr-ink)] transition-colors hover:border-[var(--lr-ink)]/40 hover:bg-[var(--lr-ink)]/20"
+                  className="flex size-8 shrink-0 items-center justify-center text-[var(--lr-ink)]/50 transition-colors hover:text-[var(--lr-ink)]"
                   aria-label="Collapse sidebar"
                 >
                   <ChevronLeft className="size-3.5" />
