@@ -380,11 +380,11 @@ export function QuizCollectionRow({
   status?: { label: string; tone: StampTone }
   actions?: ReactNode
 }) {
+  void topic
+
   return (
     <div className="bg-[var(--lr-paper)] px-4 py-4">
-      <div className="grid gap-3 lg:grid-cols-[56px_1fr_auto] lg:items-center">
-        <TopicAvatar topic={topic} difficulty={difficulty} />
-
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="min-w-0 max-w-full truncate text-base font-black">{title}</h3>
@@ -429,7 +429,6 @@ export function QuizFeedRow({
     >
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
-          <DifficultyRail difficulty={difficulty} />
           <p className="min-w-0 truncate text-base font-black">{title}</p>
           <DifficultyStamp difficulty={difficulty} />
         </div>
@@ -460,12 +459,6 @@ export function DifficultyStamp({
       {difficulty}
     </span>
   )
-}
-
-function DifficultyRail({ difficulty }: { difficulty: string }) {
-  const tone = difficultyTones[difficulty] ?? difficultyTones.medium
-
-  return <span className={cn('h-7 w-2 shrink-0 border-[2px]', tone)} />
 }
 
 export function IconMetricCard({
