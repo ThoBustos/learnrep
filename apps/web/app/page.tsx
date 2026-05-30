@@ -5,6 +5,7 @@ import { HeroBadge } from '@/components/landing/HeroBadge'
 import { TerminalWindow } from '@/components/landing/TerminalWindow'
 import { InstallCommand } from '@/components/landing/InstallCommand'
 import { OnboardingQuiz } from '@/components/landing/OnboardingQuiz'
+import { HowItWorks } from '@/components/landing/HowItWorks'
 import { SEQUENCE } from '@/lib/landing/terminalSequence'
 import { QUESTIONS } from '@/lib/landing/quizQuestions'
 import { landingColorVars } from '@/lib/tokens'
@@ -71,6 +72,8 @@ export default async function HomePage() {
               <TerminalWindow sequence={SEQUENCE} />
             </div>
           </section>
+
+          <HowItWorks />
 
           <OnboardingQuiz questions={QUESTIONS} />
         </div>
