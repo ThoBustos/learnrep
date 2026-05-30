@@ -204,7 +204,8 @@ export function MetricTicket({
 }) {
   return (
     <div className={cn('relative min-h-24 overflow-hidden border-[3px] border-[var(--lr-line)] px-5 py-4 shadow-[4px_4px_0_var(--lr-line)]', metricTones[tone], className)}>
-      <span className="absolute left-0 top-0 h-full w-2 bg-[var(--lr-line)]" />
+      <span className="absolute -left-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
+      <span className="absolute -right-2 top-1/2 size-4 -translate-y-1/2 rounded-full border-[3px] border-[var(--lr-line)] bg-[var(--lr-notebook)]" />
       <p className="text-4xl font-black leading-none tracking-[-0.04em]">{value}</p>
       <p className="mt-2 font-mono text-[10px] font-black uppercase tracking-[0.14em] opacity-75">{label}</p>
       {meta && <p className="mt-4 font-mono text-[10px] font-bold opacity-60">{meta}</p>}
@@ -226,11 +227,11 @@ export function PromptCard({
   className?: string
 }) {
   return (
-    <div className={cn('border-[3px] border-[var(--lr-line)] bg-[var(--lr-yolk)] p-4 shadow-[6px_6px_0_var(--lr-line)]', className)}>
-      <div className="grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-center">
-        <div className="w-fit border-[3px] border-[var(--lr-line)] bg-[var(--lr-tomato)] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-white">
-          {kicker}
-        </div>
+    <div className={cn('relative border-[3px] border-[var(--lr-line)] bg-[var(--lr-yolk)] p-5 shadow-[6px_6px_0_var(--lr-line)]', className)}>
+      <div className="absolute -top-3 left-5 border-[3px] border-[var(--lr-line)] bg-[var(--lr-tomato)] px-3 py-1 font-mono text-[10px] font-black uppercase tracking-[0.14em] text-white">
+        {kicker}
+      </div>
+      <div className="mt-3 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
         <p className="min-w-0 break-words font-mono text-sm font-black leading-6 text-[var(--lr-ink)]">
           &ldquo;{prompt}&rdquo;
         </p>
@@ -380,8 +381,6 @@ export function QuizCollectionRow({
   status?: { label: string; tone: StampTone }
   actions?: ReactNode
 }) {
-  void topic
-
   return (
     <div className="bg-[var(--lr-paper)] px-4 py-4">
       <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -392,6 +391,7 @@ export function QuizCollectionRow({
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-2 font-mono text-[10px] font-bold text-[var(--lr-muted)]">
             <DifficultyStamp difficulty={difficulty} />
+            <span>{topic}</span>
             <span>{questionCount} questions</span>
             {attemptCount != null && <span>{attemptCount} attempts</span>}
             {bestScore != null ? <StatusStamp tone="green">Best: {bestScore}%</StatusStamp> : null}
@@ -439,7 +439,6 @@ export function QuizFeedRow({
 
       <div className="shrink-0 sm:text-right">
         <p className="text-2xl font-black leading-none tracking-[-0.04em]">{bestScore != null ? `${bestScore}%` : '-'}</p>
-        <p className="mt-1 font-mono text-[10px] font-black uppercase tracking-[0.12em] text-[var(--lr-muted)]">Best</p>
       </div>
     </Link>
   )
